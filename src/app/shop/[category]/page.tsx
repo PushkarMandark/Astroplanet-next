@@ -1,11 +1,12 @@
 import { MainLayout } from "@/components/templates/main-layout";
-import { ProductGrid } from "@/components/organisms/product-grid";
+import { PaginatedProductGrid } from "@/components/organisms/paginated-product-grid";
 import { getProducts, getCategories, buildCategoryTree } from "@/lib/api/products";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { decodeHtmlEntities } from "@/lib/utils/decode";
 import {
     Sparkles,
     Filter,
@@ -56,7 +57,7 @@ const categoryIcons: Record<string, React.ReactNode> = {
     "default": <Package className="h-5 w-5" />,
 };
 
-// Products per page - fetch all for static export
+// Fetch all products for client-side pagination
 const PRODUCTS_PER_PAGE = 100;
 
 export default async function CategoryPage({ params }: CategoryPageProps) {
@@ -71,14 +72,11 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
         notFound();
     }
 
-    // Fetch all products for this category (static export)
+    // Fetch all products for this category
     const products = await getProducts({
         per_page: PRODUCTS_PER_PAGE,
         category: selectedCategory.id,
     });
-
-    // For static export, we show all products on one page
-    const totalProducts = products.length;
 
     return (
         <MainLayout>
@@ -111,8 +109,6 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
                         <p className="text-white/70 text-lg max-w-2xl mx-auto mb-8">
                             Explore our curated collection of {selectedCategory.name.toLowerCase()}
                         </p>
-
-
                     </div>
                 </div>
             </section>
@@ -144,7 +140,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
                                     size="sm"
                                     className={`rounded-full flex-shrink-0 ${cat.slug === categorySlug ? 'bg-primary' : ''}`}
                                 >
-                                    {cat.name}
+                                    {decodeHtmlEntities(cat.name)}
                                     <Badge variant="secondary" className="ml-2 text-xs">
                                         {cat.count}
                                     </Badge>
@@ -203,7 +199,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
                                                                 <Link key={child.id} href={`/shop/${child.slug}`} className="block">
                                                                     <div className={`flex items-center justify-between p-2 pl-3 rounded-lg transition-all text-sm ${child.slug === categorySlug ? 'bg-primary/10 text-primary font-medium' : 'text-muted-foreground hover:bg-muted hover:text-foreground'}`}>
                                                                         <span className="truncate max-w-[120px]">
-                                                                            {child.name}
+                                                                            {decodeHtmlEntities(child.name)}
                                                                         </span>
                                                                         <Badge variant="outline" className="text-xs flex-shrink-0">
                                                                             {child.count}
@@ -245,9 +241,6 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
                                     <h2 className="text-2xl font-bold font-serif">
                                         {selectedCategory.name}
                                     </h2>
-                                    <p className="text-muted-foreground">
-                                        Showing {totalProducts} products
-                                    </p>
                                 </div>
 
                                 {/* View Options */}
@@ -262,13 +255,13 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
                                 </div>
                             </div>
 
-                            {/* Products Grid */}
+                            {/* Paginated Products Grid */}
                             {products.length > 0 ? (
-                                <>
-                                    <ProductGrid products={products} columns={3} />
-
-
-                                </>
+                                <PaginatedProductGrid
+                                    products={products}
+                                    perPage={12}
+                                    columns={3}
+                                />
                             ) : (
                                 /* Enhanced Empty State */
                                 <Card className="border-0 shadow-lg">

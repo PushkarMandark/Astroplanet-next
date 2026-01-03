@@ -6,6 +6,7 @@ export { Footer } from "./footer";
 export { HeroSection } from "./hero-section";
 export { ProductCard } from "./product-card";
 export { ProductGrid } from "./product-grid";
+export { PaginatedProductGrid } from "./paginated-product-grid";
 export { ServicesSection, type Service } from "./services-section";
 export { ToolsSection } from "./tools-section";
 export { TestimonialsSection, type Testimonial } from "./testimonials-section";

@@ -1,5 +1,5 @@
 import { MainLayout } from "@/components/templates/main-layout";
-import { ProductGrid } from "@/components/organisms/product-grid";
+import { PaginatedProductGrid } from "@/components/organisms/paginated-product-grid";
 import { getProducts, getCategories, buildCategoryTree } from "@/lib/api/products";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -33,24 +33,18 @@ const categoryIcons: Record<string, React.ReactNode> = {
     "default": <Package className="h-5 w-5" />,
 };
 
-// Products per page - fetch all for static export
+// Fetch all products for client-side pagination
 const PRODUCTS_PER_PAGE = 100;
 
 export default async function ShopPage() {
-    // Fetch products and categories
+    // Fetch all products and categories
     const [products, categories] = await Promise.all([
-        getProducts({
-            per_page: PRODUCTS_PER_PAGE,
-        }),
+        getProducts({ per_page: PRODUCTS_PER_PAGE }),
         getCategories(),
     ]);
 
-    // For static export, show all products
-    const totalProducts = products.length;
-
     return (
         <MainLayout>
-
             {/* Category Pills */}
             <section className="py-6 bg-gradient-to-b from-muted/50 to-white border-b sticky top-16 z-30 backdrop-blur-sm bg-white/80">
                 <div className="container mx-auto px-4">
@@ -179,9 +173,6 @@ export default async function ShopPage() {
                                     <h2 className="text-2xl font-bold font-serif">
                                         All Products
                                     </h2>
-                                    <p className="text-muted-foreground">
-                                        Showing {totalProducts} products
-                                    </p>
                                 </div>
 
                                 {/* View Options */}
@@ -196,11 +187,13 @@ export default async function ShopPage() {
                                 </div>
                             </div>
 
-                            {/* Products Grid */}
+                            {/* Paginated Products Grid */}
                             {products.length > 0 ? (
-                                <>
-                                    <ProductGrid products={products} columns={3} />
-                                </>
+                                <PaginatedProductGrid
+                                    products={products}
+                                    perPage={12}
+                                    columns={3}
+                                />
                             ) : (
                                 /* Enhanced Empty State */
                                 <Card className="border-0 shadow-lg">

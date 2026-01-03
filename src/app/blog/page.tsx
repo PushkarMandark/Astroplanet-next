@@ -4,7 +4,8 @@ import { OptimizedImage } from "@/components/atoms/image";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { getPosts, getPostCategories, getFeaturedImage, getPostUrl, getAuthorName } from "@/lib/api/blog";
-import { Calendar, User } from "lucide-react";
+import { Calendar, User, BookOpen } from "lucide-react";
+import { BlogGridClient } from "./blog-grid-client";
 
 export const metadata = {
     title: "Blog",
@@ -13,7 +14,7 @@ export const metadata = {
 
 export default async function BlogPage() {
     const [posts, categories] = await Promise.all([
-        getPosts({ per_page: 12 }),
+        getPosts({ per_page: 100 }),
         getPostCategories(),
     ]);
 
@@ -22,6 +23,10 @@ export default async function BlogPage() {
             {/* Page Header */}
             <section className="bg-gradient-to-br from-primary to-secondary text-primary-foreground py-16">
                 <div className="container mx-auto px-4 text-center">
+                    <Badge className="mb-4 bg-white/10 text-white border-white/20 backdrop-blur-sm px-4 py-1">
+                        <BookOpen className="h-3 w-3 mr-1" />
+                        Latest Articles
+                    </Badge>
                     <h1 className="text-4xl md:text-5xl font-bold font-heading mb-4">
                         Blog
                     </h1>
@@ -31,53 +36,42 @@ export default async function BlogPage() {
                 </div>
             </section>
 
+            {/* Category Filters */}
+            {categories.length > 0 && (
+                <section className="py-6 bg-muted/30 border-b">
+                    <div className="container mx-auto px-4">
+                        <div className="flex items-center gap-3 overflow-x-auto pb-2 scrollbar-hide">
+                            <span className="text-sm font-medium text-muted-foreground flex-shrink-0">
+                                Categories:
+                            </span>
+                            {categories.slice(0, 8).map((category) => (
+                                <Badge
+                                    key={category.id}
+                                    variant="outline"
+                                    className="cursor-pointer hover:bg-primary hover:text-white transition-colors flex-shrink-0"
+                                >
+                                    {category.name}
+                                </Badge>
+                            ))}
+                        </div>
+                    </div>
+                </section>
+            )}
+
             <section className="py-12">
                 <div className="container mx-auto px-4">
                     {posts.length === 0 ? (
-                        <div className="text-center py-12">
-                            <p className="text-muted-foreground">No blog posts found.</p>
+                        <div className="text-center py-16">
+                            <div className="w-24 h-24 mx-auto mb-6 rounded-full bg-muted flex items-center justify-center">
+                                <BookOpen className="h-12 w-12 text-muted-foreground" />
+                            </div>
+                            <h3 className="text-xl font-bold mb-2">No Blog Posts Found</h3>
+                            <p className="text-muted-foreground">
+                                Check back later for new articles.
+                            </p>
                         </div>
                     ) : (
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                            {posts.map((post) => (
-                                <Link key={post.id} href={getPostUrl(post)}>
-                                    <Card className="h-full overflow-hidden hover:shadow-lg transition-shadow group">
-                                        <div className="relative aspect-video overflow-hidden">
-                                            <OptimizedImage
-                                                src={getFeaturedImage(post)}
-                                                alt={post.title.rendered}
-                                                fill
-                                                className="object-cover transition-transform group-hover:scale-105"
-                                            />
-                                        </div>
-                                        <CardContent className="p-6">
-                                            <div className="flex items-center gap-4 text-sm text-muted-foreground mb-3">
-                                                <span className="flex items-center gap-1">
-                                                    <Calendar className="h-4 w-4" />
-                                                    {new Date(post.date).toLocaleDateString("en-IN", {
-                                                        year: "numeric",
-                                                        month: "short",
-                                                        day: "numeric",
-                                                    })}
-                                                </span>
-                                                <span className="flex items-center gap-1">
-                                                    <User className="h-4 w-4" />
-                                                    {getAuthorName(post)}
-                                                </span>
-                                            </div>
-                                            <h2
-                                                className="text-xl font-bold font-heading mb-2 group-hover:text-primary transition-colors line-clamp-2"
-                                                dangerouslySetInnerHTML={{ __html: post.title.rendered }}
-                                            />
-                                            <div
-                                                className="text-muted-foreground text-sm line-clamp-3"
-                                                dangerouslySetInnerHTML={{ __html: post.excerpt.rendered }}
-                                            />
-                                        </CardContent>
-                                    </Card>
-                                </Link>
-                            ))}
-                        </div>
+                        <BlogGridClient posts={posts} />
                     )}
                 </div>
             </section>
