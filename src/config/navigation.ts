@@ -37,16 +37,17 @@ export const navigationConfig = {
 
     footer: {
         quickLinks: [
-            { label: "About Us", href: "/about" },
+            { label: "About Us", href: "/about-us" },
             { label: "Shop", href: "/shop" },
             { label: "Services", href: "/services" },
             { label: "Contact", href: "/contact" },
         ],
         policies: [
+            { label: "Terms of Use", href: "/terms-of-use" },
             { label: "Privacy Policy", href: "/privacy-policy" },
-            { label: "Terms of Service", href: "/terms" },
-            { label: "Refund Policy", href: "/refund-policy" },
-            { label: "Shipping Info", href: "/shipping" },
+            { label: "Return Policy", href: "/return-policy" },
+            { label: "Shipment Policy", href: "/shipment-policy" },
+            { label: "Refund & Cancellation", href: "/refund-cancellation-policy" },
         ],
         freeTools: [
             { label: "Daily Horoscope", href: "/horoscope" },
