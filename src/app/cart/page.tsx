@@ -71,7 +71,7 @@ export default function CartPage() {
                                 </Button>
                             </div>
 
-                            <Card>
+                            <Card className="py-4">
                                 <CardContent className="p-4">
                                     {items.map((item) => (
                                         <CartItem
@@ -96,7 +96,7 @@ export default function CartPage() {
 
                         {/* Order Summary */}
                         <div className="w-full lg:w-80">
-                            <Card className="sticky top-24">
+                            <Card className="sticky top-24 py-4">
                                 <CardHeader>
                                     <CardTitle>Order Summary</CardTitle>
                                 </CardHeader>

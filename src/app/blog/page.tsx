@@ -1,10 +1,6 @@
-import Link from "next/link";
 import { MainLayout } from "@/components/templates/main-layout";
-import { OptimizedImage } from "@/components/atoms/image";
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { getPosts, getPostCategories, getFeaturedImage, getPostUrl, getAuthorName } from "@/lib/api/blog";
-import { Calendar, User, BookOpen } from "lucide-react";
+import { getPosts, getPostCategories } from "@/lib/api/blog";
+import { BookOpen } from "lucide-react";
 import { BlogGridClient } from "./blog-grid-client";
 
 export const metadata = {
@@ -20,50 +16,39 @@ export default async function BlogPage() {
 
     return (
         <MainLayout>
-            {/* Page Header */}
-            <section className="bg-gradient-to-br from-primary to-secondary text-primary-foreground py-16">
-                <div className="container mx-auto px-4 text-center">
-                    <Badge className="mb-4 bg-white/10 text-white border-white/20 backdrop-blur-sm px-4 py-1">
-                        <BookOpen className="h-3 w-3 mr-1" />
-                        Latest Articles
-                    </Badge>
-                    <h1 className="text-4xl md:text-5xl font-bold font-heading mb-4">
-                        Blog
-                    </h1>
-                    <p className="text-primary-foreground/80 max-w-2xl mx-auto">
-                        Explore articles on astrology, horoscopes, gemstones, and spiritual guidance
-                    </p>
+            {/* Compact Page Header */}
+            <section className="bg-gradient-to-r from-primary to-secondary text-primary-foreground py-8">
+                <div className="container mx-auto px-4">
+                    <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+                        <div>
+                            <h1 className="text-3xl md:text-4xl font-bold font-heading">
+                                Our Blog
+                            </h1>
+                            <p className="text-primary-foreground/80 text-sm md:text-base mt-1">
+                                Insights on astrology, horoscopes, and spiritual guidance
+                            </p>
+                        </div>
+                        <div className="flex items-center gap-6 text-sm">
+                            <div className="flex items-center gap-2">
+                                <span className="text-2xl font-bold">{posts.length}</span>
+                                <span className="text-primary-foreground/70">Articles</span>
+                            </div>
+                            <div className="w-px h-8 bg-white/20" />
+                            <div className="flex items-center gap-2">
+                                <span className="text-2xl font-bold">{categories.length}</span>
+                                <span className="text-primary-foreground/70">Categories</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </section>
 
-            {/* Category Filters */}
-            {categories.length > 0 && (
-                <section className="py-6 bg-muted/30 border-b">
-                    <div className="container mx-auto px-4">
-                        <div className="flex items-center gap-3 overflow-x-auto pb-2 scrollbar-hide">
-                            <span className="text-sm font-medium text-muted-foreground flex-shrink-0">
-                                Categories:
-                            </span>
-                            {categories.slice(0, 8).map((category) => (
-                                <Badge
-                                    key={category.id}
-                                    variant="outline"
-                                    className="cursor-pointer hover:bg-primary hover:text-white transition-colors flex-shrink-0"
-                                >
-                                    {category.name}
-                                </Badge>
-                            ))}
-                        </div>
-                    </div>
-                </section>
-            )}
-
-            <section className="py-12">
+            <section className="py-12 md:py-16">
                 <div className="container mx-auto px-4">
                     {posts.length === 0 ? (
                         <div className="text-center py-16">
-                            <div className="w-24 h-24 mx-auto mb-6 rounded-full bg-muted flex items-center justify-center">
-                                <BookOpen className="h-12 w-12 text-muted-foreground" />
+                            <div className="w-24 h-24 mx-auto mb-6 rounded-full bg-gradient-to-br from-primary/10 to-secondary/10 flex items-center justify-center">
+                                <BookOpen className="h-12 w-12 text-primary/50" />
                             </div>
                             <h3 className="text-xl font-bold mb-2">No Blog Posts Found</h3>
                             <p className="text-muted-foreground">
@@ -71,10 +56,11 @@ export default async function BlogPage() {
                             </p>
                         </div>
                     ) : (
-                        <BlogGridClient posts={posts} />
+                        <BlogGridClient posts={posts} categories={categories} />
                     )}
                 </div>
             </section>
         </MainLayout>
     );
 }
+

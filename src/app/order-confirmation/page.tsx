@@ -1,26 +1,42 @@
 "use client";
 
+import { Suspense } from "react";
 import Link from "next/link";
-import { CheckCircle, Package, ArrowRight, Home, Truck, Phone } from "lucide-react";
+import { useSearchParams } from "next/navigation";
+import { CheckCircle, Package, ArrowRight, Home, Truck, Phone, Copy, Check } from "lucide-react";
 import { MainLayout } from "@/components/templates/main-layout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { siteConfig } from "@/config/site";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useCartStore } from "@/stores";
 
-export default function OrderConfirmationPage() {
+function OrderConfirmationContent() {
+    const searchParams = useSearchParams();
+    const orderId = searchParams.get("order_id");
+    const status = searchParams.get("status");
     const clearCart = useCartStore((state) => state.clearCart);
+    const [copied, setCopied] = useState(false);
 
     // Clear cart on successful order
     useEffect(() => {
-        clearCart();
-    }, [clearCart]);
+        if (status === "success") {
+            clearCart();
+        }
+    }, [status, clearCart]);
+
+    const copyOrderId = () => {
+        if (orderId) {
+            navigator.clipboard.writeText(orderId);
+            setCopied(true);
+            setTimeout(() => setCopied(false), 2000);
+        }
+    };
 
     return (
         <MainLayout>
-            <section className="py-20 bg-gradient-to-b from-green-50 to-white">
+            <section className="py-20 bg-gradient-to-b from-green-50 to-white dark:from-green-950/20 dark:to-background">
                 <div className="container mx-auto px-4">
                     <div className="max-w-2xl mx-auto text-center">
                         {/* Success Icon */}
@@ -29,19 +45,43 @@ export default function OrderConfirmationPage() {
                         </div>
 
                         {/* Success Message */}
-                        <h1 className="text-4xl md:text-5xl font-bold font-serif text-green-700 mb-4">
+                        <h1 className="text-4xl md:text-5xl font-bold font-heading text-green-700 dark:text-green-400 mb-4">
                             Order Confirmed!
                         </h1>
-                        <p className="text-xl text-gray-600 mb-8">
+                        <p className="text-xl text-gray-600 dark:text-gray-400 mb-8">
                             Thank you for your purchase. Your cosmic journey is about to begin!
                         </p>
 
                         {/* Order Info Card */}
                         <Card className="mb-8 border-0 shadow-lg">
                             <CardContent className="p-8">
+                                {/* Order ID Display */}
+                                {orderId && (
+                                    <div className="mb-6 p-4 rounded-lg bg-green-50 dark:bg-green-950/30 border border-green-200 dark:border-green-900">
+                                        <p className="text-sm text-muted-foreground mb-1">Order Number</p>
+                                        <div className="flex items-center justify-center gap-3">
+                                            <span className="text-2xl font-bold text-green-700 dark:text-green-400">
+                                                #{orderId}
+                                            </span>
+                                            <Button
+                                                variant="ghost"
+                                                size="sm"
+                                                onClick={copyOrderId}
+                                                className="h-8 w-8 p-0"
+                                            >
+                                                {copied ? (
+                                                    <Check className="h-4 w-4 text-green-600" />
+                                                ) : (
+                                                    <Copy className="h-4 w-4" />
+                                                )}
+                                            </Button>
+                                        </div>
+                                    </div>
+                                )}
+
                                 <div className="flex items-center justify-center gap-3 mb-6">
                                     <Package className="h-6 w-6 text-primary" />
-                                    <span className="text-lg font-semibold">Order Details</span>
+                                    <span className="text-lg font-semibold">What&apos;s Next?</span>
                                 </div>
 
                                 <p className="text-muted-foreground mb-6">
@@ -118,3 +158,24 @@ export default function OrderConfirmationPage() {
         </MainLayout>
     );
 }
+
+export default function OrderConfirmationPage() {
+    return (
+        <Suspense fallback={
+            <MainLayout>
+                <section className="py-20">
+                    <div className="container mx-auto px-4 text-center">
+                        <div className="animate-pulse">
+                            <div className="w-24 h-24 mx-auto mb-8 rounded-full bg-gray-200" />
+                            <div className="h-10 w-64 mx-auto mb-4 bg-gray-200 rounded" />
+                            <div className="h-6 w-96 mx-auto bg-gray-200 rounded" />
+                        </div>
+                    </div>
+                </section>
+            </MainLayout>
+        }>
+            <OrderConfirmationContent />
+        </Suspense>
+    );
+}
+
