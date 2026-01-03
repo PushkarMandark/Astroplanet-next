@@ -23,7 +23,6 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { useCartStore } from "@/stores";
 import { formatPrice } from "@/lib/api/client";
-import { createOrder } from "@/lib/api/orders";
 import { toast } from "sonner";
 
 const checkoutSchema = z.object({
@@ -66,21 +65,35 @@ export default function CheckoutPage() {
         setIsSubmitting(true);
 
         try {
-            const result = await createOrder({
-                items,
-                billing: {
-                    firstName: data.firstName,
-                    lastName: data.lastName,
-                    email: data.email,
-                    phone: data.phone,
-                    address: data.address,
-                    city: data.city,
-                    state: data.state,
-                    postcode: data.postcode,
-                    country: "IN",
+            const WP_URL = process.env.NEXT_PUBLIC_WP_URL || "https://api.astroeshop.com";
+
+            // Call WordPress PHP endpoint for order creation
+            const response = await fetch(`${WP_URL}/wp-json/astroeshop/v1/create-order`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
                 },
-                notes: data.notes,
+                body: JSON.stringify({
+                    items: items.map(item => ({
+                        product_id: item.id,
+                        quantity: item.quantity,
+                    })),
+                    billing: {
+                        first_name: data.firstName,
+                        last_name: data.lastName,
+                        email: data.email,
+                        phone: data.phone,
+                        address_1: data.address,
+                        city: data.city,
+                        state: data.state,
+                        postcode: data.postcode,
+                        country: "IN",
+                    },
+                    customer_note: data.notes || "",
+                }),
             });
+
+            const result = await response.json();
 
             if (result.success && result.checkout_url) {
                 clearCart();

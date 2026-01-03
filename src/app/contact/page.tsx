@@ -75,12 +75,36 @@ export default function ContactPage() {
         setIsSubmitting(true);
 
         try {
-            // Simulate API call
-            await new Promise((resolve) => setTimeout(resolve, 1500));
-            console.log("Contact form submitted:", data);
-            setIsSubmitted(true);
+            const WP_URL = process.env.NEXT_PUBLIC_WP_URL || "https://api.astroeshop.com";
+
+            const response = await fetch(`${WP_URL}/wp-json/astroeshop/v1/inquiry`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    customer_name: data.name,
+                    customer_email: data.email,
+                    customer_phone: data.phone || "",
+                    inquiry_subject: data.subject,
+                    inquiry_message: data.message,
+                    inquiry_source: "contact_form",
+                    inquiry_status: "new",
+                    inquiry_timestamp: new Date().toISOString(),
+                }),
+            });
+
+            const result = await response.json();
+
+            if (response.ok && result.success) {
+                setIsSubmitted(true);
+            } else {
+                console.error("Form submission failed:", result);
+                alert("Failed to send message. Please try again.");
+            }
         } catch (error) {
             console.error("Error submitting form:", error);
+            alert("An error occurred. Please try again.");
         } finally {
             setIsSubmitting(false);
         }
