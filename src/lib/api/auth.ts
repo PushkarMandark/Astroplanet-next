@@ -3,6 +3,25 @@ import { wpRequest, wcRequest } from "./client";
 
 const WP_URL = process.env.NEXT_PUBLIC_WP_URL || "https://backend.astroplanet.in";
 
+// Clean HTML tags from WordPress error messages
+function cleanErrorMessage(message: string): string {
+    // Remove HTML tags
+    const cleanMessage = message.replace(/<[^>]*>/g, '');
+
+    // Make common error messages more user-friendly
+    if (cleanMessage.toLowerCase().includes('not registered')) {
+        return 'This username is not registered. Please check your username or email.';
+    }
+    if (cleanMessage.toLowerCase().includes('incorrect') || cleanMessage.toLowerCase().includes('wrong')) {
+        return 'Incorrect password. Please try again.';
+    }
+    if (cleanMessage.toLowerCase().includes('invalid')) {
+        return 'Invalid username or password.';
+    }
+
+    return cleanMessage || 'Login failed. Please try again.';
+}
+
 // Login with JWT
 export async function login(
     credentials: AuthCredentials
@@ -24,7 +43,7 @@ export async function login(
         if (!response.ok || !data.token) {
             return {
                 success: false,
-                message: data.message || "Invalid credentials",
+                message: cleanErrorMessage(data.message || "Invalid credentials"),
             };
         }
 

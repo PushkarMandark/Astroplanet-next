@@ -1,19 +1,24 @@
 "use client";
 
-import Link from "next/link";
+import { useState, useEffect } from "react";
 import {
     User,
     MapPin,
-    Package,
-    Heart,
-    Settings,
-    LogOut,
     Mail,
     Phone,
     Edit,
-    Shield
+    Shield,
+    Plus,
+    Eye,
+    EyeOff,
+    Loader2,
+    Check,
+    X,
+    Home,
+    Building2,
+    Save
 } from "lucide-react";
-import { MainLayout } from "@/components/templates/main-layout";
+import { AccountLayout } from "@/components/templates/account-layout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -21,271 +26,640 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { useAuthStore } from "@/stores";
-import { useState, useEffect } from "react";
+import { toast } from "sonner";
+
+const WP_URL = process.env.NEXT_PUBLIC_WP_URL || "https://backend.astroplanet.in";
+
+interface Address {
+    id: string;
+    type: "billing" | "shipping";
+    label: string;
+    first_name: string;
+    last_name: string;
+    company: string;
+    address_1: string;
+    address_2: string;
+    city: string;
+    state: string;
+    postcode: string;
+    country: string;
+    phone: string;
+    isDefault?: boolean;
+}
+
+const INDIAN_STATES = [
+    "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh",
+    "Goa", "Gujarat", "Haryana", "Himachal Pradesh", "Jharkhand", "Karnataka",
+    "Kerala", "Madhya Pradesh", "Maharashtra", "Manipur", "Meghalaya", "Mizoram",
+    "Nagaland", "Odisha", "Punjab", "Rajasthan", "Sikkim", "Tamil Nadu",
+    "Telangana", "Tripura", "Uttar Pradesh", "Uttarakhand", "West Bengal",
+    "Delhi", "Jammu and Kashmir", "Ladakh"
+];
 
 export default function AccountPage() {
     const [mounted, setMounted] = useState(false);
-    const { user, isAuthenticated, logout } = useAuthStore();
+    const [isEditingProfile, setIsEditingProfile] = useState(false);
+    const [showPasswordForm, setShowPasswordForm] = useState(false);
+    const [showAddressDialog, setShowAddressDialog] = useState(false);
+    const [editingAddress, setEditingAddress] = useState<Address | null>(null);
+
+    // Profile form state
+    const [profileForm, setProfileForm] = useState({
+        firstName: "",
+        lastName: "",
+        phone: "",
+        dateOfBirth: ""
+    });
+
+    // Password form state
+    const [newPassword, setNewPassword] = useState("");
+    const [confirmPassword, setConfirmPassword] = useState("");
+    const [showPassword, setShowPassword] = useState(false);
+
+    // Address form state
+    const [addressForm, setAddressForm] = useState<Partial<Address>>({
+        type: "shipping",
+        label: "Home",
+        first_name: "",
+        last_name: "",
+        company: "",
+        address_1: "",
+        address_2: "",
+        city: "",
+        state: "",
+        postcode: "",
+        country: "India",
+        phone: ""
+    });
+
+    // Saved addresses
+    const [addresses, setAddresses] = useState<Address[]>([]);
+
+    const [isLoading, setIsLoading] = useState(false);
+
+    const user = useAuthStore((state) => state.user);
+    const token = useAuthStore((state) => state.token);
 
     useEffect(() => {
         setMounted(true);
-    }, []);
+        if (user) {
+            setProfileForm({
+                firstName: user.firstName || "",
+                lastName: user.lastName || "",
+                phone: "",
+                dateOfBirth: ""
+            });
+        }
+    }, [user]);
 
-    if (!mounted) {
-        return (
-            <MainLayout>
-                <section className="bg-gradient-to-r from-primary to-primary/80 text-white py-12">
-                    <div className="container mx-auto px-4">
-                        <h1 className="text-4xl font-bold font-serif">My Account</h1>
-                    </div>
-                </section>
-                <section className="py-12">
-                    <div className="container mx-auto px-4">
-                        <div className="animate-pulse h-96 bg-muted rounded-lg" />
-                    </div>
-                </section>
-            </MainLayout>
-        );
-    }
+    const handleProfileSave = async () => {
+        setIsLoading(true);
+        try {
+            const response = await fetch(`${WP_URL}/wp-json/wp/v2/users/me`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`,
+                },
+                body: JSON.stringify({
+                    first_name: profileForm.firstName,
+                    last_name: profileForm.lastName,
+                    name: `${profileForm.firstName} ${profileForm.lastName}`.trim(),
+                }),
+            });
 
-    // If not authenticated, show login prompt
-    if (!isAuthenticated()) {
-        return (
-            <MainLayout>
-                <section className="bg-gradient-to-r from-primary to-primary/80 text-white py-12">
-                    <div className="container mx-auto px-4">
-                        <h1 className="text-4xl font-bold font-serif">My Account</h1>
-                    </div>
-                </section>
-                <section className="py-20">
-                    <div className="container mx-auto px-4 text-center">
-                        <div className="w-24 h-24 mx-auto mb-6 rounded-full bg-muted flex items-center justify-center">
-                            <User className="h-12 w-12 text-muted-foreground" />
-                        </div>
-                        <h2 className="text-2xl font-bold font-serif mb-2">
-                            Sign In to Your Account
-                        </h2>
-                        <p className="text-muted-foreground mb-8 max-w-md mx-auto">
-                            Access your profile, orders, wishlist, and more by signing into your account.
-                        </p>
-                        <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                            <Button asChild size="lg" className="bg-gradient-to-r from-primary to-primary/80">
-                                <Link href="/login">Sign In</Link>
-                            </Button>
-                            <Button asChild size="lg" variant="outline">
-                                <Link href="/register">Create Account</Link>
-                            </Button>
-                        </div>
-                    </div>
-                </section>
-            </MainLayout>
-        );
-    }
+            if (response.ok) {
+                toast.success("Profile updated successfully!");
+                setIsEditingProfile(false);
+            } else {
+                toast.error("Failed to update profile");
+            }
+        } catch {
+            toast.error("An error occurred");
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const handlePasswordChange = async () => {
+        if (newPassword !== confirmPassword) {
+            toast.error("Passwords do not match");
+            return;
+        }
+        if (newPassword.length < 8) {
+            toast.error("Password must be at least 8 characters");
+            return;
+        }
+
+        setIsLoading(true);
+        try {
+            const response = await fetch(`${WP_URL}/wp-json/wp/v2/users/me`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`,
+                },
+                body: JSON.stringify({ password: newPassword }),
+            });
+
+            if (response.ok) {
+                toast.success("Password updated!");
+                setShowPasswordForm(false);
+                setNewPassword("");
+                setConfirmPassword("");
+            } else {
+                toast.error("Failed to update password");
+            }
+        } catch {
+            toast.error("An error occurred");
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const handleAddressSave = () => {
+        if (!addressForm.address_1 || !addressForm.city || !addressForm.state || !addressForm.postcode) {
+            toast.error("Please fill in all required fields");
+            return;
+        }
+
+        const newAddress: Address = {
+            id: editingAddress?.id || Date.now().toString(),
+            type: addressForm.type as "billing" | "shipping",
+            label: addressForm.label || "Home",
+            first_name: addressForm.first_name || "",
+            last_name: addressForm.last_name || "",
+            company: addressForm.company || "",
+            address_1: addressForm.address_1 || "",
+            address_2: addressForm.address_2 || "",
+            city: addressForm.city || "",
+            state: addressForm.state || "",
+            postcode: addressForm.postcode || "",
+            country: "India",
+            phone: addressForm.phone || "",
+            isDefault: addresses.length === 0
+        };
+
+        if (editingAddress) {
+            setAddresses(prev => prev.map(a => a.id === editingAddress.id ? newAddress : a));
+            toast.success("Address updated!");
+        } else {
+            setAddresses(prev => [...prev, newAddress]);
+            toast.success("Address added!");
+        }
+
+        setShowAddressDialog(false);
+        setEditingAddress(null);
+        resetAddressForm();
+    };
+
+    const resetAddressForm = () => {
+        setAddressForm({
+            type: "shipping",
+            label: "Home",
+            first_name: "",
+            last_name: "",
+            company: "",
+            address_1: "",
+            address_2: "",
+            city: "",
+            state: "",
+            postcode: "",
+            country: "India",
+            phone: ""
+        });
+    };
+
+    const handleDeleteAddress = (id: string) => {
+        setAddresses(prev => prev.filter(a => a.id !== id));
+        toast.success("Address deleted");
+    };
+
+    const openEditAddress = (address: Address) => {
+        setAddressForm(address);
+        setEditingAddress(address);
+        setShowAddressDialog(true);
+    };
 
     return (
-        <MainLayout>
-            {/* Page Header */}
-            <section className="bg-gradient-to-r from-primary to-primary/80 text-white py-12">
-                <div className="container mx-auto px-4">
-                    <div className="flex items-center gap-4">
-                        <div className="w-16 h-16 rounded-full bg-white/20 flex items-center justify-center text-3xl font-bold">
-                            {user?.displayName?.charAt(0) || user?.firstName?.charAt(0) || 'U'}
-                        </div>
-                        <div>
-                            <h1 className="text-3xl font-bold font-serif">
-                                Welcome, {user?.displayName || user?.firstName || 'User'}!
-                            </h1>
-                            <p className="text-white/80">{user?.email || 'user@example.com'}</p>
-                        </div>
-                    </div>
-                </div>
-            </section>
+        <AccountLayout title="Account Settings" description="Manage your profile and preferences">
+            <Tabs defaultValue="profile" className="w-full">
+                <TabsList className="mb-6 w-full sm:w-auto">
+                    <TabsTrigger value="profile">Profile</TabsTrigger>
+                    <TabsTrigger value="addresses">Addresses</TabsTrigger>
+                    <TabsTrigger value="security">Security</TabsTrigger>
+                </TabsList>
 
-            <section className="py-12">
-                <div className="container mx-auto px-4">
-                    <div className="grid lg:grid-cols-4 gap-8">
-                        {/* Sidebar Navigation */}
-                        <aside className="lg:col-span-1">
-                            <Card className="border-0 shadow-lg sticky top-24">
-                                <CardContent className="p-4">
-                                    <nav className="space-y-1">
-                                        <Link href="/account" className="flex items-center gap-3 p-3 rounded-lg bg-primary/10 text-primary font-medium">
-                                            <User className="h-5 w-5" />
-                                            Profile
-                                        </Link>
-                                        <Link href="/orders" className="flex items-center gap-3 p-3 rounded-lg hover:bg-muted transition-colors">
-                                            <Package className="h-5 w-5" />
-                                            Orders
-                                        </Link>
-                                        <Link href="/wishlist" className="flex items-center gap-3 p-3 rounded-lg hover:bg-muted transition-colors">
-                                            <Heart className="h-5 w-5" />
-                                            Wishlist
-                                        </Link>
-                                        <Link href="#addresses" className="flex items-center gap-3 p-3 rounded-lg hover:bg-muted transition-colors">
-                                            <MapPin className="h-5 w-5" />
-                                            Addresses
-                                        </Link>
-                                        <Link href="#settings" className="flex items-center gap-3 p-3 rounded-lg hover:bg-muted transition-colors">
-                                            <Settings className="h-5 w-5" />
-                                            Settings
-                                        </Link>
-                                        <Separator className="my-2" />
-                                        <button
-                                            onClick={logout}
-                                            className="flex items-center gap-3 p-3 rounded-lg hover:bg-destructive/10 text-destructive transition-colors w-full"
+                {/* Profile Tab */}
+                <TabsContent value="profile">
+                    <Card className="border-0 shadow-lg py-4">
+                        <CardHeader>
+                            <div className="flex items-center justify-between">
+                                <div>
+                                    <CardTitle>Personal Information</CardTitle>
+                                    <CardDescription>Manage your personal details</CardDescription>
+                                </div>
+                                {!isEditingProfile ? (
+                                    <Button variant="outline" size="sm" onClick={() => setIsEditingProfile(true)}>
+                                        <Edit className="h-4 w-4 mr-2" />
+                                        Edit
+                                    </Button>
+                                ) : (
+                                    <div className="flex gap-2">
+                                        <Button size="sm" onClick={handleProfileSave} disabled={isLoading}>
+                                            {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4 mr-1" />}
+                                            Save
+                                        </Button>
+                                        <Button variant="ghost" size="sm" onClick={() => setIsEditingProfile(false)}>
+                                            <X className="h-4 w-4" />
+                                        </Button>
+                                    </div>
+                                )}
+                            </div>
+                        </CardHeader>
+                        <CardContent className="space-y-6">
+                            <div className="grid md:grid-cols-2 gap-6">
+                                <div className="space-y-2">
+                                    <Label>First Name</Label>
+                                    <div className="flex items-center gap-2">
+                                        <User className="h-4 w-4 text-muted-foreground" />
+                                        <Input
+                                            value={mounted ? (isEditingProfile ? profileForm.firstName : user?.firstName || "Not set") : ""}
+                                            onChange={(e) => setProfileForm(p => ({ ...p, firstName: e.target.value }))}
+                                            readOnly={!isEditingProfile}
+                                            className={!isEditingProfile ? "bg-muted" : ""}
+                                        />
+                                    </div>
+                                </div>
+                                <div className="space-y-2">
+                                    <Label>Last Name</Label>
+                                    <div className="flex items-center gap-2">
+                                        <User className="h-4 w-4 text-muted-foreground" />
+                                        <Input
+                                            value={mounted ? (isEditingProfile ? profileForm.lastName : user?.lastName || "Not set") : ""}
+                                            onChange={(e) => setProfileForm(p => ({ ...p, lastName: e.target.value }))}
+                                            readOnly={!isEditingProfile}
+                                            className={!isEditingProfile ? "bg-muted" : ""}
+                                        />
+                                    </div>
+                                </div>
+                                <div className="space-y-2">
+                                    <Label>Email Address</Label>
+                                    <div className="flex items-center gap-2">
+                                        <Mail className="h-4 w-4 text-muted-foreground" />
+                                        <Input value={mounted ? (user?.email || "") : ""} readOnly className="bg-muted" />
+                                    </div>
+                                    <p className="text-xs text-muted-foreground">Email cannot be changed here</p>
+                                </div>
+                                <div className="space-y-2">
+                                    <Label>Phone Number</Label>
+                                    <div className="flex items-center gap-2">
+                                        <Phone className="h-4 w-4 text-muted-foreground" />
+                                        <Input
+                                            placeholder="Add phone number"
+                                            value={profileForm.phone}
+                                            onChange={(e) => setProfileForm(p => ({ ...p, phone: e.target.value }))}
+                                            readOnly={!isEditingProfile}
+                                            className={!isEditingProfile ? "bg-muted" : ""}
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                        </CardContent>
+                    </Card>
+                </TabsContent>
+
+                {/* Addresses Tab */}
+                <TabsContent value="addresses">
+                    <Card className="border-0 shadow-lg py-4">
+                        <CardHeader>
+                            <div className="flex items-center justify-between">
+                                <div>
+                                    <CardTitle>Saved Addresses</CardTitle>
+                                    <CardDescription>Manage your delivery addresses</CardDescription>
+                                </div>
+                                <Button
+                                    size="sm"
+                                    className="bg-gradient-to-r from-primary to-primary/80"
+                                    onClick={() => {
+                                        resetAddressForm();
+                                        setEditingAddress(null);
+                                        setShowAddressDialog(true);
+                                    }}
+                                >
+                                    <Plus className="h-4 w-4 mr-2" />
+                                    Add Address
+                                </Button>
+                            </div>
+                        </CardHeader>
+                        <CardContent>
+                            {addresses.length === 0 ? (
+                                <div className="text-center py-12">
+                                    <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-muted flex items-center justify-center">
+                                        <MapPin className="h-8 w-8 text-muted-foreground" />
+                                    </div>
+                                    <p className="text-muted-foreground mb-4">No addresses saved yet</p>
+                                    <Button
+                                        variant="outline"
+                                        onClick={() => {
+                                            resetAddressForm();
+                                            setShowAddressDialog(true);
+                                        }}
+                                    >
+                                        <Plus className="h-4 w-4 mr-2" />
+                                        Add Your First Address
+                                    </Button>
+                                </div>
+                            ) : (
+                                <div className="grid md:grid-cols-2 gap-4">
+                                    {addresses.map((address) => (
+                                        <div
+                                            key={address.id}
+                                            className={`p-4 rounded-lg border-2 ${address.isDefault ? "border-primary/50 bg-primary/5" : "border-muted"}`}
                                         >
-                                            <LogOut className="h-5 w-5" />
-                                            Sign Out
-                                        </button>
-                                    </nav>
-                                </CardContent>
-                            </Card>
-                        </aside>
-
-                        {/* Main Content */}
-                        <main className="lg:col-span-3">
-                            <Tabs defaultValue="profile" className="w-full">
-                                <TabsList className="mb-8">
-                                    <TabsTrigger value="profile">Profile</TabsTrigger>
-                                    <TabsTrigger value="addresses">Addresses</TabsTrigger>
-                                    <TabsTrigger value="security">Security</TabsTrigger>
-                                </TabsList>
-
-                                {/* Profile Tab */}
-                                <TabsContent value="profile">
-                                    <Card className="border-0 shadow-lg">
-                                        <CardHeader>
-                                            <div className="flex items-center justify-between">
-                                                <div>
-                                                    <CardTitle>Personal Information</CardTitle>
-                                                    <CardDescription>Manage your personal details</CardDescription>
+                                            <div className="flex items-start justify-between mb-2">
+                                                <div className="flex items-center gap-2">
+                                                    {address.label === "Home" ? (
+                                                        <Home className="h-4 w-4 text-primary" />
+                                                    ) : (
+                                                        <Building2 className="h-4 w-4 text-primary" />
+                                                    )}
+                                                    <h4 className="font-semibold">{address.label}</h4>
                                                 </div>
-                                                <Button variant="outline" size="sm">
-                                                    <Edit className="h-4 w-4 mr-2" />
+                                                {address.isDefault && (
+                                                    <Badge variant="secondary" className="text-xs">Default</Badge>
+                                                )}
+                                            </div>
+                                            <p className="text-sm text-muted-foreground">
+                                                {address.first_name} {address.last_name}<br />
+                                                {address.address_1}<br />
+                                                {address.address_2 && <>{address.address_2}<br /></>}
+                                                {address.city}, {address.state} {address.postcode}<br />
+                                                {address.country}
+                                            </p>
+                                            {address.phone && (
+                                                <p className="text-sm text-muted-foreground mt-1">
+                                                    Phone: {address.phone}
+                                                </p>
+                                            )}
+                                            <div className="flex gap-2 mt-3">
+                                                <Button
+                                                    variant="outline"
+                                                    size="sm"
+                                                    onClick={() => openEditAddress(address)}
+                                                >
                                                     Edit
                                                 </Button>
-                                            </div>
-                                        </CardHeader>
-                                        <CardContent className="space-y-6">
-                                            <div className="grid md:grid-cols-2 gap-6">
-                                                <div className="space-y-2">
-                                                    <Label>Full Name</Label>
-                                                    <Input value={user?.displayName || `${user?.firstName || ''} ${user?.lastName || ''}`.trim() || ''} readOnly className="bg-muted" />
-                                                </div>
-                                                <div className="space-y-2">
-                                                    <Label>Email Address</Label>
-                                                    <div className="flex items-center gap-2">
-                                                        <Mail className="h-4 w-4 text-muted-foreground" />
-                                                        <Input value={user?.email || ''} readOnly className="bg-muted" />
-                                                    </div>
-                                                </div>
-                                                <div className="space-y-2">
-                                                    <Label>Phone Number</Label>
-                                                    <div className="flex items-center gap-2">
-                                                        <Phone className="h-4 w-4 text-muted-foreground" />
-                                                        <Input placeholder="Add phone number" className="bg-muted" />
-                                                    </div>
-                                                </div>
-                                                <div className="space-y-2">
-                                                    <Label>Date of Birth</Label>
-                                                    <Input type="date" className="bg-muted" />
-                                                </div>
-                                            </div>
-                                        </CardContent>
-                                    </Card>
-                                </TabsContent>
-
-                                {/* Addresses Tab */}
-                                <TabsContent value="addresses">
-                                    <Card className="border-0 shadow-lg">
-                                        <CardHeader>
-                                            <div className="flex items-center justify-between">
-                                                <div>
-                                                    <CardTitle>Saved Addresses</CardTitle>
-                                                    <CardDescription>Manage your delivery addresses</CardDescription>
-                                                </div>
-                                                <Button size="sm" className="bg-gradient-to-r from-primary to-primary/80">
-                                                    Add New Address
+                                                <Button
+                                                    variant="ghost"
+                                                    size="sm"
+                                                    className="text-destructive hover:text-destructive"
+                                                    onClick={() => handleDeleteAddress(address.id)}
+                                                >
+                                                    Delete
                                                 </Button>
                                             </div>
-                                        </CardHeader>
-                                        <CardContent>
-                                            <div className="grid md:grid-cols-2 gap-4">
-                                                {/* Default Address */}
-                                                <div className="p-4 rounded-lg border-2 border-primary/30 bg-primary/5 relative">
-                                                    <Badge className="absolute top-2 right-2 bg-primary">Default</Badge>
-                                                    <h4 className="font-semibold mb-2">Home</h4>
-                                                    <p className="text-sm text-muted-foreground">
-                                                        123 Example Street<br />
-                                                        Apartment 4B<br />
-                                                        New Delhi, Delhi 110001<br />
-                                                        India
-                                                    </p>
-                                                    <div className="flex gap-2 mt-4">
-                                                        <Button variant="outline" size="sm">Edit</Button>
-                                                        <Button variant="ghost" size="sm" className="text-destructive">Remove</Button>
-                                                    </div>
-                                                </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </CardContent>
+                    </Card>
+                </TabsContent>
 
-                                                {/* Add New Address Card */}
-                                                <div className="p-4 rounded-lg border-2 border-dashed border-muted-foreground/30 flex items-center justify-center min-h-[200px]">
-                                                    <Button variant="ghost" className="flex flex-col gap-2 h-auto py-4">
-                                                        <MapPin className="h-8 w-8 text-muted-foreground" />
-                                                        <span className="text-muted-foreground">Add New Address</span>
-                                                    </Button>
-                                                </div>
-                                            </div>
-                                        </CardContent>
-                                    </Card>
-                                </TabsContent>
+                {/* Security Tab */}
+                <TabsContent value="security">
+                    <Card className="border-0 shadow-lg py-4">
+                        <CardHeader>
+                            <div className="flex items-center gap-3">
+                                <Shield className="h-6 w-6 text-primary" />
+                                <div>
+                                    <CardTitle>Security Settings</CardTitle>
+                                    <CardDescription>Manage your account security</CardDescription>
+                                </div>
+                            </div>
+                        </CardHeader>
+                        <CardContent className="space-y-6">
+                            {/* Change Password */}
+                            <div className="p-5 rounded-lg border bg-card">
+                                <div className="flex items-center justify-between mb-3">
+                                    <div>
+                                        <h4 className="font-semibold">Change Password</h4>
+                                        <p className="text-sm text-muted-foreground">
+                                            Keep your account secure with a strong password
+                                        </p>
+                                    </div>
+                                    {!showPasswordForm && (
+                                        <Button variant="outline" onClick={() => setShowPasswordForm(true)}>
+                                            Update Password
+                                        </Button>
+                                    )}
+                                </div>
 
-                                {/* Security Tab */}
-                                <TabsContent value="security">
-                                    <Card className="border-0 shadow-lg">
-                                        <CardHeader>
-                                            <div className="flex items-center gap-3">
-                                                <Shield className="h-6 w-6 text-primary" />
-                                                <div>
-                                                    <CardTitle>Security Settings</CardTitle>
-                                                    <CardDescription>Manage your account security</CardDescription>
-                                                </div>
+                                {showPasswordForm && (
+                                    <div className="mt-4 space-y-4 pt-4 border-t">
+                                        <div className="space-y-2">
+                                            <Label>New Password</Label>
+                                            <div className="relative">
+                                                <Input
+                                                    type={showPassword ? "text" : "password"}
+                                                    value={newPassword}
+                                                    onChange={(e) => setNewPassword(e.target.value)}
+                                                    placeholder="Enter new password (min 8 characters)"
+                                                />
+                                                <Button
+                                                    type="button"
+                                                    variant="ghost"
+                                                    size="icon"
+                                                    className="absolute right-0 top-0 h-full px-3"
+                                                    onClick={() => setShowPassword(!showPassword)}
+                                                >
+                                                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                                                </Button>
                                             </div>
-                                        </CardHeader>
-                                        <CardContent className="space-y-6">
-                                            <div className="p-4 rounded-lg bg-muted/50">
-                                                <h4 className="font-semibold mb-2">Change Password</h4>
-                                                <p className="text-sm text-muted-foreground mb-4">
-                                                    Keep your account secure with a strong password
-                                                </p>
-                                                <Button variant="outline">Update Password</Button>
-                                            </div>
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label>Confirm Password</Label>
+                                            <Input
+                                                type={showPassword ? "text" : "password"}
+                                                value={confirmPassword}
+                                                onChange={(e) => setConfirmPassword(e.target.value)}
+                                                placeholder="Confirm new password"
+                                            />
+                                        </div>
+                                        <div className="flex gap-2">
+                                            <Button onClick={handlePasswordChange} disabled={isLoading}>
+                                                {isLoading ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Check className="h-4 w-4 mr-2" />}
+                                                Save Password
+                                            </Button>
+                                            <Button variant="ghost" onClick={() => { setShowPasswordForm(false); setNewPassword(""); setConfirmPassword(""); }}>
+                                                Cancel
+                                            </Button>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
 
-                                            <div className="p-4 rounded-lg bg-muted/50">
-                                                <h4 className="font-semibold mb-2">Two-Factor Authentication</h4>
-                                                <p className="text-sm text-muted-foreground mb-4">
-                                                    Add an extra layer of security to your account
-                                                </p>
-                                                <Button variant="outline">Enable 2FA</Button>
-                                            </div>
+                            {/* 2FA */}
+                            <div className="p-5 rounded-lg border bg-card">
+                                <div className="flex items-center justify-between mb-2">
+                                    <h4 className="font-semibold">Two-Factor Authentication</h4>
+                                    <Badge variant="secondary">Coming Soon</Badge>
+                                </div>
+                                <p className="text-sm text-muted-foreground mb-4">
+                                    Add an extra layer of security to your account
+                                </p>
+                                <Button variant="outline" disabled>Enable 2FA</Button>
+                            </div>
 
-                                            <Separator />
+                            <Separator />
 
-                                            <div className="p-4 rounded-lg border border-destructive/30 bg-destructive/5">
-                                                <h4 className="font-semibold text-destructive mb-2">Delete Account</h4>
-                                                <p className="text-sm text-muted-foreground mb-4">
-                                                    Permanently delete your account and all associated data
-                                                </p>
-                                                <Button variant="destructive" size="sm">Delete Account</Button>
-                                            </div>
-                                        </CardContent>
-                                    </Card>
-                                </TabsContent>
-                            </Tabs>
-                        </main>
+                            {/* Danger Zone */}
+                            <div className="p-5 rounded-lg border border-destructive/30 bg-destructive/5">
+                                <h4 className="font-semibold text-destructive mb-2">Danger Zone</h4>
+                                <p className="text-sm text-muted-foreground mb-4">
+                                    Permanently delete your account. Contact support to proceed.
+                                </p>
+                                <Button variant="destructive" size="sm" disabled>Delete Account</Button>
+                            </div>
+                        </CardContent>
+                    </Card>
+                </TabsContent>
+            </Tabs>
+
+            {/* Add/Edit Address Dialog */}
+            <Dialog open={showAddressDialog} onOpenChange={setShowAddressDialog}>
+                <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
+                    <DialogHeader>
+                        <DialogTitle>{editingAddress ? "Edit Address" : "Add New Address"}</DialogTitle>
+                    </DialogHeader>
+                    <div className="space-y-4 py-4">
+                        <div className="grid grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                                <Label>Address Label</Label>
+                                <Select
+                                    value={addressForm.label}
+                                    onValueChange={(v) => setAddressForm(f => ({ ...f, label: v }))}
+                                >
+                                    <SelectTrigger>
+                                        <SelectValue placeholder="Select type" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="Home">Home</SelectItem>
+                                        <SelectItem value="Work">Work</SelectItem>
+                                        <SelectItem value="Other">Other</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                            <div className="space-y-2">
+                                <Label>Type</Label>
+                                <Select
+                                    value={addressForm.type}
+                                    onValueChange={(v) => setAddressForm(f => ({ ...f, type: v as "billing" | "shipping" }))}
+                                >
+                                    <SelectTrigger>
+                                        <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="shipping">Shipping</SelectItem>
+                                        <SelectItem value="billing">Billing</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                                <Label>First Name *</Label>
+                                <Input
+                                    value={addressForm.first_name}
+                                    onChange={(e) => setAddressForm(f => ({ ...f, first_name: e.target.value }))}
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <Label>Last Name *</Label>
+                                <Input
+                                    value={addressForm.last_name}
+                                    onChange={(e) => setAddressForm(f => ({ ...f, last_name: e.target.value }))}
+                                />
+                            </div>
+                        </div>
+
+                        <div className="space-y-2">
+                            <Label>Address Line 1 *</Label>
+                            <Input
+                                value={addressForm.address_1}
+                                onChange={(e) => setAddressForm(f => ({ ...f, address_1: e.target.value }))}
+                                placeholder="House/Flat number, Street name"
+                            />
+                        </div>
+
+                        <div className="space-y-2">
+                            <Label>Address Line 2</Label>
+                            <Input
+                                value={addressForm.address_2}
+                                onChange={(e) => setAddressForm(f => ({ ...f, address_2: e.target.value }))}
+                                placeholder="Landmark, Area (optional)"
+                            />
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                                <Label>City *</Label>
+                                <Input
+                                    value={addressForm.city}
+                                    onChange={(e) => setAddressForm(f => ({ ...f, city: e.target.value }))}
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <Label>PIN Code *</Label>
+                                <Input
+                                    value={addressForm.postcode}
+                                    onChange={(e) => setAddressForm(f => ({ ...f, postcode: e.target.value }))}
+                                    maxLength={6}
+                                />
+                            </div>
+                        </div>
+
+                        <div className="space-y-2">
+                            <Label>State *</Label>
+                            <Select
+                                value={addressForm.state}
+                                onValueChange={(v) => setAddressForm(f => ({ ...f, state: v }))}
+                            >
+                                <SelectTrigger>
+                                    <SelectValue placeholder="Select state" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {INDIAN_STATES.map(state => (
+                                        <SelectItem key={state} value={state}>{state}</SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                        </div>
+
+                        <div className="space-y-2">
+                            <Label>Phone Number</Label>
+                            <Input
+                                value={addressForm.phone}
+                                onChange={(e) => setAddressForm(f => ({ ...f, phone: e.target.value }))}
+                                placeholder="+91 XXXXXXXXXX"
+                            />
+                        </div>
                     </div>
-                </div>
-            </section>
-        </MainLayout>
+                    <DialogFooter>
+                        <Button variant="outline" onClick={() => setShowAddressDialog(false)}>
+                            Cancel
+                        </Button>
+                        <Button onClick={handleAddressSave}>
+                            {editingAddress ? "Update Address" : "Save Address"}
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+        </AccountLayout>
     );
 }

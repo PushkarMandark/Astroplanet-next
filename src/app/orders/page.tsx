@@ -1,14 +1,13 @@
 "use client";
 
-import Link from "next/link";
-import { Package, Eye, ArrowRight, ShoppingBag, Clock, CheckCircle, Truck, XCircle } from "lucide-react";
-import { MainLayout } from "@/components/templates/main-layout";
+import { Package, Eye, ShoppingBag, Clock, CheckCircle, Truck, XCircle } from "lucide-react";
+import { AccountLayout } from "@/components/templates/account-layout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { EmptyState } from "@/components/molecules/empty-state";
 import { formatPrice } from "@/lib/api/client";
-import { useAuthStore } from "@/stores";
 import { useState, useEffect } from "react";
 
 // Order status icons and colors
@@ -22,161 +21,8 @@ const statusConfig: Record<string, { icon: React.ElementType; color: string; bgC
     refunded: { icon: XCircle, color: "text-gray-600", bgColor: "bg-gray-100" },
 };
 
-// Mock orders for display (will be replaced with WooCommerce API)
-const mockOrders = [
-    {
-        id: 1234,
-        date: "2024-01-15",
-        status: "completed",
-        total: 2499,
-        items: [
-            { name: "Natural Ruby Gemstone", quantity: 1, price: 2499 }
-        ]
-    },
-    {
-        id: 1235,
-        date: "2024-01-20",
-        status: "shipped",
-        total: 1599,
-        items: [
-            { name: "5 Mukhi Rudraksha", quantity: 2, price: 799 }
-        ]
-    },
-    {
-        id: 1236,
-        date: "2024-01-25",
-        status: "processing",
-        total: 4999,
-        items: [
-            { name: "Sri Yantra Gold Plated", quantity: 1, price: 4999 }
-        ]
-    },
-];
-
-export default function OrdersPage() {
-    const [mounted, setMounted] = useState(false);
-    const isAuthenticated = useAuthStore((state) => state.isAuthenticated());
-
-    useEffect(() => {
-        setMounted(true);
-    }, []);
-
-    if (!mounted) {
-        return (
-            <MainLayout>
-                <section className="bg-gradient-to-r from-primary to-primary/80 text-white py-12">
-                    <div className="container mx-auto px-4">
-                        <h1 className="text-4xl font-bold font-serif">My Orders</h1>
-                    </div>
-                </section>
-                <section className="py-12">
-                    <div className="container mx-auto px-4">
-                        <div className="animate-pulse space-y-4">
-                            {[1, 2, 3].map((i) => (
-                                <div key={i} className="h-32 bg-muted rounded-lg" />
-                            ))}
-                        </div>
-                    </div>
-                </section>
-            </MainLayout>
-        );
-    }
-
-    // If not authenticated, show login prompt
-    if (!isAuthenticated) {
-        return (
-            <MainLayout>
-                <section className="bg-gradient-to-r from-primary to-primary/80 text-white py-12">
-                    <div className="container mx-auto px-4">
-                        <h1 className="text-4xl font-bold font-serif">My Orders</h1>
-                    </div>
-                </section>
-                <section className="py-20">
-                    <div className="container mx-auto px-4 text-center">
-                        <div className="w-24 h-24 mx-auto mb-6 rounded-full bg-muted flex items-center justify-center">
-                            <Package className="h-12 w-12 text-muted-foreground" />
-                        </div>
-                        <h2 className="text-2xl font-bold font-serif mb-2">
-                            Sign In to View Orders
-                        </h2>
-                        <p className="text-muted-foreground mb-8 max-w-md mx-auto">
-                            Please sign in to your account to view your order history and track shipments.
-                        </p>
-                        <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                            <Button asChild size="lg" className="bg-gradient-to-r from-primary to-primary/80">
-                                <Link href="/login">Sign In</Link>
-                            </Button>
-                            <Button asChild size="lg" variant="outline">
-                                <Link href="/register">Create Account</Link>
-                            </Button>
-                        </div>
-                    </div>
-                </section>
-            </MainLayout>
-        );
-    }
-
-    return (
-        <MainLayout>
-            {/* Page Header */}
-            <section className="bg-gradient-to-r from-primary to-primary/80 text-white py-12">
-                <div className="container mx-auto px-4">
-                    <h1 className="text-4xl font-bold font-serif">My Orders</h1>
-                    <p className="text-white/80 mt-2">Track and manage your orders</p>
-                </div>
-            </section>
-
-            <section className="py-12">
-                <div className="container mx-auto px-4">
-                    <Tabs defaultValue="all" className="w-full">
-                        <TabsList className="mb-8">
-                            <TabsTrigger value="all">All Orders</TabsTrigger>
-                            <TabsTrigger value="processing">Processing</TabsTrigger>
-                            <TabsTrigger value="shipped">Shipped</TabsTrigger>
-                            <TabsTrigger value="completed">Completed</TabsTrigger>
-                        </TabsList>
-
-                        <TabsContent value="all">
-                            <div className="space-y-6">
-                                {mockOrders.length > 0 ? (
-                                    mockOrders.map((order) => (
-                                        <OrderCard key={order.id} order={order} />
-                                    ))
-                                ) : (
-                                    <EmptyState />
-                                )}
-                            </div>
-                        </TabsContent>
-
-                        <TabsContent value="processing">
-                            <div className="space-y-6">
-                                {mockOrders.filter(o => o.status === 'processing').map((order) => (
-                                    <OrderCard key={order.id} order={order} />
-                                ))}
-                            </div>
-                        </TabsContent>
-
-                        <TabsContent value="shipped">
-                            <div className="space-y-6">
-                                {mockOrders.filter(o => o.status === 'shipped').map((order) => (
-                                    <OrderCard key={order.id} order={order} />
-                                ))}
-                            </div>
-                        </TabsContent>
-
-                        <TabsContent value="completed">
-                            <div className="space-y-6">
-                                {mockOrders.filter(o => o.status === 'completed').map((order) => (
-                                    <OrderCard key={order.id} order={order} />
-                                ))}
-                            </div>
-                        </TabsContent>
-                    </Tabs>
-                </div>
-            </section>
-        </MainLayout>
-    );
-}
+// Mock orders - will be replaced with WooCommerce API
+const mockOrders: Order[] = [];
 
 interface Order {
     id: number;
@@ -186,24 +32,93 @@ interface Order {
     items: Array<{ name: string; quantity: number; price: number }>;
 }
 
+export default function OrdersPage() {
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
+
+    return (
+        <AccountLayout title="My Orders" description="Track and manage your orders">
+            <Tabs defaultValue="all" className="w-full">
+                <TabsList className="mb-6 w-full sm:w-auto">
+                    <TabsTrigger value="all">All</TabsTrigger>
+                    <TabsTrigger value="processing">Processing</TabsTrigger>
+                    <TabsTrigger value="shipped">Shipped</TabsTrigger>
+                    <TabsTrigger value="completed">Completed</TabsTrigger>
+                </TabsList>
+
+                <TabsContent value="all">
+                    <div className="space-y-4">
+                        {mockOrders.length > 0 ? (
+                            mockOrders.map((order) => (
+                                <OrderCard key={order.id} order={order} />
+                            ))
+                        ) : (
+                            <OrdersEmptyState />
+                        )}
+                    </div>
+                </TabsContent>
+
+                <TabsContent value="processing">
+                    <div className="space-y-4">
+                        {mockOrders.filter(o => o.status === 'processing').length > 0 ? (
+                            mockOrders.filter(o => o.status === 'processing').map((order) => (
+                                <OrderCard key={order.id} order={order} />
+                            ))
+                        ) : (
+                            <EmptyFilterState status="processing" />
+                        )}
+                    </div>
+                </TabsContent>
+
+                <TabsContent value="shipped">
+                    <div className="space-y-4">
+                        {mockOrders.filter(o => o.status === 'shipped').length > 0 ? (
+                            mockOrders.filter(o => o.status === 'shipped').map((order) => (
+                                <OrderCard key={order.id} order={order} />
+                            ))
+                        ) : (
+                            <EmptyFilterState status="shipped" />
+                        )}
+                    </div>
+                </TabsContent>
+
+                <TabsContent value="completed">
+                    <div className="space-y-4">
+                        {mockOrders.filter(o => o.status === 'completed').length > 0 ? (
+                            mockOrders.filter(o => o.status === 'completed').map((order) => (
+                                <OrderCard key={order.id} order={order} />
+                            ))
+                        ) : (
+                            <EmptyFilterState status="completed" />
+                        )}
+                    </div>
+                </TabsContent>
+            </Tabs>
+        </AccountLayout>
+    );
+}
+
 function OrderCard({ order }: { order: Order }) {
     const config = statusConfig[order.status] || statusConfig.pending;
     const StatusIcon = config.icon;
 
     return (
-        <Card className="border-0 shadow-lg overflow-hidden">
+        <Card className="border-0 shadow-md overflow-hidden">
             <CardHeader className="bg-muted/30 py-4">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                    <div className="flex items-center gap-4">
-                        <div className={`w-12 h-12 rounded-full ${config.bgColor} flex items-center justify-center`}>
-                            <StatusIcon className={`h-6 w-6 ${config.color}`} />
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div className="flex items-center gap-3">
+                        <div className={`w-10 h-10 rounded-full ${config.bgColor} flex items-center justify-center`}>
+                            <StatusIcon className={`h-5 w-5 ${config.color}`} />
                         </div>
                         <div>
-                            <CardTitle className="text-lg">Order #{order.id}</CardTitle>
-                            <p className="text-sm text-muted-foreground">
-                                Placed on {new Date(order.date).toLocaleDateString('en-IN', {
+                            <CardTitle className="text-base">Order #{order.id}</CardTitle>
+                            <p className="text-xs text-muted-foreground">
+                                {new Date(order.date).toLocaleDateString('en-IN', {
                                     year: 'numeric',
-                                    month: 'long',
+                                    month: 'short',
                                     day: 'numeric'
                                 })}
                             </p>
@@ -214,10 +129,10 @@ function OrderCard({ order }: { order: Order }) {
                     </Badge>
                 </div>
             </CardHeader>
-            <CardContent className="p-6">
-                <div className="space-y-3 mb-4">
+            <CardContent className="p-4">
+                <div className="space-y-2 mb-4">
                     {order.items.map((item, idx) => (
-                        <div key={idx} className="flex justify-between items-center">
+                        <div key={idx} className="flex justify-between items-center text-sm">
                             <span className="text-muted-foreground">
                                 {item.name} × {item.quantity}
                             </span>
@@ -225,10 +140,10 @@ function OrderCard({ order }: { order: Order }) {
                         </div>
                     ))}
                 </div>
-                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pt-4 border-t">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pt-3 border-t">
                     <div>
-                        <span className="text-sm text-muted-foreground">Order Total: </span>
-                        <span className="text-xl font-bold text-primary">{formatPrice(order.total)}</span>
+                        <span className="text-sm text-muted-foreground">Total: </span>
+                        <span className="text-lg font-bold text-primary">{formatPrice(order.total)}</span>
                     </div>
                     <Button variant="outline" size="sm">
                         <Eye className="h-4 w-4 mr-2" />
@@ -240,22 +155,31 @@ function OrderCard({ order }: { order: Order }) {
     );
 }
 
-function EmptyState() {
+function OrdersEmptyState() {
     return (
-        <div className="text-center py-16">
-            <div className="w-24 h-24 mx-auto mb-6 rounded-full bg-muted flex items-center justify-center">
-                <ShoppingBag className="h-12 w-12 text-muted-foreground" />
-            </div>
-            <h3 className="text-xl font-bold mb-2">No Orders Yet</h3>
-            <p className="text-muted-foreground mb-6 max-w-md mx-auto">
-                You haven&apos;t placed any orders yet. Start shopping to see your orders here.
-            </p>
-            <Button asChild className="bg-gradient-to-r from-primary to-primary/80">
-                <Link href="/shop">
-                    Start Shopping
-                    <ArrowRight className="h-4 w-4 ml-2" />
-                </Link>
-            </Button>
-        </div>
+        <Card className="card-shadow">
+            <CardContent className="py-16">
+                <EmptyState
+                    icon={ShoppingBag}
+                    title="No Orders Yet"
+                    description="You haven't placed any orders yet. Start shopping to see your orders here."
+                    actionLabel="Start Shopping"
+                    actionHref="/shop"
+                />
+            </CardContent>
+        </Card>
+    );
+}
+
+function EmptyFilterState({ status }: { status: string }) {
+    return (
+        <Card className="card-shadow">
+            <CardContent className="py-12 text-center">
+                <Package className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
+                <p className="text-muted-foreground">
+                    No {status} orders found
+                </p>
+            </CardContent>
+        </Card>
     );
 }

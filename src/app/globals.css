@@ -185,4 +185,29 @@
     -webkit-text-fill-color: transparent;
     background-clip: text;
   }
+
+  /* Primary gradient button - use instead of repeating the gradient classes */
+  .btn-primary {
+    @apply bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70;
+  }
+
+  /* Card with shadow - for elevated card styles */
+  .card-shadow {
+    @apply border-0 shadow-lg;
+  }
+
+  /* Card with hover effect */
+  .card-interactive {
+    @apply border-0 shadow-lg hover:shadow-xl transition-all duration-300;
+  }
+
+  /* Section padding - consistent vertical rhythm */
+  .section-padding {
+    @apply py-12 md:py-16;
+  }
+
+  /* Container with padding */
+  .container-padding {
+    @apply container mx-auto px-4;
+  }
 }
