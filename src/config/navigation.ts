@@ -43,9 +43,9 @@ export const navigationConfig = {
             { label: "Contact", href: "/contact" },
         ],
         policies: [
-            { label: "Privacy Policy", href: "/privacy" },
+            { label: "Privacy Policy", href: "/privacy-policy" },
             { label: "Terms of Service", href: "/terms" },
-            { label: "Refund Policy", href: "/refund" },
+            { label: "Refund Policy", href: "/refund-policy" },
             { label: "Shipping Info", href: "/shipping" },
         ],
         freeTools: [

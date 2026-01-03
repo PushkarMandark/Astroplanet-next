@@ -6,10 +6,9 @@ import { OptimizedImage } from "@/components/atoms/image";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { useCartStore } from "@/stores";
+import { useCartStore, useWishlistStore } from "@/stores";
 import { Product } from "@/types";
 import { cn } from "@/lib/utils";
-import { useState } from "react";
 
 interface ProductCardProps {
     product: Product;
@@ -18,7 +17,8 @@ interface ProductCardProps {
 
 export function ProductCard({ product, className }: ProductCardProps) {
     const addItem = useCartStore((state) => state.addItem);
-    const [isWishlisted, setIsWishlisted] = useState(false);
+    const { toggleItem, isInWishlist } = useWishlistStore();
+    const isWishlisted = isInWishlist(product.id);
 
     const handleAddToCart = (e: React.MouseEvent) => {
         e.preventDefault();
@@ -29,7 +29,7 @@ export function ProductCard({ product, className }: ProductCardProps) {
     const handleWishlist = (e: React.MouseEvent) => {
         e.preventDefault();
         e.stopPropagation();
-        setIsWishlisted(!isWishlisted);
+        toggleItem(product);
     };
 
     const productUrl = `/product/${product.slug}`;
