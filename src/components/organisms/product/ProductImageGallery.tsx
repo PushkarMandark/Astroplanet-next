@@ -86,54 +86,62 @@ export function ProductImageGallery({ images, productName }: ProductImageGallery
                 )}
 
                 {/* Quick Actions */}
-                <div className="absolute top-4 right-4 flex flex-col gap-2 z-40">
+                <div className="absolute top-4 right-4 flex flex-col gap-2 z-50">
                     <Button
                         variant="secondary"
                         size="icon"
-                        className="rounded-full bg-white shadow-lg hover:bg-red-50 hover:text-red-500 border border-gray-100"
+                        className="rounded-full bg-white/90 backdrop-blur-sm shadow-xl hover:bg-red-50 hover:text-red-500 border border-gray-100 transition-all active:scale-95"
                     >
-                        <Heart className="h-5 w-5" />
+                        <Heart className="h-5 w-5 text-gray-700 hover:text-red-500 fill-transparent hover:fill-red-500" />
                     </Button>
                     <Button
                         variant="secondary"
                         size="icon"
-                        className="rounded-full bg-white shadow-lg hover:bg-blue-50 hover:text-blue-500 border border-gray-100"
+                        className="rounded-full bg-white/90 backdrop-blur-sm shadow-xl hover:bg-blue-50 hover:text-blue-500 border border-gray-100 transition-all active:scale-95"
                     >
-                        <Share2 className="h-5 w-5" />
+                        <Share2 className="h-5 w-5 text-gray-700 hover:text-blue-500" />
                     </Button>
                 </div>
 
                 {/* Zoom Hint */}
-                <div className="absolute bottom-4 left-4 bg-black/50 backdrop-blur-md text-white px-3 py-1.5 rounded-full text-xs font-medium flex items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity z-10">
+                <div className="absolute bottom-4 left-4 bg-black/60 backdrop-blur-md text-white px-3 py-1.5 rounded-full text-[10px] uppercase tracking-wider font-bold flex items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity z-20">
                     <Search className="h-3 w-3" />
-                    Move cursor to zoom
+                    Move to zoom
                 </div>
 
                 {/* Navigation Arrows */}
                 {hasMultipleImages && (
                     <>
                         <Button
-                            variant="ghost"
+                            variant="secondary"
                             size="icon"
-                            onClick={(e) => { e.stopPropagation(); handlePrevImage(); }}
-                            className="absolute left-4 top-1/2 -translate-y-1/2 rounded-full bg-white/80 hover:bg-white shadow-lg opacity-0 group-hover:opacity-100 transition-all z-40"
+                            onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                handlePrevImage();
+                            }}
+                            className="absolute left-4 top-1/2 -translate-y-1/2 rounded-full bg-white/90 hover:bg-white shadow-xl opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all z-50 w-10 h-10"
                         >
-                            <ChevronLeft className="h-6 w-6" />
+                            <ChevronLeft className="h-6 w-6 text-gray-800" />
                         </Button>
                         <Button
-                            variant="ghost"
+                            variant="secondary"
                             size="icon"
-                            onClick={(e) => { e.stopPropagation(); handleNextImage(); }}
-                            className="absolute right-4 top-1/2 -translate-y-1/2 rounded-full bg-white/80 hover:bg-white shadow-lg opacity-0 group-hover:opacity-100 transition-all z-40"
+                            onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                handleNextImage();
+                            }}
+                            className="absolute right-4 top-1/2 -translate-y-1/2 rounded-full bg-white/90 hover:bg-white shadow-xl opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all z-50 w-10 h-10"
                         >
-                            <ChevronRight className="h-6 w-6" />
+                            <ChevronRight className="h-6 w-6 text-gray-800" />
                         </Button>
                     </>
                 )}
 
                 {/* Image Counter */}
                 {hasMultipleImages && (
-                    <div className="absolute bottom-6 right-6 bg-white/90 backdrop-blur-md px-3 py-1.5 rounded-full text-xs font-bold shadow-lg text-primary z-40">
+                    <div className="absolute bottom-6 right-6 bg-primary/90 backdrop-blur-md px-3 py-1.5 rounded-full text-xs font-bold shadow-lg text-white z-20">
                         {selectedImageIndex + 1} / {images.length}
                     </div>
                 )}
@@ -144,7 +152,7 @@ export function ProductImageGallery({ images, productName }: ProductImageGallery
                 <div className="grid grid-cols-5 gap-3">
                     {images.map((image, index) => (
                         <button
-                            key={image.id || index}
+                            key={`${image.id}-${index}`}
                             onClick={() => setSelectedImageIndex(index)}
                             onMouseEnter={() => setSelectedImageIndex(index)}
                             className={cn(

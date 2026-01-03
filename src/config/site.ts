@@ -64,10 +64,10 @@ export const designTokens = {
         info: "#0277bd",
     },
     fonts: {
-        heading: "'Cormorant Garamond', 'Crimson Pro', Georgia, serif",
-        body: "'Nunito Sans', 'Segoe UI', sans-serif",
+        heading: "'Playfair Display', Georgia, 'Times New Roman', serif",
+        body: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
         googleFonts:
-            "Cormorant+Garamond:wght@400;500;600;700&family=Crimson+Pro:wght@400;500;600;700&family=Nunito+Sans:wght@400;500;600;700",
+            "Playfair+Display:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700",
     },
 };
 
