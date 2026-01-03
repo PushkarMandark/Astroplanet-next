@@ -1,13 +1,13 @@
 // Site configuration matching the PHP project's design system
 export const siteConfig = {
-    name: "AstroPlanet",
+    name: "AstroEshop",
     tagline: "Your Cosmic Journey Starts Here",
-    url: process.env.NEXT_PUBLIC_SITE_URL || "https://astroplanet.in",
-    wpUrl: process.env.NEXT_PUBLIC_WP_URL || "https://backend.astroplanet.in",
+    url: process.env.NEXT_PUBLIC_SITE_URL || "https://astroeshop.com",
+    wpUrl: process.env.NEXT_PUBLIC_WP_URL || "https://api.astroeshop.com",
 
     // Contact Info
     contact: {
-        email: "support@astroplanet.in",
+        email: "support@astroeshop.com",
         phone: "+91 9971 000226",
         whatsapp: "+919971000226",
         address:
@@ -16,10 +16,10 @@ export const siteConfig = {
 
     // Social Links
     social: {
-        facebook: "https://facebook.com/astroplanet",
-        instagram: "https://instagram.com/astroplanet",
-        twitter: "https://twitter.com/astroplanet",
-        youtube: "https://youtube.com/astroplanet",
+        facebook: "https://facebook.com/astroeshop",
+        instagram: "https://instagram.com/astroeshop",
+        twitter: "https://twitter.com/astroeshop",
+        youtube: "https://youtube.com/astroeshop",
     },
 
     // Business Details
@@ -36,7 +36,7 @@ export const siteConfig = {
 
     // SEO Defaults
     seo: {
-        titleSuffix: " | AstroPlanet",
+        titleSuffix: " | AstroEshop",
         defaultDescription:
             "Discover authentic astrology products and services. Birth charts, gemstones, puja services, and expert consultations.",
         defaultKeywords:

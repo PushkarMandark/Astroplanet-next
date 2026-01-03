@@ -31,7 +31,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { useAuthStore } from "@/stores";
 import { toast } from "sonner";
 
-const WP_URL = process.env.NEXT_PUBLIC_WP_URL || "https://backend.astroplanet.in";
+const WP_URL = process.env.NEXT_PUBLIC_WP_URL || "https://api.astroeshop.com";
 
 interface Address {
     id: string;

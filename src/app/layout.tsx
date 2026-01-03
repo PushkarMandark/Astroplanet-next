@@ -19,8 +19,8 @@ const nunitoSans = Nunito_Sans({
 
 export const metadata: Metadata = {
   title: {
-    default: "AstroPlanet - Your Cosmic Journey Starts Here",
-    template: "%s | AstroPlanet",
+    default: "AstroEshop - Your Cosmic Journey Starts Here",
+    template: "%s | AstroEshop",
   },
   description:
     "Discover authentic astrology products and services. Birth charts, gemstones, puja services, and expert consultations.",
@@ -34,20 +34,20 @@ export const metadata: Metadata = {
     "numerology",
     "panchang",
   ],
-  authors: [{ name: "AstroPlanet" }],
-  creator: "AstroPlanet",
+  authors: [{ name: "AstroEshop" }],
+  creator: "AstroEshop",
   openGraph: {
     type: "website",
     locale: "en_IN",
-    url: "https://astroplanet.in",
-    siteName: "AstroPlanet",
-    title: "AstroPlanet - Your Cosmic Journey Starts Here",
+    url: "https://astroeshop.com",
+    siteName: "AstroEshop",
+    title: "AstroEshop - Your Cosmic Journey Starts Here",
     description:
       "Discover authentic astrology products and services. Birth charts, gemstones, puja services, and expert consultations.",
   },
   twitter: {
     card: "summary_large_image",
-    title: "AstroPlanet - Your Cosmic Journey Starts Here",
+    title: "AstroEshop - Your Cosmic Journey Starts Here",
     description:
       "Discover authentic astrology products and services. Birth charts, gemstones, puja services, and expert consultations.",
   },

@@ -1,5 +1,5 @@
 // Base API client for WooCommerce and WordPress REST API
-const WP_URL = process.env.NEXT_PUBLIC_WP_URL || "https://backend.astroplanet.in";
+const WP_URL = process.env.NEXT_PUBLIC_WP_URL || "https://api.astroeshop.com";
 const WC_KEY = process.env.WC_CONSUMER_KEY || "";
 const WC_SECRET = process.env.WC_CONSUMER_SECRET || "";
 

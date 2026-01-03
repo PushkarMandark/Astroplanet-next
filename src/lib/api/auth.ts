@@ -1,7 +1,7 @@
 import { AuthCredentials, RegisterData, AuthResponse, User } from "@/types";
 import { wpRequest, wcRequest } from "./client";
 
-const WP_URL = process.env.NEXT_PUBLIC_WP_URL || "https://backend.astroplanet.in";
+const WP_URL = process.env.NEXT_PUBLIC_WP_URL || "https://api.astroeshop.com";
 
 // Clean HTML tags from WordPress error messages
 function cleanErrorMessage(message: string): string {
