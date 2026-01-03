@@ -1,107 +1,72 @@
-import { MainLayout } from "@/components/templates/main-layout";
-import { siteConfig } from "@/config/site";
+"use client";
 
-export const metadata = {
-    title: "Privacy Policy",
-    description: "Privacy Policy for AstroPlanet - How we collect, use, and protect your information.",
-};
+import { MainLayout } from "@/components/templates/main-layout";
 
 export default function PrivacyPolicyPage() {
     return (
         <MainLayout>
-            <section className="bg-primary text-primary-foreground py-12">
-                <div className="container mx-auto px-4">
-                    <h1 className="text-3xl md:text-4xl font-bold font-heading">
+            {/* Hero Section */}
+            <section className="bg-gradient-to-br from-primary via-[#6b0707] to-[#3d0404] text-white py-16">
+                <div className="container mx-auto px-4 text-center">
+                    <h1 className="text-4xl md:text-5xl font-bold font-serif mb-4">
                         Privacy Policy
                     </h1>
-                    <p className="text-primary-foreground/80 mt-2">
-                        Last updated: December 2024
+                    <p className="text-white/80 max-w-2xl mx-auto">
+                        Your privacy is important to us. Learn how we collect, use, and protect your information.
                     </p>
                 </div>
             </section>
 
-            <section className="py-12">
-                <div className="container mx-auto px-4">
-                    <div className="max-w-3xl mx-auto prose">
-                        <h2>Introduction</h2>
-                        <p>
-                            At {siteConfig.name}, we are committed to protecting your privacy.
-                            This Privacy Policy explains how we collect, use, disclose, and
-                            safeguard your information when you visit our website.
+            {/* Content */}
+            <section className="py-16 bg-gray-50">
+                <div className="container mx-auto px-4 max-w-4xl">
+                    <div className="bg-white rounded-xl shadow-lg p-8 md:p-12 prose prose-lg max-w-none">
+                        <p className="lead text-lg text-muted-foreground mb-8">
+                            We at Astro E-Shop respect the privacy of our customers and therefore created this particular window for your privacy queries. The material information that we collect from our customers is only used to facilitate the selection of the desired and accordingly offer the most suitable treatment.
                         </p>
 
-                        <h2>Information We Collect</h2>
-                        <p>We may collect information about you in a variety of ways:</p>
+                        <div className="bg-green-50 border border-green-200 rounded-lg p-6 mb-8">
+                            <p className="text-green-800 font-semibold mb-0">
+                                We do not sell or share your information to a third party at any time without your permission.
+                            </p>
+                        </div>
+
+                        <h2>What Information We Collect and How</h2>
+
                         <ul>
-                            <li>
-                                <strong>Personal Data:</strong> Name, email address, phone number,
-                                billing address, and other contact details you provide when
-                                registering or making a purchase.
-                            </li>
-                            <li>
-                                <strong>Order Information:</strong> Products purchased, payment
-                                details, and delivery information.
-                            </li>
-                            <li>
-                                <strong>Usage Data:</strong> Information about how you interact
-                                with our website, including pages visited and links clicked.
-                            </li>
+                            <li>Any personal data you knowingly provide us with through forms and emails such as name, telephone, address.</li>
+                            <li>During registration, we automatically collect the personal information you provide during the form filling procedure.</li>
+                            <li>When you visit Astro E-Shop and interact with the services and tools that reside there, Astro E-Shop and third parties with whom Astro E-Shop has contracted to provide services to Astro E-Shop may collect information on your actions.</li>
                         </ul>
 
-                        <h2>How We Use Your Information</h2>
-                        <p>We use the information we collect to:</p>
-                        <ul>
-                            <li>Process and fulfill your orders</li>
-                            <li>Send order confirmations and updates</li>
-                            <li>Provide customer support</li>
-                            <li>Send marketing communications (with your consent)</li>
-                            <li>Improve our website and services</li>
-                            <li>Comply with legal obligations</li>
-                        </ul>
+                        <h2>Purpose of Information Collection</h2>
 
-                        <h2>Information Sharing</h2>
                         <p>
-                            We do not sell your personal information. We may share your
-                            information with:
-                        </p>
-                        <ul>
-                            <li>Payment processors for transaction processing</li>
-                            <li>Shipping companies for order delivery</li>
-                            <li>Service providers who assist our operations</li>
-                            <li>Legal authorities when required by law</li>
-                        </ul>
-
-                        <h2>Data Security</h2>
-                        <p>
-                            We implement appropriate security measures to protect your personal
-                            information. However, no method of transmission over the Internet
-                            is 100% secure.
+                            The purpose of this information collection is generally to gather broad demographic information that is not personal. We also use your IP address to help diagnose problems with our software or our server and to administer our website.
                         </p>
 
-                        <h2>Cookies</h2>
                         <p>
-                            We use cookies to enhance your experience on our website. You can
-                            control cookie settings through your browser preferences.
+                            We track the visitor IP address to get more information on visitor&apos;s demography e.g. which parts of the world our traffic comes from. We collect browser types used, screen resolutions, and time spent on the website to analyze trends, administer and troubleshoot the site, understand user linking and disliking within the website.
                         </p>
 
-                        <h2>Your Rights</h2>
-                        <p>You have the right to:</p>
-                        <ul>
-                            <li>Access your personal information</li>
-                            <li>Correct inaccurate data</li>
-                            <li>Request deletion of your data</li>
-                            <li>Opt-out of marketing communications</li>
-                        </ul>
-
-                        <h2>Contact Us</h2>
                         <p>
-                            If you have any questions about this Privacy Policy, please contact
-                            us at:
+                            All of this information is used for gathering broad demographic data to enhance the performance and services of the site.
+                        </p>
+
+                        <div className="bg-primary/10 border border-primary/20 rounded-lg p-6 mt-8">
+                            <h3 className="text-primary mt-0">Our Commitment</h3>
+                            <p className="mb-0 font-semibold">
+                                WE DO NOT SELL OR SHARE YOUR PERSONAL DATA WITH THE THIRD PARTY WITHOUT YOUR CONSENT.
+                            </p>
+                        </div>
+
+                        <h2 className="mt-8">Contact Us</h2>
+                        <p>
+                            If you have any questions about our Privacy Policy, please contact us at:
                         </p>
                         <ul>
-                            <li>Email: {siteConfig.contact.email}</li>
-                            <li>Phone: {siteConfig.contact.phone}</li>
-                            <li>Address: {siteConfig.contact.address}</li>
+                            <li>Email: <a href="mailto:support@astroeshop.com">support@astroeshop.com</a></li>
+                            <li>Phone: <a href="tel:+919599686887">+91 9599686887</a></li>
                         </ul>
                     </div>
                 </div>

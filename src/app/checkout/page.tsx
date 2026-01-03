@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
@@ -21,7 +21,7 @@ import {
     CardTitle,
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { useCartStore } from "@/stores";
+import { useCartStore, useAuthStore } from "@/stores";
 import { formatPrice } from "@/lib/api/client";
 import { toast } from "sonner";
 
@@ -41,16 +41,99 @@ type CheckoutFormData = z.infer<typeof checkoutSchema>;
 
 export default function CheckoutPage() {
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
     const router = useRouter();
     const { items, getSubtotal, clearCart } = useCartStore();
+    const { user, token, isAuthenticated } = useAuthStore();
 
     const {
         register,
         handleSubmit,
         formState: { errors },
+        reset,
     } = useForm<CheckoutFormData>({
         resolver: zodResolver(checkoutSchema),
     });
+
+    // Fetch user's saved address - check localStorage first, then WordPress
+    useEffect(() => {
+        const fetchUserAddress = async () => {
+            // First check localStorage for saved address
+            const savedAddress = localStorage.getItem('checkoutAddress');
+            if (savedAddress) {
+                try {
+                    const parsed = JSON.parse(savedAddress);
+                    reset({
+                        firstName: parsed.firstName || "",
+                        lastName: parsed.lastName || "",
+                        email: parsed.email || "",
+                        phone: parsed.phone || "",
+                        address: parsed.address || "",
+                        city: parsed.city || "",
+                        state: parsed.state || "",
+                        postcode: parsed.postcode || "",
+                        notes: "",
+                    });
+                    setIsLoading(false);
+                    return; // Use saved address from localStorage
+                } catch (e) {
+                    console.error("Error parsing saved address:", e);
+                }
+            }
+
+            // If logged in and no localStorage, try WordPress
+            if (isAuthenticated() && user && token) {
+                try {
+                    const WP_URL = process.env.NEXT_PUBLIC_WP_URL || "https://api.astroeshop.com";
+
+                    const response = await fetch(
+                        `${WP_URL}/wp-json/astroeshop/v1/user-address`,
+                        {
+                            headers: {
+                                Authorization: `Bearer ${token}`,
+                                "Content-Type": "application/json",
+                            },
+                        }
+                    );
+
+                    if (response.ok) {
+                        const addressData = await response.json();
+
+                        if (addressData.billing && addressData.billing.first_name) {
+                            reset({
+                                firstName: addressData.billing.first_name || "",
+                                lastName: addressData.billing.last_name || "",
+                                email: addressData.billing.email || user.email || "",
+                                phone: addressData.billing.phone || "",
+                                address: addressData.billing.address_1 || "",
+                                city: addressData.billing.city || "",
+                                state: addressData.billing.state || "",
+                                postcode: addressData.billing.postcode || "",
+                                notes: "",
+                            });
+                            setIsLoading(false);
+                            return;
+                        }
+                    }
+                } catch (error) {
+                    console.error("Error fetching user address:", error);
+                }
+
+                // Pre-fill with basic user info if no saved address
+                if (user) {
+                    reset((current) => ({
+                        ...current,
+                        firstName: current.firstName || user.displayName?.split(" ")[0] || "",
+                        lastName: current.lastName || user.displayName?.split(" ").slice(1).join(" ") || "",
+                        email: current.email || user.email || "",
+                    }));
+                }
+            }
+            setIsLoading(false);
+        };
+
+        fetchUserAddress();
+    }, [isAuthenticated, user, token, reset]);
 
     const subtotal = getSubtotal();
     const shipping = subtotal > 500 ? 0 : 50;
@@ -96,6 +179,26 @@ export default function CheckoutPage() {
             const result = await response.json();
 
             if (result.success && result.checkout_url) {
+                // Save order info to localStorage for tracking
+                localStorage.setItem('pendingOrder', JSON.stringify({
+                    order_id: result.order_id,
+                    order_key: result.order_key,
+                    total: result.total,
+                    created_at: new Date().toISOString(),
+                }));
+
+                // Save address to localStorage for future checkouts
+                localStorage.setItem('checkoutAddress', JSON.stringify({
+                    firstName: data.firstName,
+                    lastName: data.lastName,
+                    email: data.email,
+                    phone: data.phone,
+                    address: data.address,
+                    city: data.city,
+                    state: data.state,
+                    postcode: data.postcode,
+                }));
+
                 clearCart();
                 // Redirect to WooCommerce payment page
                 window.location.href = result.checkout_url;

@@ -14,15 +14,35 @@ import { useCartStore } from "@/stores";
 
 function OrderConfirmationContent() {
     const searchParams = useSearchParams();
-    const orderId = searchParams.get("order_id");
+    const urlOrderId = searchParams.get("order_id");
     const status = searchParams.get("status");
     const clearCart = useCartStore((state) => state.clearCart);
     const [copied, setCopied] = useState(false);
+    const [orderId, setOrderId] = useState<string | null>(urlOrderId);
+
+    // Check localStorage for pending order if no order_id in URL
+    useEffect(() => {
+        if (!urlOrderId) {
+            const pendingOrder = localStorage.getItem('pendingOrder');
+            if (pendingOrder) {
+                try {
+                    const order = JSON.parse(pendingOrder);
+                    setOrderId(order.order_id?.toString());
+                    // Clear pending order after showing
+                    localStorage.removeItem('pendingOrder');
+                } catch (e) {
+                    console.error("Error parsing pending order", e);
+                }
+            }
+        }
+    }, [urlOrderId]);
 
     // Clear cart on successful order
     useEffect(() => {
         if (status === "success") {
             clearCart();
+            // Also clear pending order
+            localStorage.removeItem('pendingOrder');
         }
     }, [status, clearCart]);
 
