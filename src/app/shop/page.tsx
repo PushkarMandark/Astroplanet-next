@@ -4,31 +4,19 @@ import { getProducts, getCategories, buildCategoryTree } from "@/lib/api/product
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import Link from "next/link";
 import { decodeHtmlEntities } from "@/lib/utils/decode";
 import {
-    Search,
     Sparkles,
     Filter,
     Grid3X3,
     LayoutGrid,
     Star,
-    ShoppingBag,
     Gem,
     Package,
     ChevronRight,
-    ChevronLeft,
     SlidersHorizontal,
 } from "lucide-react";
-
-interface ShopPageProps {
-    searchParams: Promise<{
-        category?: string;
-        search?: string;
-        page?: string;
-    }>;
-}
 
 export const metadata = {
     title: "Shop",
@@ -45,44 +33,20 @@ const categoryIcons: Record<string, React.ReactNode> = {
     "default": <Package className="h-5 w-5" />,
 };
 
-// Products per page
-const PRODUCTS_PER_PAGE = 24;
+// Products per page - fetch all for static export
+const PRODUCTS_PER_PAGE = 100;
 
-export default async function ShopPage({ searchParams }: ShopPageProps) {
-    const params = await searchParams;
-    const categoryId = params.category ? parseInt(params.category) : undefined;
-    const searchQuery = params.search || "";
-    const currentPage = params.page ? parseInt(params.page) : 1;
-
+export default async function ShopPage() {
     // Fetch products and categories
     const [products, categories] = await Promise.all([
         getProducts({
             per_page: PRODUCTS_PER_PAGE,
-            page: currentPage,
-            category: categoryId,
-            search: searchQuery || undefined,
         }),
         getCategories(),
     ]);
 
-    // Find selected category name
-    const selectedCategory = categories.find(c => c.id === categoryId);
-
-    // Calculate total pages (estimate based on product count)
-    // WooCommerce returns all products if we fetch with high per_page, so we estimate
-    const totalProducts = selectedCategory ? selectedCategory.count : categories.reduce((acc, c) => acc + c.count, 0);
-    const totalPages = Math.ceil(totalProducts / PRODUCTS_PER_PAGE);
-    const hasNextPage = products.length === PRODUCTS_PER_PAGE;
-    const hasPrevPage = currentPage > 1;
-
-    // Build pagination URL helper
-    const buildPageUrl = (page: number) => {
-        const params = new URLSearchParams();
-        if (categoryId) params.set('category', categoryId.toString());
-        if (searchQuery) params.set('search', searchQuery);
-        params.set('page', page.toString());
-        return `/shop?${params.toString()}`;
-    };
+    // For static export, show all products
+    const totalProducts = products.length;
 
     return (
         <MainLayout>
@@ -97,9 +61,9 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
                         </span>
                         <Link href="/shop">
                             <Button
-                                variant={!categoryId ? "default" : "outline"}
+                                variant="default"
                                 size="sm"
-                                className={`rounded-full flex-shrink-0 ${!categoryId ? 'bg-primary' : ''}`}
+                                className="rounded-full flex-shrink-0 bg-primary"
                             >
                                 All Products
                             </Button>
@@ -110,9 +74,9 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
                                 href={`/shop/${category.slug}`}
                             >
                                 <Button
-                                    variant={categoryId === category.id ? "default" : "outline"}
+                                    variant="outline"
                                     size="sm"
-                                    className={`rounded-full flex-shrink-0 ${categoryId === category.id ? 'bg-primary' : ''}`}
+                                    className="rounded-full flex-shrink-0"
                                 >
                                     {decodeHtmlEntities(category.name)}
                                     <Badge variant="secondary" className="ml-2 text-xs">
@@ -143,7 +107,7 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
                                     <CardContent className="p-3 max-h-[400px] overflow-y-auto">
                                         <div className="space-y-1">
                                             <Link href="/shop" className="block">
-                                                <div className={`flex items-center justify-between p-3 rounded-lg transition-all ${!categoryId ? 'bg-primary/10 text-primary font-medium' : 'hover:bg-muted'}`}>
+                                                <div className="flex items-center justify-between p-3 rounded-lg transition-all bg-primary/10 text-primary font-medium">
                                                     <span className="flex items-center gap-2">
                                                         <LayoutGrid className="h-4 w-4" />
                                                         All Products
@@ -212,16 +176,11 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
                             {/* Results Header */}
                             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
                                 <div>
-                                    {searchQuery && (
-                                        <p className="text-sm text-muted-foreground mb-1">
-                                            Showing results for &quot;{searchQuery}&quot;
-                                        </p>
-                                    )}
                                     <h2 className="text-2xl font-bold font-serif">
-                                        {selectedCategory ? selectedCategory.name : 'All Products'}
+                                        All Products
                                     </h2>
                                     <p className="text-muted-foreground">
-                                        Page {currentPage} • Showing {products.length} products
+                                        Showing {totalProducts} products
                                     </p>
                                 </div>
 
@@ -241,68 +200,6 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
                             {products.length > 0 ? (
                                 <>
                                     <ProductGrid products={products} columns={3} />
-
-                                    {/* Pagination */}
-                                    <div className="mt-12 flex flex-col sm:flex-row items-center justify-center gap-4">
-                                        {/* Previous Button */}
-                                        {hasPrevPage ? (
-                                            <Link href={buildPageUrl(currentPage - 1)}>
-                                                <Button variant="outline" size="lg" className="px-6">
-                                                    <ChevronLeft className="h-4 w-4 mr-2" />
-                                                    Previous
-                                                </Button>
-                                            </Link>
-                                        ) : (
-                                            <Button variant="outline" size="lg" className="px-6" disabled>
-                                                <ChevronLeft className="h-4 w-4 mr-2" />
-                                                Previous
-                                            </Button>
-                                        )}
-
-                                        {/* Page Numbers */}
-                                        <div className="flex items-center gap-2">
-                                            {[...Array(Math.min(totalPages, 5))].map((_, i) => {
-                                                const pageNum = i + 1;
-                                                const isActive = pageNum === currentPage;
-                                                return (
-                                                    <Link key={pageNum} href={buildPageUrl(pageNum)}>
-                                                        <Button
-                                                            variant={isActive ? "default" : "outline"}
-                                                            size="icon"
-                                                            className={`h-10 w-10 ${isActive ? 'bg-primary' : ''}`}
-                                                        >
-                                                            {pageNum}
-                                                        </Button>
-                                                    </Link>
-                                                );
-                                            })}
-                                            {totalPages > 5 && (
-                                                <>
-                                                    <span className="px-2 text-muted-foreground">...</span>
-                                                    <Link href={buildPageUrl(totalPages)}>
-                                                        <Button variant="outline" size="icon" className="h-10 w-10">
-                                                            {totalPages}
-                                                        </Button>
-                                                    </Link>
-                                                </>
-                                            )}
-                                        </div>
-
-                                        {/* Next Button */}
-                                        {hasNextPage ? (
-                                            <Link href={buildPageUrl(currentPage + 1)}>
-                                                <Button variant="outline" size="lg" className="px-6">
-                                                    Next
-                                                    <ChevronRight className="h-4 w-4 ml-2" />
-                                                </Button>
-                                            </Link>
-                                        ) : (
-                                            <Button variant="outline" size="lg" className="px-6" disabled>
-                                                Next
-                                                <ChevronRight className="h-4 w-4 ml-2" />
-                                            </Button>
-                                        )}
-                                    </div>
                                 </>
                             ) : (
                                 /* Enhanced Empty State */

@@ -9,6 +9,13 @@ interface ProductPageProps {
     }>;
 }
 
+export async function generateStaticParams() {
+    const products = await getProducts({ per_page: 100 });
+    return products.map((product) => ({
+        slug: product.slug,
+    }));
+}
+
 export async function generateMetadata({ params }: ProductPageProps) {
     const { slug } = await params;
     const product = await getProductBySlug(slug);

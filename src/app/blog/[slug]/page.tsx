@@ -1,11 +1,18 @@
 import { notFound } from "next/navigation";
-import { getPostBySlug, getRecentPosts, getFeaturedImage, getAuthorName } from "@/lib/api/blog";
+import { getPostBySlug, getRecentPosts, getFeaturedImage, getAuthorName, getPosts } from "@/lib/api/blog";
 import { BlogPostClient } from "./BlogPostClient";
 
 interface BlogPostPageProps {
     params: Promise<{
         slug: string;
     }>;
+}
+
+export async function generateStaticParams() {
+    const posts = await getPosts({ per_page: 100 });
+    return posts.map((post) => ({
+        slug: post.slug,
+    }));
 }
 
 export async function generateMetadata({ params }: BlogPostPageProps) {

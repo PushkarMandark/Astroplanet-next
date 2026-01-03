@@ -4,30 +4,22 @@ import { getProducts, getCategories, buildCategoryTree } from "@/lib/api/product
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import {
-    Search,
     Sparkles,
     Filter,
     Grid3X3,
     LayoutGrid,
     Star,
-    ShoppingBag,
     Gem,
     Package,
     ChevronRight,
-    ChevronLeft,
     SlidersHorizontal,
 } from "lucide-react";
 
 interface CategoryPageProps {
     params: Promise<{ category: string }>;
-    searchParams: Promise<{
-        search?: string;
-        page?: string;
-    }>;
 }
 
 // Generate static params for all categories
@@ -64,14 +56,11 @@ const categoryIcons: Record<string, React.ReactNode> = {
     "default": <Package className="h-5 w-5" />,
 };
 
-// Products per page
-const PRODUCTS_PER_PAGE = 24;
+// Products per page - fetch all for static export
+const PRODUCTS_PER_PAGE = 100;
 
-export default async function CategoryPage({ params, searchParams }: CategoryPageProps) {
+export default async function CategoryPage({ params }: CategoryPageProps) {
     const { category: categorySlug } = await params;
-    const queryParams = await searchParams;
-    const searchQuery = queryParams.search || "";
-    const currentPage = queryParams.page ? parseInt(queryParams.page) : 1;
 
     // Fetch categories first to get the category ID
     const categories = await getCategories();
@@ -82,28 +71,14 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
         notFound();
     }
 
-    // Fetch products for this category
+    // Fetch all products for this category (static export)
     const products = await getProducts({
         per_page: PRODUCTS_PER_PAGE,
-        page: currentPage,
         category: selectedCategory.id,
-        search: searchQuery || undefined,
     });
 
-    // Calculate pagination
-    const totalProducts = selectedCategory.count;
-    const totalPages = Math.ceil(totalProducts / PRODUCTS_PER_PAGE);
-    const hasNextPage = products.length === PRODUCTS_PER_PAGE;
-    const hasPrevPage = currentPage > 1;
-
-    // Build pagination URL helper
-    const buildPageUrl = (page: number) => {
-        const params = new URLSearchParams();
-        if (searchQuery) params.set('search', searchQuery);
-        if (page > 1) params.set('page', page.toString());
-        const queryString = params.toString();
-        return `/shop/${categorySlug}${queryString ? `?${queryString}` : ''}`;
-    };
+    // For static export, we show all products on one page
+    const totalProducts = products.length;
 
     return (
         <MainLayout>
@@ -127,7 +102,7 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
                         </div>
 
                         <Badge className="mb-4 bg-white/10 text-white border-white/20 backdrop-blur-sm">
-                            <ShoppingBag className="h-3 w-3 mr-1" />
+                            <Package className="h-3 w-3 mr-1" />
                             {selectedCategory.count} Products
                         </Badge>
                         <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold font-serif mb-4">
@@ -137,25 +112,7 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
                             Explore our curated collection of {selectedCategory.name.toLowerCase()}
                         </p>
 
-                        {/* Enhanced Search Bar */}
-                        <form action={`/shop/${categorySlug}`} method="GET" className="max-w-xl mx-auto">
-                            <div className="relative">
-                                <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-                                <Input
-                                    type="text"
-                                    name="search"
-                                    defaultValue={searchQuery}
-                                    placeholder={`Search in ${selectedCategory.name}...`}
-                                    className="w-full h-14 pl-12 pr-32 text-black text-lg rounded-full border-0 shadow-lg focus:ring-2 focus:ring-accent"
-                                />
-                                <Button
-                                    type="submit"
-                                    className="absolute right-2 top-1/2 -translate-y-1/2 h-10 px-6 rounded-full bg-gradient-to-r from-secondary to-orange-500 hover:from-secondary/90 hover:to-orange-400"
-                                >
-                                    Search
-                                </Button>
-                            </div>
-                        </form>
+
                     </div>
                 </div>
             </section>
@@ -285,16 +242,11 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
                             {/* Results Header */}
                             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
                                 <div>
-                                    {searchQuery && (
-                                        <p className="text-sm text-muted-foreground mb-1">
-                                            Showing results for &quot;{searchQuery}&quot;
-                                        </p>
-                                    )}
                                     <h2 className="text-2xl font-bold font-serif">
                                         {selectedCategory.name}
                                     </h2>
                                     <p className="text-muted-foreground">
-                                        Page {currentPage} • Showing {products.length} of {totalProducts} products
+                                        Showing {totalProducts} products
                                     </p>
                                 </div>
 
@@ -315,69 +267,7 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
                                 <>
                                     <ProductGrid products={products} columns={3} />
 
-                                    {/* Pagination */}
-                                    {totalPages > 1 && (
-                                        <div className="mt-12 flex flex-col sm:flex-row items-center justify-center gap-4">
-                                            {/* Previous Button */}
-                                            {hasPrevPage ? (
-                                                <Link href={buildPageUrl(currentPage - 1)}>
-                                                    <Button variant="outline" size="lg" className="px-6">
-                                                        <ChevronLeft className="h-4 w-4 mr-2" />
-                                                        Previous
-                                                    </Button>
-                                                </Link>
-                                            ) : (
-                                                <Button variant="outline" size="lg" className="px-6" disabled>
-                                                    <ChevronLeft className="h-4 w-4 mr-2" />
-                                                    Previous
-                                                </Button>
-                                            )}
 
-                                            {/* Page Numbers */}
-                                            <div className="flex items-center gap-2">
-                                                {[...Array(Math.min(totalPages, 5))].map((_, i) => {
-                                                    const pageNum = i + 1;
-                                                    const isActive = pageNum === currentPage;
-                                                    return (
-                                                        <Link key={pageNum} href={buildPageUrl(pageNum)}>
-                                                            <Button
-                                                                variant={isActive ? "default" : "outline"}
-                                                                size="icon"
-                                                                className={`h-10 w-10 ${isActive ? 'bg-primary' : ''}`}
-                                                            >
-                                                                {pageNum}
-                                                            </Button>
-                                                        </Link>
-                                                    );
-                                                })}
-                                                {totalPages > 5 && (
-                                                    <>
-                                                        <span className="px-2 text-muted-foreground">...</span>
-                                                        <Link href={buildPageUrl(totalPages)}>
-                                                            <Button variant="outline" size="icon" className="h-10 w-10">
-                                                                {totalPages}
-                                                            </Button>
-                                                        </Link>
-                                                    </>
-                                                )}
-                                            </div>
-
-                                            {/* Next Button */}
-                                            {hasNextPage ? (
-                                                <Link href={buildPageUrl(currentPage + 1)}>
-                                                    <Button variant="outline" size="lg" className="px-6">
-                                                        Next
-                                                        <ChevronRight className="h-4 w-4 ml-2" />
-                                                    </Button>
-                                                </Link>
-                                            ) : (
-                                                <Button variant="outline" size="lg" className="px-6" disabled>
-                                                    Next
-                                                    <ChevronRight className="h-4 w-4 ml-2" />
-                                                </Button>
-                                            )}
-                                        </div>
-                                    )}
                                 </>
                             ) : (
                                 /* Enhanced Empty State */
