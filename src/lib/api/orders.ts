@@ -1,7 +1,5 @@
 import { CreateOrderData, CreateOrderResponse, Order } from "@/types";
-import { wcRequest } from "./client";
-
-const WP_URL = process.env.NEXT_PUBLIC_WP_URL || "https://api.astroeshop.com";
+import { wcRequest, WP_URL } from "./client";
 
 // Create order
 export async function createOrder(

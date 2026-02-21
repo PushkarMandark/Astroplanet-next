@@ -55,8 +55,8 @@ export function ProductGridWithLoadMore({
                     setProducts((prev) => [...prev, ...newProducts]);
                     setPage(nextPage);
                 }
-            } catch (error) {
-                console.error("Failed to load more products:", error);
+            } catch {
+                // Load more failed silently; user can retry
             }
         });
     };

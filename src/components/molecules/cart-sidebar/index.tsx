@@ -8,6 +8,7 @@ import { Separator } from "@/components/ui/separator";
 import { OptimizedImage } from "@/components/atoms/image";
 import { useCartStore, useAuthStore } from "@/stores";
 import { formatPrice } from "@/lib/api/client";
+import { FREE_SHIPPING_THRESHOLD, FLAT_SHIPPING_RATE } from "@/lib/constants";
 import {
     Sheet,
     SheetContent,
@@ -32,7 +33,7 @@ export function CartSidebar({ open, onOpenChange }: CartSidebarProps) {
     }, []);
 
     const subtotal = getSubtotal();
-    const shipping = subtotal > 500 ? 0 : 50;
+    const shipping = subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : FLAT_SHIPPING_RATE;
     const total = subtotal + shipping;
 
     return (
@@ -157,9 +158,9 @@ export function CartSidebar({ open, onOpenChange }: CartSidebarProps) {
                                         )}
                                     </span>
                                 </div>
-                                {subtotal < 500 && subtotal > 0 && (
+                                {subtotal < FREE_SHIPPING_THRESHOLD && subtotal > 0 && (
                                     <p className="text-xs text-muted-foreground">
-                                        Add {formatPrice(500 - subtotal)} more for free shipping
+                                        Add {formatPrice(FREE_SHIPPING_THRESHOLD - subtotal)} more for free shipping
                                     </p>
                                 )}
                                 <Separator />

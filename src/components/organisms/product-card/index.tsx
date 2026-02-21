@@ -33,11 +33,13 @@ export function ProductCard({ product, className }: ProductCardProps) {
     };
 
     const productUrl = `/product/${product.slug}`;
-    const imageUrl = product.images?.[0]?.src || "/images/placeholder.jpg";
+    const imageUrl = product.images?.[0]?.src || "/images/placeholder.svg";
     const hasDiscount = product.on_sale && product.sale_price;
-    const discountPercent = hasDiscount
-        ? Math.round(((Number(product.regular_price) - Number(product.sale_price)) / Number(product.regular_price)) * 100)
-        : 0;
+    const regularPrice = Number(product.regular_price);
+    const discountPercent =
+        hasDiscount && regularPrice > 0
+            ? Math.round(((regularPrice - Number(product.sale_price)) / regularPrice) * 100)
+            : 0;
 
     return (
         <Card
@@ -133,11 +135,11 @@ export function ProductCard({ product, className }: ProductCardProps) {
                 </Link>
 
                 {/* Rating placeholder */}
-                <div className="flex items-center gap-1 mb-3">
+                <div className="flex items-center gap-1 mb-3" aria-label="4.8 out of 5 stars">
                     {[...Array(5)].map((_, i) => (
-                        <Star key={i} className="h-4 w-4 text-amber-400 fill-amber-400" />
+                        <Star key={i} className="h-4 w-4 text-amber-400 fill-amber-400" aria-hidden="true" />
                     ))}
-                    <span className="text-xs text-muted-foreground ml-1">(4.8)</span>
+                    <span className="text-xs text-muted-foreground ml-1" aria-hidden="true">(4.8)</span>
                 </div>
 
                 {/* Price */}

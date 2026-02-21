@@ -40,7 +40,7 @@ export const useWishlistStore = create<WishlistState>()(
                         id: product.id,
                         name: product.name,
                         price: parseFloat(product.price) || 0,
-                        image: product.images?.[0]?.src || "/placeholder.jpg",
+                        image: product.images?.[0]?.src || "/images/placeholder.svg",
                         slug: product.slug,
                         regularPrice: product.regular_price ? parseFloat(product.regular_price) : undefined,
                         onSale: product.on_sale,

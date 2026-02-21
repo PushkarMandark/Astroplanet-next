@@ -1,7 +1,5 @@
 "use client";
 
-import { useState } from "react";
-import Link from "next/link";
 import { ChevronLeft, ChevronRight, MoreHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -20,32 +18,26 @@ export function Pagination({
     className,
 }: PaginationProps) {
     // Generate page numbers to show
-    const getPageNumbers = () => {
-        const pages: (number | "ellipsis")[] = [];
-        const showEllipsisStart = currentPage > 3;
-        const showEllipsisEnd = currentPage < totalPages - 2;
+    const getPageNumbers = (): (number | "ellipsis")[] => {
+        const pageSet = new Set<number>();
 
-        // Always show first page
-        pages.push(1);
-
-        if (showEllipsisStart) {
-            pages.push("ellipsis");
-        }
+        // Always show first and last page
+        pageSet.add(1);
+        if (totalPages > 1) pageSet.add(totalPages);
 
         // Pages around current
         for (let i = Math.max(2, currentPage - 1); i <= Math.min(totalPages - 1, currentPage + 1); i++) {
-            if (!pages.includes(i)) {
-                pages.push(i);
+            pageSet.add(i);
+        }
+
+        // Build sorted array and insert ellipsis where there are gaps
+        const sorted = Array.from(pageSet).sort((a, b) => a - b);
+        const pages: (number | "ellipsis")[] = [sorted[0]];
+        for (let i = 1; i < sorted.length; i++) {
+            if (sorted[i] - sorted[i - 1] > 1) {
+                pages.push("ellipsis");
             }
-        }
-
-        if (showEllipsisEnd) {
-            pages.push("ellipsis");
-        }
-
-        // Always show last page if more than 1 page
-        if (totalPages > 1 && !pages.includes(totalPages)) {
-            pages.push(totalPages);
+            pages.push(sorted[i]);
         }
 
         return pages;
@@ -78,9 +70,10 @@ export function Pagination({
                     pageNum === "ellipsis" ? (
                         <span
                             key={`ellipsis-${idx}`}
+                            aria-label="More pages"
                             className="flex items-center justify-center h-10 w-10 text-muted-foreground"
                         >
-                            <MoreHorizontal className="h-4 w-4" />
+                            <MoreHorizontal className="h-4 w-4" aria-hidden="true" />
                         </span>
                     ) : (
                         <Button
@@ -88,6 +81,8 @@ export function Pagination({
                             variant={pageNum === currentPage ? "default" : "outline"}
                             size="icon"
                             onClick={() => onPageChange(pageNum)}
+                            aria-label={`Page ${pageNum}`}
+                            aria-current={pageNum === currentPage ? "page" : undefined}
                             className={cn(
                                 "h-10 w-10",
                                 pageNum === currentPage && "bg-primary text-primary-foreground"

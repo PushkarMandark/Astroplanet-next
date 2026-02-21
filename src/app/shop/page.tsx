@@ -7,39 +7,25 @@ import { Card, CardContent } from "@/components/ui/card";
 import Link from "next/link";
 import { decodeHtmlEntities } from "@/lib/utils/decode";
 import {
-    Sparkles,
     Filter,
-    Grid3X3,
-    LayoutGrid,
-    Star,
     Gem,
+    LayoutGrid,
     Package,
     ChevronRight,
     SlidersHorizontal,
 } from "lucide-react";
+import { categoryIcons } from "@/lib/category-icons";
+import { ALL_PRODUCTS_FETCH_LIMIT } from "@/lib/constants";
 
 export const metadata = {
     title: "Shop",
     description: "Browse our collection of authentic astrology products, gemstones, and spiritual items.",
 };
 
-// Category icons mapping
-const categoryIcons: Record<string, React.ReactNode> = {
-    "gemstones": <Gem className="h-5 w-5" />,
-    "astrology": <Star className="h-5 w-5" />,
-    "spiritual": <Sparkles className="h-5 w-5" />,
-    "yantras": <Sparkles className="h-5 w-5" />,
-    "rudraksha": <Gem className="h-5 w-5" />,
-    "default": <Package className="h-5 w-5" />,
-};
-
-// Fetch all products for client-side pagination
-const PRODUCTS_PER_PAGE = 100;
-
 export default async function ShopPage() {
     // Fetch all products and categories
     const [products, categories] = await Promise.all([
-        getProducts({ per_page: PRODUCTS_PER_PAGE }),
+        getProducts({ per_page: ALL_PRODUCTS_FETCH_LIMIT }),
         getCategories(),
     ]);
 
@@ -168,23 +154,10 @@ export default async function ShopPage() {
                         {/* Products Section */}
                         <main className="flex-1">
                             {/* Results Header */}
-                            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
-                                <div>
-                                    <h2 className="text-2xl font-bold font-serif">
-                                        All Products
-                                    </h2>
-                                </div>
-
-                                {/* View Options */}
-                                <div className="flex items-center gap-2">
-                                    <span className="text-sm text-muted-foreground">View:</span>
-                                    <Button variant="outline" size="icon" className="h-9 w-9">
-                                        <Grid3X3 className="h-4 w-4" />
-                                    </Button>
-                                    <Button variant="ghost" size="icon" className="h-9 w-9">
-                                        <LayoutGrid className="h-4 w-4" />
-                                    </Button>
-                                </div>
+                            <div className="mb-8">
+                                <h2 className="text-2xl font-bold font-serif">
+                                    All Products
+                                </h2>
                             </div>
 
                             {/* Paginated Products Grid */}

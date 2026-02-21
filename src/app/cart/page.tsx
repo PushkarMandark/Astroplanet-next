@@ -9,13 +9,14 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/componen
 import { Separator } from "@/components/ui/separator";
 import { useCartStore } from "@/stores";
 import { formatPrice } from "@/lib/api/client";
+import { FREE_SHIPPING_THRESHOLD, FLAT_SHIPPING_RATE } from "@/lib/constants";
 
 export default function CartPage() {
     const { items, updateQuantity, removeItem, clearCart, getSubtotal } =
         useCartStore();
 
     const subtotal = getSubtotal();
-    const shipping = subtotal > 500 ? 0 : 50; // Free shipping over ₹500
+    const shipping = subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : FLAT_SHIPPING_RATE;
     const total = subtotal + shipping;
 
     if (items.length === 0) {
@@ -115,9 +116,9 @@ export default function CartPage() {
                                             )}
                                         </span>
                                     </div>
-                                    {subtotal < 500 && (
+                                    {subtotal < FREE_SHIPPING_THRESHOLD && (
                                         <p className="text-xs text-muted-foreground">
-                                            Add {formatPrice(500 - subtotal)} more for free shipping
+                                            Add {formatPrice(FREE_SHIPPING_THRESHOLD - subtotal)} more for free shipping
                                         </p>
                                     )}
                                     <Separator />

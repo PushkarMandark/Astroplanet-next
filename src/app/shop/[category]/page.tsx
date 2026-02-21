@@ -8,16 +8,15 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { decodeHtmlEntities } from "@/lib/utils/decode";
 import {
-    Sparkles,
     Filter,
-    Grid3X3,
-    LayoutGrid,
-    Star,
     Gem,
+    LayoutGrid,
     Package,
     ChevronRight,
     SlidersHorizontal,
 } from "lucide-react";
+import { categoryIcons } from "@/lib/category-icons";
+import { ALL_PRODUCTS_FETCH_LIMIT } from "@/lib/constants";
 
 interface CategoryPageProps {
     params: Promise<{ category: string }>;
@@ -47,18 +46,6 @@ export async function generateMetadata({ params }: CategoryPageProps) {
     };
 }
 
-// Category icons mapping
-const categoryIcons: Record<string, React.ReactNode> = {
-    "gemstones": <Gem className="h-5 w-5" />,
-    "astrology": <Star className="h-5 w-5" />,
-    "spiritual": <Sparkles className="h-5 w-5" />,
-    "yantras": <Sparkles className="h-5 w-5" />,
-    "rudraksha": <Gem className="h-5 w-5" />,
-    "default": <Package className="h-5 w-5" />,
-};
-
-// Fetch all products for client-side pagination
-const PRODUCTS_PER_PAGE = 100;
 
 export default async function CategoryPage({ params }: CategoryPageProps) {
     const { category: categorySlug } = await params;
@@ -74,7 +61,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
 
     // Fetch all products for this category
     const products = await getProducts({
-        per_page: PRODUCTS_PER_PAGE,
+        per_page: ALL_PRODUCTS_FETCH_LIMIT,
         category: selectedCategory.id,
     });
 
@@ -236,23 +223,10 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
                         {/* Products Section */}
                         <main className="flex-1">
                             {/* Results Header */}
-                            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
-                                <div>
-                                    <h2 className="text-2xl font-bold font-serif">
-                                        {selectedCategory.name}
-                                    </h2>
-                                </div>
-
-                                {/* View Options */}
-                                <div className="flex items-center gap-2">
-                                    <span className="text-sm text-muted-foreground">View:</span>
-                                    <Button variant="outline" size="icon" className="h-9 w-9">
-                                        <Grid3X3 className="h-4 w-4" />
-                                    </Button>
-                                    <Button variant="ghost" size="icon" className="h-9 w-9">
-                                        <LayoutGrid className="h-4 w-4" />
-                                    </Button>
-                                </div>
+                            <div className="mb-8">
+                                <h2 className="text-2xl font-bold font-serif">
+                                    {selectedCategory.name}
+                                </h2>
                             </div>
 
                             {/* Paginated Products Grid */}

@@ -45,7 +45,7 @@ export const useCartStore = create<CartState>()(
                         name: product.name,
                         price: parseFloat(product.price) || 0,
                         quantity,
-                        image: product.images?.[0]?.src || "/placeholder.jpg",
+                        image: product.images?.[0]?.src || "/images/placeholder.svg",
                         slug: product.slug,
                     };
                     set({ items: [...items, newItem] });

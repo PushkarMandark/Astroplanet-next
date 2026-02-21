@@ -30,8 +30,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { useAuthStore } from "@/stores";
 import { toast } from "sonner";
-
-const WP_URL = process.env.NEXT_PUBLIC_WP_URL || "https://api.astroeshop.com";
+import { WP_URL } from "@/lib/api/client";
 
 interface Address {
     id: string;
@@ -151,6 +150,10 @@ export default function AccountPage() {
         }
         if (newPassword.length < 8) {
             toast.error("Password must be at least 8 characters");
+            return;
+        }
+        if (!/[A-Z]/.test(newPassword) || !/[0-9]/.test(newPassword)) {
+            toast.error("Password must contain at least one uppercase letter and one number");
             return;
         }
 

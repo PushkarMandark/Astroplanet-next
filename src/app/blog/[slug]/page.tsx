@@ -25,7 +25,7 @@ export async function generateMetadata({ params }: BlogPostPageProps) {
 
     return {
         title: `${post.title.rendered.replace(/<[^>]*>/g, "")} | AstroPlanet`,
-        description: post.excerpt.rendered.replace(/<[^>]*>/g, "").slice(0, 160),
+        description: (post.excerpt?.rendered ?? "").replace(/<[^>]*>/g, "").slice(0, 160),
     };
 }
 

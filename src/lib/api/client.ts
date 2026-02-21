@@ -1,7 +1,8 @@
 // Base API client for WooCommerce and WordPress REST API
-const WP_URL = process.env.NEXT_PUBLIC_WP_URL || "https://api.astroeshop.com";
+export const WP_URL = process.env.NEXT_PUBLIC_WP_URL || "https://api.astroeshop.com";
 const WC_KEY = process.env.WC_CONSUMER_KEY || "";
 const WC_SECRET = process.env.WC_CONSUMER_SECRET || "";
+const FETCH_TIMEOUT_MS = 10_000;
 
 interface ApiResponse<T> {
     success: boolean;
@@ -24,6 +25,7 @@ export async function wcRequest<T>(
     try {
         const response = await fetch(url.toString(), {
             ...options,
+            signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
             headers: {
                 "Content-Type": "application/json",
                 Accept: "application/json",
@@ -44,7 +46,6 @@ export async function wcRequest<T>(
 
         return { success: true, data, httpCode: response.status };
     } catch (error) {
-        console.error("WC API Error:", error);
         return {
             success: false,
             error: error instanceof Error ? error.message : "Network error",
@@ -62,6 +63,7 @@ export async function wpRequest<T>(
     try {
         const response = await fetch(url, {
             ...options,
+            signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
             headers: {
                 "Content-Type": "application/json",
                 Accept: "application/json",
@@ -81,7 +83,6 @@ export async function wpRequest<T>(
 
         return { success: true, data, httpCode: response.status };
     } catch (error) {
-        console.error("WP API Error:", error);
         return {
             success: false,
             error: error instanceof Error ? error.message : "Network error",

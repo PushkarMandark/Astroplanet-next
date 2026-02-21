@@ -22,18 +22,23 @@ import {
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { useCartStore, useAuthStore } from "@/stores";
-import { formatPrice } from "@/lib/api/client";
+import { formatPrice, WP_URL } from "@/lib/api/client";
+import { FREE_SHIPPING_THRESHOLD, FLAT_SHIPPING_RATE } from "@/lib/constants";
 import { toast } from "sonner";
 
 const checkoutSchema = z.object({
     firstName: z.string().min(1, "First name is required"),
     lastName: z.string().min(1, "Last name is required"),
     email: z.string().email("Invalid email address"),
-    phone: z.string().min(10, "Phone number must be at least 10 digits"),
+    phone: z
+        .string()
+        .regex(/^[6-9]\d{9}$/, "Enter a valid 10-digit Indian mobile number"),
     address: z.string().min(5, "Address is required"),
     city: z.string().min(2, "City is required"),
     state: z.string().min(2, "State is required"),
-    postcode: z.string().min(5, "Postcode is required"),
+    postcode: z
+        .string()
+        .regex(/^\d{6}$/, "Enter a valid 6-digit PIN code"),
     notes: z.string().optional(),
 });
 
@@ -44,7 +49,7 @@ export default function CheckoutPage() {
     const [isLoading, setIsLoading] = useState(true);
     const router = useRouter();
     const { items, getSubtotal, clearCart } = useCartStore();
-    const { user, token, isAuthenticated } = useAuthStore();
+    const { user, token } = useAuthStore();
 
     const {
         register,
@@ -57,6 +62,8 @@ export default function CheckoutPage() {
 
     // Fetch user's saved address - check localStorage first, then WordPress
     useEffect(() => {
+        const controller = new AbortController();
+
         const fetchUserAddress = async () => {
             // First check localStorage for saved address
             const savedAddress = localStorage.getItem('checkoutAddress');
@@ -76,19 +83,18 @@ export default function CheckoutPage() {
                     });
                     setIsLoading(false);
                     return; // Use saved address from localStorage
-                } catch (e) {
-                    console.error("Error parsing saved address:", e);
+                } catch {
+                    // Ignore malformed localStorage data
                 }
             }
 
             // If logged in and no localStorage, try WordPress
-            if (isAuthenticated() && user && token) {
+            if (user && token) {
                 try {
-                    const WP_URL = process.env.NEXT_PUBLIC_WP_URL || "https://api.astroeshop.com";
-
                     const response = await fetch(
                         `${WP_URL}/wp-json/astroeshop/v1/user-address`,
                         {
+                            signal: controller.signal,
                             headers: {
                                 Authorization: `Bearer ${token}`,
                                 "Content-Type": "application/json",
@@ -116,27 +122,26 @@ export default function CheckoutPage() {
                         }
                     }
                 } catch (error) {
-                    console.error("Error fetching user address:", error);
+                    if ((error as Error).name === "AbortError") return;
                 }
 
                 // Pre-fill with basic user info if no saved address
-                if (user) {
-                    reset((current) => ({
-                        ...current,
-                        firstName: current.firstName || user.displayName?.split(" ")[0] || "",
-                        lastName: current.lastName || user.displayName?.split(" ").slice(1).join(" ") || "",
-                        email: current.email || user.email || "",
-                    }));
-                }
+                reset((current) => ({
+                    ...current,
+                    firstName: current.firstName || user.displayName?.split(" ")[0] || "",
+                    lastName: current.lastName || user.displayName?.split(" ").slice(1).join(" ") || "",
+                    email: current.email || user.email || "",
+                }));
             }
             setIsLoading(false);
         };
 
         fetchUserAddress();
-    }, [isAuthenticated, user, token, reset]);
+        return () => controller.abort();
+    }, [user, token, reset]);
 
     const subtotal = getSubtotal();
-    const shipping = subtotal > 500 ? 0 : 50;
+    const shipping = subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : FLAT_SHIPPING_RATE;
     const total = subtotal + shipping;
 
     const onSubmit = async (data: CheckoutFormData) => {
@@ -148,8 +153,6 @@ export default function CheckoutPage() {
         setIsSubmitting(true);
 
         try {
-            const WP_URL = process.env.NEXT_PUBLIC_WP_URL || "https://api.astroeshop.com";
-
             // Call WordPress PHP endpoint for order creation
             const response = await fetch(`${WP_URL}/wp-json/astroeshop/v1/create-order`, {
                 method: "POST",
@@ -179,6 +182,19 @@ export default function CheckoutPage() {
             const result = await response.json();
 
             if (result.success && result.checkout_url) {
+                // Validate the redirect URL is from our expected backend domain
+                try {
+                    const redirectUrl = new URL(result.checkout_url);
+                    const expectedHost = new URL(WP_URL).host;
+                    if (redirectUrl.host !== expectedHost) {
+                        toast.error("Invalid payment URL received. Please contact support.");
+                        return;
+                    }
+                } catch {
+                    toast.error("Invalid payment URL received. Please contact support.");
+                    return;
+                }
+
                 // Save order info to localStorage for tracking
                 localStorage.setItem('pendingOrder', JSON.stringify({
                     order_id: result.order_id,

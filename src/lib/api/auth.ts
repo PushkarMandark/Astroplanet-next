@@ -1,7 +1,5 @@
 import { AuthCredentials, RegisterData, AuthResponse, User } from "@/types";
-import { wpRequest, wcRequest } from "./client";
-
-const WP_URL = process.env.NEXT_PUBLIC_WP_URL || "https://api.astroeshop.com";
+import { wpRequest, wcRequest, WP_URL } from "./client";
 
 // Clean HTML tags from WordPress error messages
 function cleanErrorMessage(message: string): string {

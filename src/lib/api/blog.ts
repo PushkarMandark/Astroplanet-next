@@ -58,7 +58,7 @@ export function getFeaturedImage(post: BlogPost): string {
     if (post._embedded?.["wp:featuredmedia"]?.[0]?.source_url) {
         return post._embedded["wp:featuredmedia"][0].source_url;
     }
-    return "/images/placeholder-blog.jpg";
+    return "/images/placeholder.svg";
 }
 
 // Helper to get author name

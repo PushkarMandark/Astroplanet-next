@@ -30,8 +30,8 @@ function OrderConfirmationContent() {
                     setOrderId(order.order_id?.toString());
                     // Clear pending order after showing
                     localStorage.removeItem('pendingOrder');
-                } catch (e) {
-                    console.error("Error parsing pending order", e);
+                } catch {
+                    // Ignore malformed localStorage data
                 }
             }
         }

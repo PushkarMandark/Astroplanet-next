@@ -99,11 +99,9 @@ export default function ContactPage() {
             if (response.ok && result.success) {
                 setIsSubmitted(true);
             } else {
-                console.error("Form submission failed:", result);
                 alert("Failed to send message. Please try again.");
             }
-        } catch (error) {
-            console.error("Error submitting form:", error);
+        } catch {
             alert("An error occurred. Please try again.");
         } finally {
             setIsSubmitting(false);

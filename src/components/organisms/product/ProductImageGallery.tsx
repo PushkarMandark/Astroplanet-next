@@ -23,7 +23,7 @@ export function ProductImageGallery({ images, productName }: ProductImageGallery
     const imageContainerRef = useRef<HTMLDivElement>(null);
 
     const hasMultipleImages = images.length > 1;
-    const mainImage = images[selectedImageIndex]?.src || "/placeholder.jpg";
+    const mainImage = images[selectedImageIndex]?.src || "/images/placeholder.svg";
 
     const handleNextImage = () => {
         setSelectedImageIndex((prev) => (prev + 1) % images.length);

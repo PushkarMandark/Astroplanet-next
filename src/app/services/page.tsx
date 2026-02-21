@@ -124,7 +124,7 @@ export default async function ServicesPage() {
                                         <Card className="h-full overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border-0 shadow-lg group">
                                             <div className="relative aspect-[4/3] bg-gradient-to-br from-primary/5 to-accent/5">
                                                 <OptimizedImage
-                                                    src={product.images?.[0]?.src || "/images/placeholder.jpg"}
+                                                    src={product.images?.[0]?.src || "/images/placeholder.svg"}
                                                     alt={product.name}
                                                     fill
                                                     className="object-cover group-hover:scale-105 transition-transform duration-300"
@@ -220,7 +220,7 @@ export default async function ServicesPage() {
                                         <Card className="h-full overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border-0 shadow-lg group">
                                             <div className="relative aspect-[4/3] bg-gradient-to-br from-amber-50 to-orange-50">
                                                 <OptimizedImage
-                                                    src={product.images?.[0]?.src || "/images/placeholder.jpg"}
+                                                    src={product.images?.[0]?.src || "/images/placeholder.svg"}
                                                     alt={product.name}
                                                     fill
                                                     className="object-cover group-hover:scale-105 transition-transform duration-300"

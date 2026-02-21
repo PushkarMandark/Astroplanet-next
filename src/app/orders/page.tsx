@@ -8,7 +8,6 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { EmptyState } from "@/components/molecules/empty-state";
 import { formatPrice } from "@/lib/api/client";
-import { useState, useEffect } from "react";
 
 // Order status icons and colors
 const statusConfig: Record<string, { icon: React.ElementType; color: string; bgColor: string }> = {
@@ -33,12 +32,6 @@ interface Order {
 }
 
 export default function OrdersPage() {
-    const [mounted, setMounted] = useState(false);
-
-    useEffect(() => {
-        setMounted(true);
-    }, []);
-
     return (
         <AccountLayout title="My Orders" description="Track and manage your orders">
             <Tabs defaultValue="all" className="w-full">
@@ -62,42 +55,30 @@ export default function OrdersPage() {
                 </TabsContent>
 
                 <TabsContent value="processing">
-                    <div className="space-y-4">
-                        {mockOrders.filter(o => o.status === 'processing').length > 0 ? (
-                            mockOrders.filter(o => o.status === 'processing').map((order) => (
-                                <OrderCard key={order.id} order={order} />
-                            ))
-                        ) : (
-                            <EmptyFilterState status="processing" />
-                        )}
-                    </div>
+                    <FilteredOrders orders={mockOrders} status="processing" />
                 </TabsContent>
 
                 <TabsContent value="shipped">
-                    <div className="space-y-4">
-                        {mockOrders.filter(o => o.status === 'shipped').length > 0 ? (
-                            mockOrders.filter(o => o.status === 'shipped').map((order) => (
-                                <OrderCard key={order.id} order={order} />
-                            ))
-                        ) : (
-                            <EmptyFilterState status="shipped" />
-                        )}
-                    </div>
+                    <FilteredOrders orders={mockOrders} status="shipped" />
                 </TabsContent>
 
                 <TabsContent value="completed">
-                    <div className="space-y-4">
-                        {mockOrders.filter(o => o.status === 'completed').length > 0 ? (
-                            mockOrders.filter(o => o.status === 'completed').map((order) => (
-                                <OrderCard key={order.id} order={order} />
-                            ))
-                        ) : (
-                            <EmptyFilterState status="completed" />
-                        )}
-                    </div>
+                    <FilteredOrders orders={mockOrders} status="completed" />
                 </TabsContent>
             </Tabs>
         </AccountLayout>
+    );
+}
+
+function FilteredOrders({ orders, status }: { orders: Order[]; status: string }) {
+    const filtered = orders.filter(o => o.status === status);
+    return (
+        <div className="space-y-4">
+            {filtered.length > 0
+                ? filtered.map((order) => <OrderCard key={order.id} order={order} />)
+                : <EmptyFilterState status={status} />
+            }
+        </div>
     );
 }
 

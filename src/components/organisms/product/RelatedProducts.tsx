@@ -34,7 +34,7 @@ export function RelatedProducts({ products }: RelatedProductsProps) {
                             <Card className="group overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
                                 <div className="relative aspect-square bg-gray-100">
                                     <OptimizedImage
-                                        src={product.images?.[0]?.src || "/images/placeholder.jpg"}
+                                        src={product.images?.[0]?.src || "/images/placeholder.svg"}
                                         alt={product.name}
                                         fill
                                         className="object-cover group-hover:scale-105 transition-transform duration-300"

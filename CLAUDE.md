@@ -30,11 +30,23 @@ No test suite is configured. TypeScript strict mode is enabled.
 
 `@/*` → `src/*` throughout the codebase. Use this consistently.
 
+## Shared Constants & Utilities
+
+**`src/lib/constants.ts`** — all magic numbers live here. Always import from here, never hardcode:
+- `FREE_SHIPPING_THRESHOLD = 500` (INR) — used in cart, cart-sidebar, and checkout
+- `FLAT_SHIPPING_RATE = 50` (INR)
+- `ALL_PRODUCTS_FETCH_LIMIT = 100` — bulk fetch limit for shop pages
+- `DEFAULT_PRODUCTS_PER_PAGE = 12` — paginated display count
+
+**`src/lib/category-icons.tsx`** — single source for the `categoryIcons` mapping (slug → Lucide icon node). Both `shop/page.tsx` and `shop/[category]/page.tsx` import from here. Do not redefine it locally.
+
 ## API Layer (`src/lib/api/`)
 
 Two base functions in `client.ts`:
 - `wcRequest<T>(endpoint, options)` — WooCommerce API with OAuth credentials (consumer key/secret from env)
 - `wpRequest<T>(endpoint, options)` — WordPress REST API, no credentials
+- Both apply a **10-second timeout** via `AbortSignal.timeout(10_000)`
+- `WP_URL` is **exported** from `client.ts` — all other files import it from here, never redeclare it
 
 **Standard endpoints used:**
 - Products: `GET /wc/v3/products`, `/wc/v3/products/categories`
@@ -46,7 +58,7 @@ Two base functions in `client.ts`:
 - `GET /astroeshop/v1/user-address` — fetch saved billing address for logged-in user
 - `POST /astroeshop/v1/create-order` — creates order AND returns a WooCommerce checkout redirect URL
 
-The checkout flow does **not** use the standard `/wc/v3/orders` endpoint directly. It calls the custom `create-order` endpoint which returns a URL, then redirects the user to WooCommerce to complete payment.
+The checkout flow does **not** use the standard `/wc/v3/orders` endpoint directly. It calls the custom `create-order` endpoint which returns a URL, validates the URL host against `WP_URL` before redirecting, then sends the user to WooCommerce to complete payment.
 
 ## State Management (`src/stores/`)
 
@@ -61,7 +73,7 @@ Four Zustand stores, three with `localStorage` persistence:
 
 **Auth gate pattern:** The cart sidebar checks `isAuthenticated()` before showing the checkout button — unauthenticated users see a login prompt instead. This check is in `src/components/molecules/cart-sidebar/`.
 
-**Checkout address prefill:** The checkout page (`src/app/checkout/page.tsx`) reads saved address from both `localStorage` and the custom `/astroeshop/v1/user-address` endpoint, preferring the API data if the user is logged in.
+**Checkout address prefill:** The checkout page (`src/app/checkout/page.tsx`) reads saved address from both `localStorage` and the custom `/astroeshop/v1/user-address` endpoint. The `useEffect` that performs this fetch uses an `AbortController` (cleaned up on unmount) to prevent race conditions. The auth check uses `user && token` directly — do not call `isAuthenticated()` redundantly since it already checks both.
 
 ## Component Architecture (`src/components/`)
 
@@ -110,7 +122,17 @@ Import from barrel files, e.g. `import { ProductCard } from "@/components/organi
 
 **Free tools** (`/horoscope`, `/panchang`, `/numerology`): Fully client-side, no API calls — use the `zodiacSigns` data from `src/types/blog.ts`.
 
-**Checkout flow:** Validate form (React Hook Form + Zod) → POST to `/astroeshop/v1/create-order` → receive redirect URL → `window.location.href` to WooCommerce payment page. Free shipping threshold: **₹500**.
+**Checkout flow:** Validate form (React Hook Form + Zod) → POST to `/astroeshop/v1/create-order` → validate redirect URL host matches `WP_URL` → `window.location.href` to WooCommerce payment page. Free shipping threshold: `FREE_SHIPPING_THRESHOLD` from `src/lib/constants.ts` (currently ₹500).
+
+**Checkout form validation rules:**
+- `phone` — regex `/^[6-9]\d{9}$/` (Indian mobile numbers only)
+- `postcode` — regex `/^\d{6}$/` (6-digit Indian PIN code)
+
+**Password change validation** (`account/page.tsx`) — requires min 8 chars, at least one uppercase letter, and at least one number.
+
+**Pagination** (`src/components/molecules/pagination/`) — uses a `Set` for O(1) page deduplication, inserts ellipsis based on gaps in the sorted page array. Active page has `aria-current="page"`; ellipsis has `aria-label="More pages"`.
+
+**Orders page** (`src/app/orders/page.tsx`) — uses `FilteredOrders` component to filter once per tab (avoids double `.filter()` calls). Currently renders `mockOrders = []` as a placeholder until WooCommerce API is wired in.
 
 ## Environment Variables
 
