@@ -18,7 +18,6 @@ import {
     BookOpen,
     List,
 } from "lucide-react";
-import { MainLayout } from "@/components/templates/main-layout";
 import { OptimizedImage } from "@/components/atoms/image";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -135,7 +134,7 @@ export function BlogPostClient({ post, recentPosts, featuredImage, authorName }:
     };
 
     return (
-        <MainLayout>
+        <>
             {/* Hero Section */}
             <section className="relative bg-gradient-to-br from-primary via-[#6b0707] to-[#3d0404] text-white py-12 md:py-16 overflow-hidden">
                 {/* Decorative Elements */}
@@ -333,155 +332,8 @@ export function BlogPostClient({ post, recentPosts, featuredImage, authorName }:
                                 {/* Article Body with clean, readable typography */}
                                 <div
                                     className="blog-content"
-                                    style={{
-                                        fontSize: '19px',
-                                        lineHeight: '2',
-                                        color: '#374151',
-                                        letterSpacing: '0.01em',
-                                    }}
                                     dangerouslySetInnerHTML={{ __html: processedContent }}
                                 />
-
-                                {/* Global styles for blog content */}
-                                <style jsx global>{`
-                                    .blog-content p {
-                                        margin-bottom: 1.75rem;
-                                        text-align: justify;
-                                        text-justify: inter-word;
-                                    }
-                                    
-                                    .blog-content h2 {
-                                        font-size: 1.875rem;
-                                        font-weight: 700;
-                                        color: #1f2937;
-                                        margin-top: 3rem;
-                                        margin-bottom: 1.25rem;
-                                        padding-bottom: 0.75rem;
-                                        border-bottom: 3px solid #EAB308;
-                                        font-family: var(--font-heading);
-                                    }
-                                    
-                                    .blog-content h3 {
-                                        font-size: 1.5rem;
-                                        font-weight: 600;
-                                        color: #8B0000;
-                                        margin-top: 2.5rem;
-                                        margin-bottom: 1rem;
-                                        padding-left: 1rem;
-                                        border-left: 4px solid #EAB308;
-                                        font-family: var(--font-heading);
-                                    }
-                                    
-                                    .blog-content h4 {
-                                        font-size: 1.25rem;
-                                        font-weight: 600;
-                                        color: #374151;
-                                        margin-top: 2rem;
-                                        margin-bottom: 0.75rem;
-                                    }
-                                    
-                                    .blog-content ul,
-                                    .blog-content ol {
-                                        margin: 1.5rem 0;
-                                        padding-left: 0;
-                                    }
-                                    
-                                    .blog-content ul li,
-                                    .blog-content ol li {
-                                        margin-bottom: 1rem;
-                                        padding-left: 2rem;
-                                        position: relative;
-                                        line-height: 1.8;
-                                    }
-                                    
-                                    .blog-content ul li::before {
-                                        content: "★";
-                                        position: absolute;
-                                        left: 0;
-                                        color: #EAB308;
-                                        font-size: 0.875rem;
-                                    }
-                                    
-                                    .blog-content ol {
-                                        counter-reset: list-counter;
-                                    }
-                                    
-                                    .blog-content ol li {
-                                        counter-increment: list-counter;
-                                        padding-left: 3rem;
-                                    }
-                                    
-                                    .blog-content ol li::before {
-                                        content: counter(list-counter);
-                                        position: absolute;
-                                        left: 0;
-                                        width: 1.75rem;
-                                        height: 1.75rem;
-                                        background: linear-gradient(135deg, #8B0000, #6b0000);
-                                        color: white;
-                                        border-radius: 50%;
-                                        display: flex;
-                                        align-items: center;
-                                        justify-content: center;
-                                        font-size: 0.875rem;
-                                        font-weight: 600;
-                                        top: 0.25rem;
-                                    }
-                                    
-                                    .blog-content strong {
-                                        color: #1f2937;
-                                        font-weight: 700;
-                                        background: rgba(234, 179, 8, 0.15);
-                                        padding: 0.125rem 0.375rem;
-                                        border-radius: 0.25rem;
-                                    }
-                                    
-                                    .blog-content a {
-                                        color: #8B0000;
-                                        text-decoration: none;
-                                        border-bottom: 2px solid rgba(139, 0, 0, 0.3);
-                                        transition: all 0.2s;
-                                    }
-                                    
-                                    .blog-content a:hover {
-                                        border-bottom-color: #8B0000;
-                                    }
-                                    
-                                    .blog-content blockquote {
-                                        margin: 2rem 0;
-                                        padding: 1.5rem 2rem;
-                                        background: linear-gradient(135deg, rgba(139, 0, 0, 0.08), rgba(234, 179, 8, 0.05));
-                                        border-left: 4px solid #8B0000;
-                                        border-radius: 0 1rem 1rem 0;
-                                        font-style: italic;
-                                        font-size: 1.125rem;
-                                    }
-                                    
-                                    .blog-content img {
-                                        border-radius: 1rem;
-                                        box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-                                        margin: 2rem 0;
-                                    }
-                                    
-                                    .blog-content hr {
-                                        border: none;
-                                        height: 2px;
-                                        background: linear-gradient(to right, transparent, rgba(139, 0, 0, 0.3), transparent);
-                                        margin: 3rem 0;
-                                    }
-                                    
-                                    /* First letter drop cap */
-                                    .blog-content > p:first-of-type::first-letter {
-                                        float: left;
-                                        font-size: 4rem;
-                                        line-height: 1;
-                                        font-weight: 700;
-                                        color: #8B0000;
-                                        margin-right: 0.75rem;
-                                        margin-top: 0.25rem;
-                                        font-family: var(--font-heading);
-                                    }
-                                `}</style>
 
                                 <Separator className="my-10" />
 
@@ -639,6 +491,6 @@ export function BlogPostClient({ post, recentPosts, featuredImage, authorName }:
                     <ChevronUp className="h-6 w-6" />
                 </button>
             )}
-        </MainLayout>
+        </>
     );
 }

@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(node --version:*)",
+      "Bash(node -e:*)",
+      "Bash(npm run build:*)",
+      "Bash(npx next build:*)",
+      "Bash(TURBOPACK=0 npx next build:*)",
+      "Bash(curl:*)"
+    ]
+  }
+}

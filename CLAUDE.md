@@ -75,6 +75,14 @@ Four Zustand stores, three with `localStorage` persistence:
 
 **Checkout address prefill:** The checkout page (`src/app/checkout/page.tsx`) reads saved address from both `localStorage` and the custom `/astroeshop/v1/user-address` endpoint. The `useEffect` that performs this fetch uses an `AbortController` (cleaned up on unmount) to prevent race conditions. The auth check uses `user && token` directly — do not call `isAuthenticated()` redundantly since it already checks both.
 
+## Images & Placeholders
+
+**`src/components/atoms/image/index.tsx` (`OptimizedImage`)** is a **client component** (`"use client"`). It wraps Next.js `<Image>` with:
+- `useState` to track the current `src`
+- `onError` handler that swaps to `/images/placeholder.svg` on load failure
+
+The fallback image is **`/images/placeholder.svg`** (exists at `public/images/placeholder.svg`). All placeholder references across the codebase use this path — never use `.jpg` variants or a bare `/placeholder.jpg` path.
+
 ## Component Architecture (`src/components/`)
 
 Atomic design with barrel exports (`index.ts`) at each level:
@@ -98,6 +106,12 @@ Import from barrel files, e.g. `import { ProductCard } from "@/components/organi
 - Fonts: **Playfair Display** (headings) + **Inter** (body) via `next/font/google`, exposed as CSS variables `--font-playfair` and `--font-inter`
 - shadcn/ui components in `src/components/ui/` — New York style, neutral base color, Lucide icons
 - Utility: `cn()` in `src/lib/utils.ts` (clsx + tailwind-merge)
+
+**`globals.css` contains two named CSS component classes:**
+- `.prose` — used on static policy/info pages for readable long-form text
+- `.blog-content` — used on blog post pages for article typography (drop cap, custom bullets, heading borders, etc.)
+
+**Do NOT use `<style jsx>` or `<style jsx global>` in any component.** This is styled-jsx syntax; TypeScript in the App Router does not recognize `jsx`/`global` as valid `<style>` attributes, causing a compile error that silently breaks `generateStaticParams` detection during `output: export` builds. Always add global or component-scoped styles to `globals.css` instead.
 
 ## Site & Navigation Config (`src/config/`)
 

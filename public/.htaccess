@@ -1,0 +1,19 @@
+Options -MultiViews
+RewriteEngine On
+
+# Redirect http to https
+# RewriteCond %{HTTPS} off
+# RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+# If the request is for an existing file or directory, serve it directly
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+
+# For paths without a trailing slash that aren't files, add trailing slash
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^([^.]+[^/])$ /$1/ [R=301,L]
+
+# Serve the index.html inside each directory
+RewriteCond %{REQUEST_FILENAME}/index.html -f
+RewriteRule ^(.*)$ $1/index.html [L]

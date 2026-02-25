@@ -53,6 +53,14 @@ export async function getRecentPosts(limit = 5): Promise<BlogPost[]> {
     return getPosts({ per_page: limit });
 }
 
+// Lightweight slug-only fetch for generateStaticParams (no _embed, no extra fields)
+export async function getPostSlugs(limit = 100): Promise<string[]> {
+    const response = await wpRequest<{ slug: string }[]>(
+        `/wp/v2/posts?per_page=${limit}&_fields=slug`
+    );
+    return response.success && response.data ? response.data.map((p) => p.slug) : [];
+}
+
 // Helper to get featured image URL
 export function getFeaturedImage(post: BlogPost): string {
     if (post._embedded?.["wp:featuredmedia"]?.[0]?.source_url) {

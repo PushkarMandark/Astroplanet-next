@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
-import { getPostBySlug, getRecentPosts, getFeaturedImage, getAuthorName, getPosts } from "@/lib/api/blog";
+import { getPostBySlug, getRecentPosts, getFeaturedImage, getAuthorName, getPostSlugs } from "@/lib/api/blog";
 import { BlogPostClient } from "./BlogPostClient";
+import { MainLayout } from "@/components/templates/main-layout";
 
 interface BlogPostPageProps {
     params: Promise<{
@@ -9,10 +10,8 @@ interface BlogPostPageProps {
 }
 
 export async function generateStaticParams() {
-    const posts = await getPosts({ per_page: 100 });
-    return posts.map((post) => ({
-        slug: post.slug,
-    }));
+    const slugs = await getPostSlugs(100);
+    return slugs.map((slug) => ({ slug }));
 }
 
 export async function generateMetadata({ params }: BlogPostPageProps) {
@@ -44,11 +43,13 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
     const authorName = getAuthorName(post);
 
     return (
-        <BlogPostClient
-            post={post}
-            recentPosts={recentPosts}
-            featuredImage={featuredImage}
-            authorName={authorName}
-        />
+        <MainLayout>
+            <BlogPostClient
+                post={post}
+                recentPosts={recentPosts}
+                featuredImage={featuredImage}
+                authorName={authorName}
+            />
+        </MainLayout>
     );
 }
