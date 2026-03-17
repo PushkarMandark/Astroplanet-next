@@ -20,6 +20,10 @@ export async function getPosts(params: {
         `/wp/v2/posts?${queryParams.toString()}`
     );
 
+    if (!response.success) {
+        console.error("Failed to fetch blog posts:", response.error, "HTTP Code:", response.httpCode);
+    }
+
     return response.success ? response.data || [] : [];
 }
 

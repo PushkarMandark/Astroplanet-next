@@ -2,7 +2,7 @@
 export const WP_URL = process.env.NEXT_PUBLIC_WP_URL || "https://api.astroeshop.com";
 const WC_KEY = process.env.WC_CONSUMER_KEY || "";
 const WC_SECRET = process.env.WC_CONSUMER_SECRET || "";
-const FETCH_TIMEOUT_MS = 10_000;
+const FETCH_TIMEOUT_MS = 30_000;
 
 interface ApiResponse<T> {
     success: boolean;
