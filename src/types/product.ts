@@ -36,6 +36,8 @@ export interface ProductCategory {
     id: number;
     name: string;
     slug: string;
+    count?: number;
+    parent?: number;
 }
 
 export interface ProductTag {

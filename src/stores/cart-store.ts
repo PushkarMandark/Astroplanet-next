@@ -101,6 +101,7 @@ export const useCartStore = create<CartState>()(
         }),
         {
             name: "astroplanet-cart",
+            partialize: (state) => ({ items: state.items }),
         }
     )
 );

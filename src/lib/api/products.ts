@@ -1,4 +1,4 @@
-import { Product, ProductListParams } from "@/types";
+import { Product, ProductListParams, ProductCategory } from "@/types";
 import { wcRequest, buildQueryString } from "./client";
 
 // Get all products
@@ -56,14 +56,7 @@ export async function getProductsByCategory(
     return getProducts({ category: categoryId, ...params });
 }
 
-// Category type with parent info
-export interface ProductCategory {
-    id: number;
-    name: string;
-    slug: string;
-    count: number;
-    parent: number;
-}
+
 
 // Get product categories
 export async function getCategories(): Promise<ProductCategory[]> {

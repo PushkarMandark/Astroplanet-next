@@ -20,47 +20,44 @@ function cleanErrorMessage(message: string): string {
     return cleanMessage || 'Login failed. Please try again.';
 }
 
-// Login with JWT
+// Login with JWT — uses wpRequest for consistent timeout/error handling
 export async function login(
     credentials: AuthCredentials
 ): Promise<AuthResponse> {
-    try {
-        const response = await fetch(`${WP_URL}/wp-json/jwt-auth/v1/token`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-                username: credentials.username,
-                password: credentials.password,
-            }),
-        });
+    const response = await wpRequest<{
+        token?: string;
+        user_id?: number;
+        user_email?: string;
+        user_display_name?: string;
+        message?: string;
+    }>("/jwt-auth/v1/token", {
+        method: "POST",
+        body: JSON.stringify({
+            username: credentials.username,
+            password: credentials.password,
+        }),
+    });
 
-        const data = await response.json();
-
-        if (!response.ok || !data.token) {
-            return {
-                success: false,
-                message: cleanErrorMessage(data.message || "Invalid credentials"),
-            };
-        }
-
-        return {
-            success: true,
-            token: data.token,
-            user: {
-                id: data.user_id || 0,
-                username: credentials.username,
-                email: data.user_email || "",
-                displayName: data.user_display_name || credentials.username,
-            },
-        };
-    } catch (error) {
+    if (!response.success || !response.data?.token) {
         return {
             success: false,
-            message: error instanceof Error ? error.message : "Login failed",
+            message: cleanErrorMessage(
+                response.data?.message || response.error || "Invalid credentials"
+            ),
         };
     }
+
+    const data = response.data;
+    return {
+        success: true,
+        token: data.token,
+        user: {
+            id: data.user_id || 0,
+            username: credentials.username,
+            email: data.user_email || "",
+            displayName: data.user_display_name || credentials.username,
+        },
+    };
 }
 
 // Register new customer
@@ -92,21 +89,17 @@ export async function register(data: RegisterData): Promise<AuthResponse> {
 
 // Validate JWT token
 export async function validateToken(token: string): Promise<boolean> {
-    try {
-        const response = await fetch(
-            `${WP_URL}/wp-json/jwt-auth/v1/token/validate`,
-            {
-                method: "POST",
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            }
-        );
+    const response = await wpRequest<{ data?: { status: number } }>(
+        "/jwt-auth/v1/token/validate",
+        {
+            method: "POST",
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        }
+    );
 
-        return response.ok;
-    } catch {
-        return false;
-    }
+    return response.success;
 }
 
 // Get current user data
@@ -116,6 +109,7 @@ export async function getCurrentUser(token: string): Promise<User | null> {
             headers: {
                 Authorization: `Bearer ${token}`,
             },
+            signal: AbortSignal.timeout(10_000),
         });
 
         if (!response.ok) return null;

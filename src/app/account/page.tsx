@@ -30,7 +30,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { useAuthStore } from "@/stores";
 import { toast } from "sonner";
-import { WP_URL } from "@/lib/api/client";
+import { updateProfile, changePassword } from "@/lib/api/account";
 
 interface Address {
     id: string;
@@ -117,24 +117,16 @@ export default function AccountPage() {
     const handleProfileSave = async () => {
         setIsLoading(true);
         try {
-            const response = await fetch(`${WP_URL}/wp-json/wp/v2/users/me`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${token}`,
-                },
-                body: JSON.stringify({
-                    first_name: profileForm.firstName,
-                    last_name: profileForm.lastName,
-                    name: `${profileForm.firstName} ${profileForm.lastName}`.trim(),
-                }),
+            const result = await updateProfile(token!, {
+                firstName: profileForm.firstName,
+                lastName: profileForm.lastName,
             });
 
-            if (response.ok) {
+            if (result.success) {
                 toast.success("Profile updated successfully!");
                 setIsEditingProfile(false);
             } else {
-                toast.error("Failed to update profile");
+                toast.error(result.error || "Failed to update profile");
             }
         } catch {
             toast.error("An error occurred");
@@ -159,22 +151,15 @@ export default function AccountPage() {
 
         setIsLoading(true);
         try {
-            const response = await fetch(`${WP_URL}/wp-json/wp/v2/users/me`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${token}`,
-                },
-                body: JSON.stringify({ password: newPassword }),
-            });
+            const result = await changePassword(token!, newPassword);
 
-            if (response.ok) {
+            if (result.success) {
                 toast.success("Password updated!");
                 setShowPasswordForm(false);
                 setNewPassword("");
                 setConfirmPassword("");
             } else {
-                toast.error("Failed to update password");
+                toast.error(result.error || "Failed to update password");
             }
         } catch {
             toast.error("An error occurred");

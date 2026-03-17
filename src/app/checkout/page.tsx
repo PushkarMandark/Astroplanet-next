@@ -5,44 +5,17 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import { ArrowLeft, Loader2 } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { MainLayout } from "@/components/templates/main-layout";
-import { CartItem } from "@/components/molecules/cart-item";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import {
-    Card,
-    CardContent,
-    CardFooter,
-    CardHeader,
-    CardTitle,
-} from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
-import { useCartStore, useAuthStore } from "@/stores";
-import { formatPrice, WP_URL } from "@/lib/api/client";
+import { useCartStore, useAuthStore, useCheckoutStore } from "@/stores";
+import { WP_URL } from "@/lib/api/client";
+import { createOrder, getUserAddress } from "@/lib/api/checkout";
 import { FREE_SHIPPING_THRESHOLD, FLAT_SHIPPING_RATE } from "@/lib/constants";
 import { toast } from "sonner";
-
-const checkoutSchema = z.object({
-    firstName: z.string().min(1, "First name is required"),
-    lastName: z.string().min(1, "Last name is required"),
-    email: z.string().email("Invalid email address"),
-    phone: z
-        .string()
-        .regex(/^[6-9]\d{9}$/, "Enter a valid 10-digit Indian mobile number"),
-    address: z.string().min(5, "Address is required"),
-    city: z.string().min(2, "City is required"),
-    state: z.string().min(2, "State is required"),
-    postcode: z
-        .string()
-        .regex(/^\d{6}$/, "Enter a valid 6-digit PIN code"),
-    notes: z.string().optional(),
-});
-
-type CheckoutFormData = z.infer<typeof checkoutSchema>;
+import { checkoutSchema, CheckoutFormData } from "@/lib/validations/checkout";
+import { CheckoutFormFields } from "@/components/checkout/checkout-form-fields";
+import { OrderSummary } from "@/components/checkout/order-summary";
 
 export default function CheckoutPage() {
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -60,69 +33,50 @@ export default function CheckoutPage() {
         resolver: zodResolver(checkoutSchema),
     });
 
-    // Fetch user's saved address - check localStorage first, then WordPress
+    const { savedAddress, setSavedAddress, setPendingOrder } = useCheckoutStore();
+
+    // Fetch user's saved address - check Zustand first, then WordPress
     useEffect(() => {
-        const controller = new AbortController();
+        let cancelled = false;
 
         const fetchUserAddress = async () => {
-            // First check localStorage for saved address
-            const savedAddress = localStorage.getItem('checkoutAddress');
+            // First check Zustand store for saved address
             if (savedAddress) {
-                try {
-                    const parsed = JSON.parse(savedAddress);
-                    reset({
-                        firstName: parsed.firstName || "",
-                        lastName: parsed.lastName || "",
-                        email: parsed.email || "",
-                        phone: parsed.phone || "",
-                        address: parsed.address || "",
-                        city: parsed.city || "",
-                        state: parsed.state || "",
-                        postcode: parsed.postcode || "",
-                        notes: "",
-                    });
-                    setIsLoading(false);
-                    return; // Use saved address from localStorage
-                } catch {
-                    // Ignore malformed localStorage data
-                }
+                reset({
+                    firstName: savedAddress.firstName || "",
+                    lastName: savedAddress.lastName || "",
+                    email: savedAddress.email || "",
+                    phone: savedAddress.phone || "",
+                    address: savedAddress.address || "",
+                    city: savedAddress.city || "",
+                    state: savedAddress.state || "",
+                    postcode: savedAddress.postcode || "",
+                    notes: "",
+                });
+                setIsLoading(false);
+                return;
             }
 
             // If logged in and no localStorage, try WordPress
             if (user && token) {
-                try {
-                    const response = await fetch(
-                        `${WP_URL}/wp-json/astroeshop/v1/user-address`,
-                        {
-                            signal: controller.signal,
-                            headers: {
-                                Authorization: `Bearer ${token}`,
-                                "Content-Type": "application/json",
-                            },
-                        }
-                    );
+                const addressData = await getUserAddress(token);
 
-                    if (response.ok) {
-                        const addressData = await response.json();
+                if (cancelled) return;
 
-                        if (addressData.billing && addressData.billing.first_name) {
-                            reset({
-                                firstName: addressData.billing.first_name || "",
-                                lastName: addressData.billing.last_name || "",
-                                email: addressData.billing.email || user.email || "",
-                                phone: addressData.billing.phone || "",
-                                address: addressData.billing.address_1 || "",
-                                city: addressData.billing.city || "",
-                                state: addressData.billing.state || "",
-                                postcode: addressData.billing.postcode || "",
-                                notes: "",
-                            });
-                            setIsLoading(false);
-                            return;
-                        }
-                    }
-                } catch (error) {
-                    if ((error as Error).name === "AbortError") return;
+                if (addressData?.billing?.first_name) {
+                    reset({
+                        firstName: addressData.billing.first_name || "",
+                        lastName: addressData.billing.last_name || "",
+                        email: addressData.billing.email || user.email || "",
+                        phone: addressData.billing.phone || "",
+                        address: addressData.billing.address_1 || "",
+                        city: addressData.billing.city || "",
+                        state: addressData.billing.state || "",
+                        postcode: addressData.billing.postcode || "",
+                        notes: "",
+                    });
+                    setIsLoading(false);
+                    return;
                 }
 
                 // Pre-fill with basic user info if no saved address
@@ -137,7 +91,7 @@ export default function CheckoutPage() {
         };
 
         fetchUserAddress();
-        return () => controller.abort();
+        return () => { cancelled = true; };
     }, [user, token, reset]);
 
     const subtotal = getSubtotal();
@@ -153,33 +107,21 @@ export default function CheckoutPage() {
         setIsSubmitting(true);
 
         try {
-            // Call WordPress PHP endpoint for order creation
-            const response = await fetch(`${WP_URL}/wp-json/astroeshop/v1/create-order`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
+            const result = await createOrder(
+                items,
+                {
+                    first_name: data.firstName,
+                    last_name: data.lastName,
+                    email: data.email,
+                    phone: data.phone,
+                    address_1: data.address,
+                    city: data.city,
+                    state: data.state,
+                    postcode: data.postcode,
+                    country: "IN",
                 },
-                body: JSON.stringify({
-                    items: items.map(item => ({
-                        product_id: item.id,
-                        quantity: item.quantity,
-                    })),
-                    billing: {
-                        first_name: data.firstName,
-                        last_name: data.lastName,
-                        email: data.email,
-                        phone: data.phone,
-                        address_1: data.address,
-                        city: data.city,
-                        state: data.state,
-                        postcode: data.postcode,
-                        country: "IN",
-                    },
-                    customer_note: data.notes || "",
-                }),
-            });
-
-            const result = await response.json();
+                data.notes || ""
+            );
 
             if (result.success && result.checkout_url) {
                 // Validate the redirect URL is from our expected backend domain
@@ -195,16 +137,16 @@ export default function CheckoutPage() {
                     return;
                 }
 
-                // Save order info to localStorage for tracking
-                localStorage.setItem('pendingOrder', JSON.stringify({
-                    order_id: result.order_id,
-                    order_key: result.order_key,
-                    total: result.total,
+                // Save order info to store for tracking
+                setPendingOrder({
+                    order_id: result.order_id!,
+                    order_key: result.order_key!,
+                    total: result.total!,
                     created_at: new Date().toISOString(),
-                }));
+                });
 
-                // Save address to localStorage for future checkouts
-                localStorage.setItem('checkoutAddress', JSON.stringify({
+                // Save address to store for future checkouts
+                setSavedAddress({
                     firstName: data.firstName,
                     lastName: data.lastName,
                     email: data.email,
@@ -213,7 +155,7 @@ export default function CheckoutPage() {
                     city: data.city,
                     state: data.state,
                     postcode: data.postcode,
-                }));
+                });
 
                 clearCart();
                 // Redirect to WooCommerce payment page
@@ -271,198 +213,18 @@ export default function CheckoutPage() {
                         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                             {/* Billing Form */}
                             <div className="lg:col-span-2 space-y-6">
-                                <Card className="py-4">
-                                    <CardHeader>
-                                        <CardTitle>Billing Details</CardTitle>
-                                    </CardHeader>
-                                    <CardContent className="space-y-4">
-                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                            <div className="space-y-2">
-                                                <Label htmlFor="firstName">First Name *</Label>
-                                                <Input
-                                                    id="firstName"
-                                                    {...register("firstName")}
-                                                    className={errors.firstName ? "border-destructive" : ""}
-                                                />
-                                                {errors.firstName && (
-                                                    <p className="text-sm text-destructive">
-                                                        {errors.firstName.message}
-                                                    </p>
-                                                )}
-                                            </div>
-                                            <div className="space-y-2">
-                                                <Label htmlFor="lastName">Last Name *</Label>
-                                                <Input
-                                                    id="lastName"
-                                                    {...register("lastName")}
-                                                    className={errors.lastName ? "border-destructive" : ""}
-                                                />
-                                                {errors.lastName && (
-                                                    <p className="text-sm text-destructive">
-                                                        {errors.lastName.message}
-                                                    </p>
-                                                )}
-                                            </div>
-                                        </div>
-
-                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                            <div className="space-y-2">
-                                                <Label htmlFor="email">Email *</Label>
-                                                <Input
-                                                    id="email"
-                                                    type="email"
-                                                    {...register("email")}
-                                                    className={errors.email ? "border-destructive" : ""}
-                                                />
-                                                {errors.email && (
-                                                    <p className="text-sm text-destructive">
-                                                        {errors.email.message}
-                                                    </p>
-                                                )}
-                                            </div>
-                                            <div className="space-y-2">
-                                                <Label htmlFor="phone">Phone *</Label>
-                                                <Input
-                                                    id="phone"
-                                                    type="tel"
-                                                    {...register("phone")}
-                                                    className={errors.phone ? "border-destructive" : ""}
-                                                />
-                                                {errors.phone && (
-                                                    <p className="text-sm text-destructive">
-                                                        {errors.phone.message}
-                                                    </p>
-                                                )}
-                                            </div>
-                                        </div>
-
-                                        <div className="space-y-2">
-                                            <Label htmlFor="address">Address *</Label>
-                                            <Input
-                                                id="address"
-                                                {...register("address")}
-                                                className={errors.address ? "border-destructive" : ""}
-                                            />
-                                            {errors.address && (
-                                                <p className="text-sm text-destructive">
-                                                    {errors.address.message}
-                                                </p>
-                                            )}
-                                        </div>
-
-                                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                                            <div className="space-y-2">
-                                                <Label htmlFor="city">City *</Label>
-                                                <Input
-                                                    id="city"
-                                                    {...register("city")}
-                                                    className={errors.city ? "border-destructive" : ""}
-                                                />
-                                                {errors.city && (
-                                                    <p className="text-sm text-destructive">
-                                                        {errors.city.message}
-                                                    </p>
-                                                )}
-                                            </div>
-                                            <div className="space-y-2">
-                                                <Label htmlFor="state">State *</Label>
-                                                <Input
-                                                    id="state"
-                                                    {...register("state")}
-                                                    className={errors.state ? "border-destructive" : ""}
-                                                />
-                                                {errors.state && (
-                                                    <p className="text-sm text-destructive">
-                                                        {errors.state.message}
-                                                    </p>
-                                                )}
-                                            </div>
-                                            <div className="space-y-2">
-                                                <Label htmlFor="postcode">Postcode *</Label>
-                                                <Input
-                                                    id="postcode"
-                                                    {...register("postcode")}
-                                                    className={errors.postcode ? "border-destructive" : ""}
-                                                />
-                                                {errors.postcode && (
-                                                    <p className="text-sm text-destructive">
-                                                        {errors.postcode.message}
-                                                    </p>
-                                                )}
-                                            </div>
-                                        </div>
-
-                                        <div className="space-y-2">
-                                            <Label htmlFor="notes">Order Notes (Optional)</Label>
-                                            <Textarea
-                                                id="notes"
-                                                {...register("notes")}
-                                                placeholder="Any special instructions..."
-                                                rows={3}
-                                            />
-                                        </div>
-                                    </CardContent>
-                                </Card>
+                                <CheckoutFormFields register={register} errors={errors} />
                             </div>
 
                             {/* Order Summary */}
                             <div>
-                                <Card className="sticky top-24 py-4">
-                                    <CardHeader>
-                                        <CardTitle>Order Summary</CardTitle>
-                                    </CardHeader>
-                                    <CardContent className="space-y-4">
-                                        {items.map((item) => (
-                                            <div key={item.id} className="flex justify-between text-sm">
-                                                <span>
-                                                    {item.name} × {item.quantity}
-                                                </span>
-                                                <span>{formatPrice(item.price * item.quantity)}</span>
-                                            </div>
-                                        ))}
-
-                                        <Separator />
-
-                                        <div className="flex justify-between">
-                                            <span className="text-muted-foreground">Subtotal</span>
-                                            <span>{formatPrice(subtotal)}</span>
-                                        </div>
-                                        <div className="flex justify-between">
-                                            <span className="text-muted-foreground">Shipping</span>
-                                            <span>
-                                                {shipping === 0 ? (
-                                                    <span className="text-green-600">FREE</span>
-                                                ) : (
-                                                    formatPrice(shipping)
-                                                )}
-                                            </span>
-                                        </div>
-
-                                        <Separator />
-
-                                        <div className="flex justify-between font-bold text-lg">
-                                            <span>Total</span>
-                                            <span>{formatPrice(total)}</span>
-                                        </div>
-                                    </CardContent>
-                                    <CardFooter>
-                                        <Button
-                                            type="submit"
-                                            className="w-full"
-                                            size="lg"
-                                            disabled={isSubmitting}
-                                        >
-                                            {isSubmitting ? (
-                                                <>
-                                                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                                                    Processing...
-                                                </>
-                                            ) : (
-                                                "Proceed to Payment"
-                                            )}
-                                        </Button>
-                                    </CardFooter>
-                                </Card>
+                                <OrderSummary
+                                    items={items}
+                                    subtotal={subtotal}
+                                    shipping={shipping}
+                                    total={total}
+                                    isSubmitting={isSubmitting}
+                                />
                             </div>
                         </div>
                     </form>

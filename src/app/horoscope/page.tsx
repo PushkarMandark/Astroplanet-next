@@ -4,7 +4,9 @@ import { MainLayout } from "@/components/templates/main-layout";
 import { ZodiacSign } from "@/components/molecules/zodiac-sign";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { zodiacSigns, HoroscopeSign } from "@/types";
+import { HoroscopeSign } from "@/types";
+import { zodiacSigns } from "@/lib/data/zodiac";
+import { getDailyHoroscope } from "@/lib/api/horoscope";
 import { useState } from "react";
 import { Star, Sparkles } from "lucide-react";
 
@@ -18,20 +20,9 @@ export default function HoroscopePage() {
         setIsLoading(true);
 
         try {
-            // Fetch horoscope from API
-            const response = await fetch(
-                `https://horoscope-app-api.vercel.app/api/v1/get-horoscope/daily?sign=${sign.sign}&day=today`
-            );
-            const data = await response.json();
-
-            if (data.success && data.data?.horoscope_data) {
-                setHoroscope(data.data.horoscope_data);
-            } else {
-                setHoroscope(
-                    "Unable to fetch horoscope at this time. Please try again later."
-                );
-            }
-        } catch (error) {
+            const result = await getDailyHoroscope(sign.sign);
+            setHoroscope(result.text);
+        } catch {
             setHoroscope(
                 "Unable to fetch horoscope at this time. Please try again later."
             );

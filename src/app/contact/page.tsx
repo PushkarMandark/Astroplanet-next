@@ -36,6 +36,7 @@ import {
     Sparkles
 } from "lucide-react";
 import { siteConfig } from "@/config/site";
+import { submitInquiry } from "@/lib/api/contact";
 
 const contactSchema = z.object({
     name: z.string().min(2, "Name must be at least 2 characters"),
@@ -75,31 +76,12 @@ export default function ContactPage() {
         setIsSubmitting(true);
 
         try {
-            const WP_URL = process.env.NEXT_PUBLIC_WP_URL || "https://api.astroeshop.com";
+            const result = await submitInquiry(data);
 
-            const response = await fetch(`${WP_URL}/wp-json/astroeshop/v1/inquiry`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    customer_name: data.name,
-                    customer_email: data.email,
-                    customer_phone: data.phone || "",
-                    inquiry_subject: data.subject,
-                    inquiry_message: data.message,
-                    inquiry_source: "contact_form",
-                    inquiry_status: "new",
-                    inquiry_timestamp: new Date().toISOString(),
-                }),
-            });
-
-            const result = await response.json();
-
-            if (response.ok && result.success) {
+            if (result.success) {
                 setIsSubmitted(true);
             } else {
-                alert("Failed to send message. Please try again.");
+                alert(result.message || "Failed to send message. Please try again.");
             }
         } catch {
             alert("An error occurred. Please try again.");

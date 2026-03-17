@@ -1,3 +1,5 @@
+import { BookOpen, Heart, Gem, Home, Briefcase, Baby } from "lucide-react";
+
 // Site configuration matching the PHP project's design system
 export const siteConfig = {
     name: "AstroEshop",
@@ -72,3 +74,48 @@ export const designTokens = {
 };
 
 export type SiteConfig = typeof siteConfig;
+
+export const servicesConfig = [
+  {
+    icon: BookOpen,
+    title: "Kundli Analysis",
+    description: "Detailed birth chart reading",
+    href: "/services",
+    color: "from-orange-500 to-red-500"
+  },
+  {
+    icon: Heart,
+    title: "Match Making",
+    description: "Kundli matching for marriage",
+    href: "/services",
+    color: "from-pink-500 to-rose-500"
+  },
+  {
+    icon: Gem,
+    title: "Gemstone Advice",
+    description: "Personalized gem recommendations",
+    href: "/shop",
+    color: "from-purple-500 to-indigo-500"
+  },
+  {
+    icon: Home,
+    title: "Vastu Shastra",
+    description: "Home & office Vastu consultation",
+    href: "/services",
+    color: "from-green-500 to-emerald-500"
+  },
+  {
+    icon: Briefcase,
+    title: "Career Guidance",
+    description: "Professional path insights",
+    href: "/services",
+    color: "from-blue-500 to-cyan-500"
+  },
+  {
+    icon: Baby,
+    title: "Baby Names",
+    description: "Auspicious names as per nakshatra",
+    href: "/services",
+    color: "from-amber-500 to-yellow-500"
+  },
+];

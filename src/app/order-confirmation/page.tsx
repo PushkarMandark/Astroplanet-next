@@ -10,7 +10,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { siteConfig } from "@/config/site";
 import { useEffect, useState } from "react";
-import { useCartStore } from "@/stores";
+import { useCartStore, useCheckoutStore } from "@/stores";
 
 function OrderConfirmationContent() {
     const searchParams = useSearchParams();
@@ -20,31 +20,26 @@ function OrderConfirmationContent() {
     const [copied, setCopied] = useState(false);
     const [orderId, setOrderId] = useState<string | null>(urlOrderId);
 
-    // Check localStorage for pending order if no order_id in URL
+    const { pendingOrder, clearPendingOrder } = useCheckoutStore();
+
+    // Check zustand store for pending order if no order_id in URL
     useEffect(() => {
         if (!urlOrderId) {
-            const pendingOrder = localStorage.getItem('pendingOrder');
             if (pendingOrder) {
-                try {
-                    const order = JSON.parse(pendingOrder);
-                    setOrderId(order.order_id?.toString());
-                    // Clear pending order after showing
-                    localStorage.removeItem('pendingOrder');
-                } catch {
-                    // Ignore malformed localStorage data
-                }
+                setOrderId(pendingOrder.order_id?.toString());
+                clearPendingOrder();
             }
         }
-    }, [urlOrderId]);
+    }, [urlOrderId, pendingOrder, clearPendingOrder]);
 
     // Clear cart on successful order
     useEffect(() => {
         if (status === "success") {
             clearCart();
             // Also clear pending order
-            localStorage.removeItem('pendingOrder');
+            clearPendingOrder();
         }
-    }, [status, clearCart]);
+    }, [status, clearCart, clearPendingOrder]);
 
     const copyOrderId = () => {
         if (orderId) {

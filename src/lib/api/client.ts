@@ -31,7 +31,7 @@ export async function wcRequest<T>(
                 Accept: "application/json",
                 ...options.headers,
             },
-            next: { revalidate: 60 }, // Cache for 60 seconds
+
         });
 
         const data = await response.json();
@@ -67,6 +67,45 @@ export async function wpRequest<T>(
             headers: {
                 "Content-Type": "application/json",
                 Accept: "application/json",
+                ...options.headers,
+            },
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            return {
+                success: false,
+                error: data.message || "Request failed",
+                httpCode: response.status,
+            };
+        }
+
+        return { success: true, data, httpCode: response.status };
+    } catch (error) {
+        return {
+            success: false,
+            error: error instanceof Error ? error.message : "Network error",
+        };
+    }
+}
+
+// Client-side authenticated WordPress request (uses JWT token)
+export async function authenticatedWpRequest<T>(
+    endpoint: string,
+    token: string,
+    options: RequestInit = {}
+): Promise<ApiResponse<T>> {
+    const url = `${WP_URL}/wp-json${endpoint}`;
+
+    try {
+        const response = await fetch(url, {
+            ...options,
+            signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
+            headers: {
+                "Content-Type": "application/json",
+                Accept: "application/json",
+                Authorization: `Bearer ${token}`,
                 ...options.headers,
             },
         });
