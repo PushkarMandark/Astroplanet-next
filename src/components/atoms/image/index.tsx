@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 
 const PLACEHOLDER = "/images/placeholder.svg";
@@ -28,6 +28,11 @@ export function OptimizedImage({
     objectFit = "cover",
 }: OptimizedImageProps) {
     const [imgSrc, setImgSrc] = useState(src || PLACEHOLDER);
+
+    useEffect(() => {
+        setImgSrc(src || PLACEHOLDER);
+    }, [src]);
+
     const isExternal = imgSrc.startsWith("http");
 
     if (fill) {

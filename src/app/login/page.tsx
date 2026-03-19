@@ -12,7 +12,7 @@ import { Label } from "@/components/ui/label";
 import { useAuthStore } from "@/stores";
 import { login } from "@/lib/api/auth";
 import { toast } from "sonner";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { Loader2 } from "lucide-react";
 
 const loginSchema = z.object({
@@ -25,7 +25,6 @@ type LoginFormData = z.infer<typeof loginSchema>;
 function LoginForm() {
     const [isLoading, setIsLoading] = useState(false);
     const [mounted, setMounted] = useState(false);
-    const router = useRouter();
     const searchParams = useSearchParams();
     const authLogin = useAuthStore((state) => state.login);
     const isAuthenticated = useAuthStore((state) => state.isAuthenticated());
@@ -36,12 +35,12 @@ function LoginForm() {
         setMounted(true);
     }, []);
 
-    // If already authenticated, redirect
+    // If already authenticated (e.g. user navigates to /login while logged in), redirect
     useEffect(() => {
-        if (mounted && isAuthenticated) {
-            router.push(redirectTo);
+        if (mounted && isAuthenticated && !isLoading) {
+            window.location.href = redirectTo;
         }
-    }, [mounted, isAuthenticated, router, redirectTo]);
+    }, [mounted, isAuthenticated, isLoading, redirectTo]);
 
     const {
         register,
@@ -60,7 +59,9 @@ function LoginForm() {
             if (result.success && result.token && result.user) {
                 authLogin(result.user, result.token);
                 toast.success("Login successful!");
-                router.push(redirectTo);
+                // Use direct navigation for instant redirect on static export
+                window.location.href = redirectTo;
+                return; // Don't setIsLoading(false) — page is navigating away
             } else {
                 toast.error(result.message || "Invalid credentials");
             }

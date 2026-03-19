@@ -1,5 +1,6 @@
 import { CartItem } from "@/types";
 import { wpRequest, authenticatedWpRequest } from "./client";
+import { siteConfig } from "@/config/site";
 
 // Billing address shape as expected by the WordPress custom endpoint
 interface CheckoutBilling {
@@ -18,6 +19,8 @@ interface CreateOrderPayload {
     items: { product_id: number; quantity: number }[];
     billing: CheckoutBilling;
     customer_note: string;
+    return_url: string;
+    cancel_url: string;
 }
 
 interface CreateOrderApiResponse {
@@ -48,6 +51,7 @@ export async function createOrder(
     billing: CheckoutBilling,
     customerNote: string
 ): Promise<CreateOrderApiResponse> {
+    const frontendUrl = siteConfig.url;
     const payload: CreateOrderPayload = {
         items: items.map((item) => ({
             product_id: item.id,
@@ -55,6 +59,8 @@ export async function createOrder(
         })),
         billing,
         customer_note: customerNote,
+        return_url: `${frontendUrl}/order-confirmation`,
+        cancel_url: `${frontendUrl}/payment-failed`,
     };
 
     const response = await wpRequest<CreateOrderApiResponse>(

@@ -1,7 +1,6 @@
-import React, { useState, useRef, useEffect } from "react";
-import { ChevronRight, ChevronLeft, Heart, Share2, ZoomIn, Search } from "lucide-react";
+import React, { useState, useRef, useEffect, useCallback } from "react";
+import { ChevronRight, ChevronLeft, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { OptimizedImage } from "@/components/atoms/image";
 import { cn } from "@/lib/utils";
 
@@ -17,154 +16,151 @@ interface ProductImageGalleryProps {
 }
 
 export function ProductImageGallery({ images, productName }: ProductImageGalleryProps) {
-    const [selectedImageIndex, setSelectedImageIndex] = useState(0);
-    const [isHovering, setIsHovering] = useState(false);
-    const [zoomPosition, setZoomPosition] = useState({ x: 0, y: 0 });
-    const imageContainerRef = useRef<HTMLDivElement>(null);
+    const [selectedIndex, setSelectedIndex] = useState(0);
+    const [showZoom, setShowZoom] = useState(false);
+    const [zoomPos, setZoomPos] = useState({ x: 50, y: 50 });
+    const imageRef = useRef<HTMLDivElement>(null);
+    const autoPlayRef = useRef<ReturnType<typeof setInterval> | null>(null);
+    const [isPaused, setIsPaused] = useState(false);
 
-    const hasMultipleImages = images.length > 1;
-    const mainImage = images[selectedImageIndex]?.src || "/images/placeholder.svg";
+    const hasMultiple = images.length > 1;
+    const currentImage = images[selectedIndex]?.src || "/images/placeholder.svg";
 
-    const handleNextImage = () => {
-        setSelectedImageIndex((prev) => (prev + 1) % images.length);
-    };
+    const goNext = useCallback(() => {
+        setSelectedIndex((prev) => (prev + 1) % images.length);
+    }, [images.length]);
 
-    const handlePrevImage = () => {
-        setSelectedImageIndex((prev) => (prev - 1 + images.length) % images.length);
-    };
+    const goPrev = useCallback(() => {
+        setSelectedIndex((prev) => (prev - 1 + images.length) % images.length);
+    }, [images.length]);
 
-    const handleImageHover = (e: React.MouseEvent<HTMLDivElement>) => {
-        if (!imageContainerRef.current) return;
-        const { left, top, width, height } = imageContainerRef.current.getBoundingClientRect();
-        const x = ((e.clientX - left) / width) * 100;
-        const y = ((e.clientY - top) / height) * 100;
-        setZoomPosition({ x, y });
-    };
-
-    // Auto-slide effect
+    // Auto-slide every 5 seconds, pause on hover
     useEffect(() => {
-        if (!hasMultipleImages) return;
-        const interval = setInterval(() => {
-            if (!isHovering) {
-                setSelectedImageIndex((prev) => (prev + 1) % images.length);
-            }
-        }, 4000);
-        return () => clearInterval(interval);
-    }, [hasMultipleImages, images.length, isHovering]);
+        if (!hasMultiple) return;
+        if (isPaused) {
+            if (autoPlayRef.current) clearInterval(autoPlayRef.current);
+            return;
+        }
+        autoPlayRef.current = setInterval(goNext, 5000);
+        return () => {
+            if (autoPlayRef.current) clearInterval(autoPlayRef.current);
+        };
+    }, [hasMultiple, isPaused, goNext]);
+
+    const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+        if (!imageRef.current) return;
+        const rect = imageRef.current.getBoundingClientRect();
+        const x = Math.max(0, Math.min(100, ((e.clientX - rect.left) / rect.width) * 100));
+        const y = Math.max(0, Math.min(100, ((e.clientY - rect.top) / rect.height) * 100));
+        setZoomPos({ x, y });
+    };
 
     return (
-        <div className="space-y-4">
+        <div className="space-y-3">
+            {/* Main Image Container */}
             <div
-                ref={imageContainerRef}
-                className="relative aspect-square rounded-3xl overflow-hidden bg-gray-50 border-2 border-gray-100 shadow-xl cursor-crosshair group"
-                onMouseEnter={() => setIsHovering(true)}
-                onMouseLeave={() => setIsHovering(false)}
-                onMouseMove={handleImageHover}
+                className="relative aspect-square rounded-2xl overflow-hidden bg-gray-50 border border-gray-200 group"
+                onMouseEnter={() => {
+                    setIsPaused(true);
+                    setShowZoom(true);
+                }}
+                onMouseLeave={() => {
+                    setIsPaused(false);
+                    setShowZoom(false);
+                }}
             >
-                <OptimizedImage
-                    src={mainImage}
-                    alt={productName}
-                    fill
-                    className="object-contain p-8 transition-transform duration-500 group-hover:scale-105"
-                    priority
-                />
-
-                {/* Magnifier Lens */}
-                {isHovering && (
-                    <div
-                        className="pointer-events-none absolute w-32 h-32 rounded-full border-4 border-white shadow-2xl overflow-hidden z-30"
-                        style={{
-                            left: `${zoomPosition.x}%`,
-                            top: `${zoomPosition.y}%`,
-                            transform: 'translate(-50%, -50%)',
-                            backgroundImage: `url(${mainImage})`,
-                            backgroundSize: '600%',
-                            backgroundPosition: `${zoomPosition.x}% ${zoomPosition.y}%`,
-                            backgroundRepeat: 'no-repeat'
-                        }}
+                {/* Main Image — this div tracks mouse for zoom */}
+                <div
+                    ref={imageRef}
+                    className="relative w-full h-full cursor-crosshair"
+                    onMouseMove={handleMouseMove}
+                >
+                    <OptimizedImage
+                        src={currentImage}
+                        alt={productName}
+                        fill
+                        className="object-contain p-6"
+                        priority
                     />
-                )}
 
-                {/* Quick Actions */}
-                <div className="absolute top-4 right-4 flex flex-col gap-2 z-50">
-                    <Button
-                        variant="secondary"
-                        size="icon"
-                        className="rounded-full bg-white/90 backdrop-blur-sm shadow-xl hover:bg-red-50 hover:text-red-500 border border-gray-100 transition-all active:scale-95"
-                    >
-                        <Heart className="h-5 w-5 text-gray-700 hover:text-red-500 fill-transparent hover:fill-red-500" />
-                    </Button>
-                    <Button
-                        variant="secondary"
-                        size="icon"
-                        className="rounded-full bg-white/90 backdrop-blur-sm shadow-xl hover:bg-blue-50 hover:text-blue-500 border border-gray-100 transition-all active:scale-95"
-                    >
-                        <Share2 className="h-5 w-5 text-gray-700 hover:text-blue-500" />
-                    </Button>
+                    {/* Zoomed view overlaid on the image on desktop */}
+                    {showZoom && (
+                        <div
+                            className="hidden lg:block absolute inset-0 z-10 pointer-events-none"
+                            style={{
+                                backgroundImage: `url(${currentImage})`,
+                                backgroundSize: "250%",
+                                backgroundPosition: `${zoomPos.x}% ${zoomPos.y}%`,
+                                backgroundRepeat: "no-repeat",
+                            }}
+                        />
+                    )}
                 </div>
 
-                {/* Zoom Hint */}
-                <div className="absolute bottom-4 left-4 bg-black/60 backdrop-blur-md text-white px-3 py-1.5 rounded-full text-[10px] uppercase tracking-wider font-bold flex items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity z-20">
-                    <Search className="h-3 w-3" />
-                    Move to zoom
-                </div>
-
-                {/* Navigation Arrows */}
-                {hasMultipleImages && (
+                {/* Navigation Arrows — z-20 so they sit above zoom overlay */}
+                {hasMultiple && (
                     <>
                         <Button
-                            variant="secondary"
+                            variant="ghost"
                             size="icon"
-                            onClick={(e) => {
-                                e.preventDefault();
-                                e.stopPropagation();
-                                handlePrevImage();
-                            }}
-                            className="absolute left-4 top-1/2 -translate-y-1/2 rounded-full bg-white/90 hover:bg-white shadow-xl opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all z-50 w-10 h-10"
+                            onClick={(e) => { e.stopPropagation(); goPrev(); }}
+                            className="absolute left-3 top-1/2 -translate-y-1/2 h-10 w-10 rounded-full bg-white/90 hover:bg-white shadow-md z-20 opacity-0 group-hover:opacity-100 transition-opacity"
                         >
-                            <ChevronLeft className="h-6 w-6 text-gray-800" />
+                            <ChevronLeft className="h-5 w-5 text-gray-700" />
                         </Button>
                         <Button
-                            variant="secondary"
+                            variant="ghost"
                             size="icon"
-                            onClick={(e) => {
-                                e.preventDefault();
-                                e.stopPropagation();
-                                handleNextImage();
-                            }}
-                            className="absolute right-4 top-1/2 -translate-y-1/2 rounded-full bg-white/90 hover:bg-white shadow-xl opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all z-50 w-10 h-10"
+                            onClick={(e) => { e.stopPropagation(); goNext(); }}
+                            className="absolute right-3 top-1/2 -translate-y-1/2 h-10 w-10 rounded-full bg-white/90 hover:bg-white shadow-md z-20 opacity-0 group-hover:opacity-100 transition-opacity"
                         >
-                            <ChevronRight className="h-6 w-6 text-gray-800" />
+                            <ChevronRight className="h-5 w-5 text-gray-700" />
                         </Button>
                     </>
                 )}
 
-                {/* Image Counter */}
-                {hasMultipleImages && (
-                    <div className="absolute bottom-6 right-6 bg-primary/90 backdrop-blur-md px-3 py-1.5 rounded-full text-xs font-bold shadow-lg text-white z-20">
-                        {selectedImageIndex + 1} / {images.length}
+                {/* Dot Indicators */}
+                {hasMultiple && (
+                    <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-1.5 z-20">
+                        {images.map((_, i) => (
+                            <button
+                                key={i}
+                                onClick={() => setSelectedIndex(i)}
+                                className={cn(
+                                    "rounded-full transition-all",
+                                    selectedIndex === i
+                                        ? "w-6 h-2 bg-primary"
+                                        : "w-2 h-2 bg-gray-300 hover:bg-gray-400"
+                                )}
+                            />
+                        ))}
                     </div>
                 )}
+
+                {/* Zoom Hint */}
+                <div className="hidden lg:flex absolute bottom-4 left-4 bg-black/50 backdrop-blur-sm text-white px-2.5 py-1 rounded-full text-[10px] uppercase tracking-wider font-medium items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity z-20">
+                    <Search className="h-3 w-3" />
+                    Hover to zoom
+                </div>
             </div>
 
             {/* Thumbnails */}
-            {hasMultipleImages && (
-                <div className="grid grid-cols-5 gap-3">
+            {hasMultiple && (
+                <div className="flex gap-2 overflow-x-auto pb-1">
                     {images.map((image, index) => (
                         <button
                             key={`${image.id}-${index}`}
-                            onClick={() => setSelectedImageIndex(index)}
-                            onMouseEnter={() => setSelectedImageIndex(index)}
+                            onClick={() => setSelectedIndex(index)}
                             className={cn(
-                                "relative aspect-square rounded-xl overflow-hidden border-2 transition-all hover:scale-105",
-                                selectedImageIndex === index
-                                    ? "border-primary shadow-lg ring-2 ring-primary/20"
+                                "relative w-16 h-16 shrink-0 rounded-lg overflow-hidden border-2 transition-all",
+                                selectedIndex === index
+                                    ? "border-primary ring-1 ring-primary/20"
                                     : "border-gray-200 hover:border-gray-300"
                             )}
                         >
                             <OptimizedImage
                                 src={image.src}
-                                alt={`${productName} thumbnail ${index + 1}`}
+                                alt={`${productName} ${index + 1}`}
                                 fill
                                 className="object-cover"
                             />

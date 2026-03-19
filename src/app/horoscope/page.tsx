@@ -1,14 +1,21 @@
 "use client";
 
 import { MainLayout } from "@/components/templates/main-layout";
-import { ZodiacSign } from "@/components/molecules/zodiac-sign";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { HoroscopeSign } from "@/types";
 import { zodiacSigns } from "@/lib/data/zodiac";
 import { getDailyHoroscope } from "@/lib/api/horoscope";
 import { useState } from "react";
-import { Star, Sparkles } from "lucide-react";
+import { Star, Sparkles, Calendar, Flame, Droplets, Wind, Mountain, ArrowRight } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
+
+const elementMeta: Record<string, { icon: typeof Flame; label: string }> = {
+    Fire: { icon: Flame, label: "Fire" },
+    Water: { icon: Droplets, label: "Water" },
+    Air: { icon: Wind, label: "Air" },
+    Earth: { icon: Mountain, label: "Earth" },
+};
 
 export default function HoroscopePage() {
     const [selectedSign, setSelectedSign] = useState<HoroscopeSign | null>(null);
@@ -18,6 +25,7 @@ export default function HoroscopePage() {
     const handleSignClick = async (sign: HoroscopeSign) => {
         setSelectedSign(sign);
         setIsLoading(true);
+        setHoroscope("");
 
         try {
             const result = await getDailyHoroscope(sign.sign);
@@ -31,104 +39,238 @@ export default function HoroscopePage() {
         }
     };
 
+    const today = new Date().toLocaleDateString("en-IN", {
+        weekday: "long",
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+    });
+
     return (
         <MainLayout>
-            {/* Page Header */}
-            <section className="relative bg-gradient-to-br from-primary via-[#6b0707] to-[#3d0404] text-white py-16 overflow-hidden">
-                {/* Static decorative elements instead of random stars */}
-                <div className="absolute inset-0 opacity-20 bg-[radial-gradient(white_1px,transparent_1px)] bg-[size:50px_50px]" />
-                <div className="absolute top-0 right-0 w-64 h-64 bg-accent/20 rounded-full blur-3xl" />
-                <div className="absolute bottom-0 left-0 w-48 h-48 bg-secondary/20 rounded-full blur-3xl" />
-
-                <div className="container mx-auto px-4 text-center relative z-10">
-                    <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-sm mb-4">
-                        <Star className="h-4 w-4 text-accent" />
-                        <span className="text-sm">Free Daily Predictions</span>
+            {/* Hero */}
+            <section className="relative bg-primary text-white overflow-hidden">
+                <div className="absolute inset-0">
+                    <div className="absolute top-10 right-20 w-72 h-72 bg-accent/15 rounded-full blur-3xl" />
+                    <div className="absolute -bottom-10 -left-10 w-56 h-56 bg-secondary/10 rounded-full blur-3xl" />
+                </div>
+                <div className="container mx-auto px-4 relative z-10 py-14 md:py-20">
+                    <div className="max-w-2xl mx-auto text-center">
+                        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 backdrop-blur-sm text-sm mb-5">
+                            <Calendar className="h-3.5 w-3.5 text-accent" />
+                            {today}
+                        </div>
+                        <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold font-heading mb-4 leading-tight">
+                            Daily Horoscope
+                        </h1>
+                        <p className="text-white/70 text-base md:text-lg max-w-lg mx-auto">
+                            Discover what the cosmos has planned for you today. Select your zodiac sign below.
+                        </p>
                     </div>
-                    <h1 className="text-4xl md:text-5xl font-bold font-serif mb-4">
-                        Daily Horoscope
-                    </h1>
-                    <p className="text-white/80 text-lg max-w-xl mx-auto">
-                        Select your zodiac sign to discover what the stars have in store for you today
-                    </p>
                 </div>
             </section>
 
-            <section className="py-16 bg-gradient-to-b from-gray-50 to-white">
+            {/* Zodiac Grid */}
+            <section className="py-12 md:py-16">
                 <div className="container mx-auto px-4">
-                    {/* Section Title */}
                     <div className="text-center mb-10">
-                        <Badge className="mb-3 bg-primary/10 text-primary border-primary/30">
-                            Choose Your Sign
-                        </Badge>
-                        <h2 className="text-2xl font-bold font-serif text-gray-800">
+                        <p className="text-xs font-bold uppercase tracking-widest text-secondary mb-2">Choose Your Sign</p>
+                        <h2 className="text-2xl md:text-3xl font-bold font-heading text-gray-900">
                             12 Zodiac Signs
                         </h2>
                     </div>
 
-                    {/* Zodiac Signs Grid */}
-                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 mb-12">
-                        {zodiacSigns.map((sign) => (
-                            <ZodiacSign
-                                key={sign.sign}
-                                sign={sign}
-                                isSelected={selectedSign?.sign === sign.sign}
-                                onClick={handleSignClick}
-                                size="md"
-                            />
-                        ))}
-                    </div>
+                    <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-3 md:gap-4 max-w-4xl mx-auto">
+                        {zodiacSigns.map((sign) => {
+                            const isActive = selectedSign?.sign === sign.sign;
 
-                    {/* Horoscope Reading */}
-                    {selectedSign && (
-                        <Card className="max-w-3xl mx-auto border-0 shadow-xl bg-white overflow-hidden">
-                            <CardHeader className="text-center bg-gradient-to-br from-primary/5 to-secondary/5 pb-6">
-                                <div className="w-24 h-24 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center shadow-lg">
-                                    <span className="text-5xl text-white">{selectedSign.symbol}</span>
+                            return (
+                                <button
+                                    key={sign.sign}
+                                    onClick={() => handleSignClick(sign)}
+                                    className={cn(
+                                        "flex flex-col items-center gap-1.5 p-4 md:p-5 rounded-2xl transition-all duration-300 group/sign",
+                                        isActive
+                                            ? "bg-primary text-white shadow-xl shadow-primary/25 scale-105"
+                                            : "bg-white hover:shadow-lg hover:-translate-y-1 border border-gray-100 hover:border-primary/20"
+                                    )}
+                                >
+                                    {/* Icon container */}
+                                    <div className={cn(
+                                        "w-12 h-12 md:w-14 md:h-14 rounded-xl flex items-center justify-center transition-colors",
+                                        isActive
+                                            ? "bg-white/15"
+                                            : "bg-primary/5 group-hover/sign:bg-primary/10"
+                                    )}>
+                                        <span className={cn(
+                                            "text-2xl md:text-3xl font-serif font-bold leading-none",
+                                            isActive ? "text-white" : "text-primary"
+                                        )}>
+                                            {sign.symbol}
+                                        </span>
+                                    </div>
+
+                                    <span className={cn(
+                                        "text-xs font-bold",
+                                        isActive ? "text-white" : "text-gray-900"
+                                    )}>
+                                        {sign.name}
+                                    </span>
+
+                                    <span className={cn(
+                                        "text-[10px] -mt-0.5",
+                                        isActive ? "text-white/70" : "text-secondary"
+                                    )}>
+                                        {sign.hindi}
+                                    </span>
+
+                                    <span className={cn(
+                                        "text-[10px]",
+                                        isActive ? "text-white/50" : "text-gray-400"
+                                    )}>
+                                        {sign.dates}
+                                    </span>
+                                </button>
+                            );
+                        })}
+                    </div>
+                </div>
+            </section>
+
+            {/* Reading Result */}
+            {selectedSign && (
+                <section className="pb-16">
+                    <div className="container mx-auto px-4">
+                        <div className="max-w-3xl mx-auto">
+                            {/* Sign Header */}
+                            <div className="relative rounded-t-3xl overflow-hidden bg-primary text-white p-8 md:p-10">
+                                <div className="absolute top-0 right-0 w-40 h-40 bg-accent/15 rounded-full blur-3xl" />
+
+                                <div className="relative z-10 flex flex-col sm:flex-row items-center gap-5">
+                                    <div className="w-20 h-20 rounded-2xl bg-white/15 backdrop-blur-sm flex items-center justify-center shrink-0">
+                                        <span className="text-5xl font-serif text-white">{selectedSign.symbol}</span>
+                                    </div>
+                                    <div className="text-center sm:text-left">
+                                        <h3 className="text-2xl md:text-3xl font-bold font-heading">
+                                            {selectedSign.name}
+                                            <span className="text-accent ml-2 text-lg">({selectedSign.hindi})</span>
+                                        </h3>
+                                        <p className="text-white/50 text-sm mt-0.5">{selectedSign.dates}</p>
+                                        <div className="flex items-center gap-2 mt-3 justify-center sm:justify-start">
+                                            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-white/10 text-xs text-white/80">
+                                                {(() => {
+                                                    const el = elementMeta[selectedSign.element];
+                                                    const ElIcon = el.icon;
+                                                    return <><ElIcon className="h-3 w-3" />{el.label}</>;
+                                                })()}
+                                            </span>
+                                            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-accent/20 text-xs text-accent">
+                                                <Star className="h-3 w-3 fill-current" />
+                                                Today&apos;s Reading
+                                            </span>
+                                        </div>
+                                    </div>
                                 </div>
-                                <CardTitle className="text-2xl font-serif">
-                                    {selectedSign.name}
-                                    <span className="text-primary ml-2">({selectedSign.hindi})</span>
-                                </CardTitle>
-                                <p className="text-muted-foreground">{selectedSign.dates}</p>
-                                <Badge className="mt-2 bg-accent text-black border-0">
-                                    Today&apos;s Reading
-                                </Badge>
-                            </CardHeader>
-                            <CardContent className="p-8">
+                            </div>
+
+                            {/* Horoscope Text */}
+                            <div className="rounded-b-3xl bg-white border border-t-0 border-gray-100 shadow-lg p-8 md:p-10">
                                 {isLoading ? (
                                     <div className="text-center py-8">
-                                        <div className="relative w-16 h-16 mx-auto mb-4">
-                                            <div className="absolute inset-0 rounded-full border-4 border-primary/20"></div>
-                                            <div className="absolute inset-0 rounded-full border-4 border-transparent border-t-primary animate-spin"></div>
-                                            <Sparkles className="absolute inset-0 m-auto h-6 w-6 text-primary" />
+                                        <div className="relative w-14 h-14 mx-auto mb-4">
+                                            <div className="absolute inset-0 rounded-full border-4 border-primary/10" />
+                                            <div className="absolute inset-0 rounded-full border-4 border-transparent border-t-primary animate-spin" />
+                                            <Sparkles className="absolute inset-0 m-auto h-5 w-5 text-primary animate-pulse" />
                                         </div>
-                                        <p className="text-muted-foreground">
-                                            Reading the stars...
-                                        </p>
+                                        <p className="text-gray-400 text-sm">Reading the stars for {selectedSign.name}...</p>
                                     </div>
                                 ) : (
-                                    <div className="prose max-w-none">
-                                        <p className="text-lg leading-relaxed text-gray-700">
+                                    <div>
+                                        <p className="text-base md:text-lg leading-relaxed text-gray-700">
                                             {horoscope}
                                         </p>
+
+                                        <div className="mt-8 pt-6 border-t border-gray-100 flex flex-wrap gap-3">
+                                            <Button
+                                                variant="outline"
+                                                size="sm"
+                                                className="rounded-full text-xs h-8 border-primary/20 text-primary hover:bg-primary/5"
+                                                onClick={() => handleSignClick(selectedSign)}
+                                            >
+                                                <Sparkles className="h-3.5 w-3.5 mr-1.5" />
+                                                Refresh Reading
+                                            </Button>
+                                            <Button
+                                                size="sm"
+                                                className="rounded-full text-xs h-8 bg-primary hover:bg-primary/90"
+                                                asChild
+                                            >
+                                                <Link href="/shop">
+                                                    Shop Gemstones
+                                                    <ArrowRight className="h-3.5 w-3.5 ml-1.5" />
+                                                </Link>
+                                            </Button>
+                                        </div>
                                     </div>
                                 )}
-                            </CardContent>
-                        </Card>
-                    )}
-
-                    {/* Instructions */}
-                    {!selectedSign && (
-                        <div className="text-center py-12">
-                            <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-gradient-to-br from-primary/10 to-secondary/10 flex items-center justify-center">
-                                <Star className="h-10 w-10 text-primary" />
                             </div>
-                            <p className="text-muted-foreground text-lg">
-                                Click on your zodiac sign above to see your daily horoscope
+
+                            {/* Quick Switch */}
+                            <div className="mt-8 text-center">
+                                <p className="text-xs text-gray-400 mb-3">Check another sign</p>
+                                <div className="flex flex-wrap justify-center gap-2">
+                                    {zodiacSigns
+                                        .filter((s) => s.sign !== selectedSign.sign)
+                                        .map((sign) => (
+                                            <button
+                                                key={sign.sign}
+                                                onClick={() => handleSignClick(sign)}
+                                                className="w-10 h-10 rounded-xl bg-white hover:bg-primary/5 border border-gray-100 hover:border-primary/20 flex items-center justify-center text-lg font-serif text-primary transition-all hover:scale-110 hover:shadow-md"
+                                                title={sign.name}
+                                            >
+                                                {sign.symbol}
+                                            </button>
+                                        ))}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            )}
+
+            {/* Empty State */}
+            {!selectedSign && (
+                <section className="pb-20">
+                    <div className="container mx-auto px-4 text-center">
+                        <div className="max-w-sm mx-auto">
+                            <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-accent/10 flex items-center justify-center">
+                                <Star className="h-8 w-8 text-accent" />
+                            </div>
+                            <p className="text-sm text-gray-500">
+                                Select your zodiac sign above to get your personalized daily horoscope reading.
                             </p>
                         </div>
-                    )}
+                    </div>
+                </section>
+            )}
+
+            {/* Bottom CTA */}
+            <section className="py-12 border-t border-gray-100 bg-gray-50/40">
+                <div className="container mx-auto px-4 text-center">
+                    <h3 className="text-xl md:text-2xl font-bold font-heading text-gray-900 mb-2">
+                        Want a Detailed Birth Chart Analysis?
+                    </h3>
+                    <p className="text-sm text-gray-500 mb-6 max-w-md mx-auto">
+                        Get a personalized reading from our expert astrologers based on your exact birth details.
+                    </p>
+                    <div className="flex items-center justify-center gap-3">
+                        <Button asChild className="bg-primary rounded-xl">
+                            <Link href="/services">Our Services</Link>
+                        </Button>
+                        <Button variant="outline" className="rounded-xl" asChild>
+                            <Link href="/contact">Contact an Expert</Link>
+                        </Button>
+                    </div>
                 </div>
             </section>
         </MainLayout>

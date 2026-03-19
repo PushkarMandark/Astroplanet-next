@@ -2,20 +2,19 @@ import { MainLayout } from "@/components/templates/main-layout";
 import { PaginatedProductGrid } from "@/components/organisms/paginated-product-grid";
 import { getProducts, getCategories, buildCategoryTree } from "@/lib/api/products";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent } from "@/components/ui/card";
 import Link from "next/link";
 import { decodeHtmlEntities } from "@/lib/utils/decode";
 import {
-    Filter,
     Gem,
     LayoutGrid,
     Package,
     ChevronRight,
     SlidersHorizontal,
+    Phone,
 } from "lucide-react";
 import { categoryIcons } from "@/lib/category-icons";
 import { ALL_PRODUCTS_FETCH_LIMIT } from "@/lib/constants";
+import { siteConfig } from "@/config/site";
 
 export const metadata = {
     title: "Shop",
@@ -23,144 +22,89 @@ export const metadata = {
 };
 
 export default async function ShopPage() {
-    // Fetch all products and categories
     const [products, categories] = await Promise.all([
         getProducts({ per_page: ALL_PRODUCTS_FETCH_LIMIT }),
         getCategories(),
     ]);
 
+    const categoryTree = buildCategoryTree(categories);
+
     return (
         <MainLayout>
-            {/* Category Pills */}
-            <section className="py-6 bg-gradient-to-b from-muted/50 to-white border-b sticky top-16 z-30 backdrop-blur-sm bg-white/80">
-                <div className="container mx-auto px-4">
-                    <div className="flex items-center gap-3 overflow-x-auto pb-2 scrollbar-hide">
-                        <span className="text-sm font-medium text-muted-foreground flex-shrink-0 flex items-center gap-1">
-                            <Filter className="h-4 w-4" />
-                            Filter:
-                        </span>
-                        <Link href="/shop">
-                            <Button
-                                variant="default"
-                                size="sm"
-                                className="rounded-full flex-shrink-0 bg-primary"
-                            >
-                                All Products
-                            </Button>
-                        </Link>
-                        {categories.slice(0, 10).map((category) => (
-                            <Link
-                                key={category.id}
-                                href={`/shop/${category.slug}`}
-                            >
-                                <Button
-                                    variant="outline"
-                                    size="sm"
-                                    className="rounded-full flex-shrink-0"
-                                >
-                                    {decodeHtmlEntities(category.name)}
-                                    <Badge variant="secondary" className="ml-2 text-xs">
-                                        {category.count}
-                                    </Badge>
-                                </Button>
-                            </Link>
-                        ))}
-                    </div>
-                </div>
-            </section>
-
             {/* Main Content */}
-            <section className="py-10">
+            <section className="py-8">
                 <div className="container mx-auto px-4">
                     <div className="flex flex-col lg:flex-row gap-8">
-                        {/* Enhanced Sidebar */}
-                        <aside className="w-full lg:w-72 flex-shrink-0">
-                            <div className="lg:sticky lg:top-40 space-y-6">
-                                {/* Categories Card */}
-                                <Card className="border-0 shadow-lg overflow-hidden">
-                                    <div className="bg-gradient-to-r from-primary to-primary/80 text-white p-4">
-                                        <h3 className="font-bold flex items-center gap-2">
-                                            <SlidersHorizontal className="h-4 w-4" />
-                                            Categories
-                                        </h3>
-                                    </div>
-                                    <CardContent className="p-3 max-h-[400px] overflow-y-auto">
-                                        <div className="space-y-1">
-                                            <Link href="/shop" className="block">
-                                                <div className="flex items-center justify-between p-3 rounded-lg transition-all bg-primary/10 text-primary font-medium">
-                                                    <span className="flex items-center gap-2">
-                                                        <LayoutGrid className="h-4 w-4" />
-                                                        All Products
-                                                    </span>
-                                                    <ChevronRight className="h-4 w-4" />
-                                                </div>
-                                            </Link>
-                                            {/* Hierarchical Categories */}
-                                            {buildCategoryTree(categories).map((parent) => (
-                                                <div key={parent.id}>
-                                                    {/* Parent Category */}
-                                                    <Link href={`/shop/${parent.slug}`} className="block">
-                                                        <div className="flex items-center justify-between p-3 rounded-lg transition-all hover:bg-muted font-medium">
-                                                            <span className="flex items-center gap-2">
-                                                                {categoryIcons[parent.slug] || categoryIcons.default}
-                                                                <span className="truncate max-w-[140px]">{parent.name}</span>
-                                                            </span>
-                                                            <Badge variant="secondary" className="text-xs flex-shrink-0">
-                                                                {parent.count}
-                                                            </Badge>
-                                                        </div>
-                                                    </Link>
-                                                    {/* Child Categories */}
-                                                    {parent.children && parent.children.length > 0 && (
-                                                        <div className="ml-4 border-l-2 border-muted pl-2 mt-1 space-y-1">
-                                                            {parent.children.map((child) => (
-                                                                <Link key={child.id} href={`/shop/${child.slug}`} className="block">
-                                                                    <div className="flex items-center justify-between p-2 pl-3 rounded-lg transition-all hover:bg-muted text-sm">
-                                                                        <span className="truncate max-w-[120px] text-muted-foreground hover:text-foreground">
-                                                                            {decodeHtmlEntities(child.name)}
-                                                                        </span>
-                                                                        <Badge variant="outline" className="text-xs flex-shrink-0">
-                                                                            {child.count}
-                                                                        </Badge>
-                                                                    </div>
-                                                                </Link>
-                                                            ))}
-                                                        </div>
-                                                    )}
-                                                </div>
-                                            ))}
-                                        </div>
-                                    </CardContent>
-                                </Card>
+                        {/* Sidebar */}
+                        <aside className="w-full lg:w-64 shrink-0">
+                            <div className="lg:sticky lg:top-36 space-y-6">
+                                {/* Categories */}
+                                <div>
+                                    <h3 className="text-sm font-bold text-gray-900 uppercase tracking-wider flex items-center gap-2 mb-3 px-1">
+                                        <SlidersHorizontal className="h-4 w-4" />
+                                        Categories
+                                    </h3>
+                                    <nav className="space-y-0.5">
+                                        <Link href="/shop" className="block">
+                                            <div className="flex items-center justify-between px-3 py-2.5 rounded-lg bg-primary/5 text-primary font-medium text-sm">
+                                                <span className="flex items-center gap-2">
+                                                    <LayoutGrid className="h-4 w-4" />
+                                                    All Products
+                                                </span>
+                                                <ChevronRight className="h-3.5 w-3.5" />
+                                            </div>
+                                        </Link>
+                                        {categoryTree.map((parent) => (
+                                            <div key={parent.id}>
+                                                <Link href={`/shop/${parent.slug}`} className="block">
+                                                    <div className="flex items-center justify-between px-3 py-2.5 rounded-lg hover:bg-gray-50 text-sm font-medium text-gray-700 transition-colors">
+                                                        <span className="flex items-center gap-2">
+                                                            {categoryIcons[parent.slug] || categoryIcons.default}
+                                                            <span className="truncate">{decodeHtmlEntities(parent.name)}</span>
+                                                        </span>
+                                                        <span className="text-xs text-gray-400">{parent.count}</span>
+                                                    </div>
+                                                </Link>
+                                                {parent.children && parent.children.length > 0 && (
+                                                    <div className="ml-6 border-l border-gray-100 pl-3 space-y-0.5 mt-0.5">
+                                                        {parent.children.map((child) => (
+                                                            <Link key={child.id} href={`/shop/${child.slug}`} className="block">
+                                                                <div className="flex items-center justify-between px-2 py-1.5 rounded-md hover:bg-gray-50 text-xs text-gray-500 hover:text-gray-700 transition-colors">
+                                                                    <span className="truncate">{decodeHtmlEntities(child.name)}</span>
+                                                                    <span className="text-gray-300">{child.count}</span>
+                                                                </div>
+                                                            </Link>
+                                                        ))}
+                                                    </div>
+                                                )}
+                                            </div>
+                                        ))}
+                                    </nav>
+                                </div>
 
                                 {/* Promo Card */}
-                                <Card className="border-0 shadow-lg overflow-hidden bg-gradient-to-br from-accent/20 via-secondary/10 to-primary/10">
-                                    <CardContent className="p-6 text-center">
-                                        <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-br from-accent to-yellow-400 flex items-center justify-center">
-                                            <Gem className="h-8 w-8 text-black" />
-                                        </div>
-                                        <h4 className="font-bold mb-2">Free Consultation</h4>
-                                        <p className="text-sm text-muted-foreground mb-4">
-                                            Get expert gemstone advice based on your birth chart
-                                        </p>
-                                        <Button size="sm" className="w-full bg-primary">
-                                            Book Now
-                                        </Button>
-                                    </CardContent>
-                                </Card>
+                                <div className="rounded-2xl bg-linear-to-br from-accent/10 to-primary/5 border border-accent/20 p-5 text-center">
+                                    <div className="w-12 h-12 mx-auto mb-3 rounded-xl bg-accent/20 flex items-center justify-center">
+                                        <Gem className="h-6 w-6 text-accent" />
+                                    </div>
+                                    <h4 className="text-sm font-bold text-gray-900 mb-1">Free Consultation</h4>
+                                    <p className="text-xs text-gray-500 mb-3 leading-relaxed">
+                                        Expert gemstone advice based on your birth chart
+                                    </p>
+                                    <Button size="sm" className="w-full bg-primary text-white rounded-lg h-9 text-xs">
+                                        Book Now
+                                    </Button>
+                                </div>
                             </div>
                         </aside>
 
-                        {/* Products Section */}
-                        <main className="flex-1">
-                            {/* Results Header */}
-                            <div className="mb-8">
-                                <h2 className="text-2xl font-bold font-serif">
-                                    All Products
-                                </h2>
+                        {/* Products */}
+                        <main className="flex-1 min-w-0">
+                            <div className="flex items-baseline justify-between mb-6">
+                                <h1 className="text-2xl font-bold font-heading text-gray-900">All Products</h1>
+                                <span className="text-sm text-gray-400">{products.length} products</span>
                             </div>
 
-                            {/* Paginated Products Grid */}
                             {products.length > 0 ? (
                                 <PaginatedProductGrid
                                     products={products}
@@ -168,47 +112,40 @@ export default async function ShopPage() {
                                     columns={3}
                                 />
                             ) : (
-                                /* Enhanced Empty State */
-                                <Card className="border-0 shadow-lg">
-                                    <CardContent className="py-16 text-center">
-                                        <div className="w-24 h-24 mx-auto mb-6 rounded-full bg-muted flex items-center justify-center">
-                                            <Package className="h-12 w-12 text-muted-foreground" />
-                                        </div>
-                                        <h3 className="text-xl font-bold mb-2">No Products Found</h3>
-                                        <p className="text-muted-foreground mb-6 max-w-md mx-auto">
-                                            We couldn&apos;t find any products matching your criteria. Try adjusting your search or browse our categories.
-                                        </p>
-                                        <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
-                                            <Button asChild>
-                                                <Link href="/shop">View All Products</Link>
-                                            </Button>
-                                            <Button asChild variant="outline">
-                                                <Link href="/contact">Contact Us</Link>
-                                            </Button>
-                                        </div>
-                                    </CardContent>
-                                </Card>
+                                <div className="py-20 text-center">
+                                    <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gray-100 flex items-center justify-center">
+                                        <Package className="h-8 w-8 text-gray-400" />
+                                    </div>
+                                    <h3 className="text-lg font-bold text-gray-900 mb-2">No Products Found</h3>
+                                    <p className="text-sm text-gray-500 mb-6">Try browsing our categories or contact us for help.</p>
+                                    <Button asChild>
+                                        <Link href="/contact">Contact Us</Link>
+                                    </Button>
+                                </div>
                             )}
                         </main>
                     </div>
                 </div>
             </section>
 
-            {/* Bottom CTA Section */}
-            <section className="py-16 bg-gradient-to-r from-primary/5 via-secondary/5 to-accent/5">
+            {/* Bottom CTA */}
+            <section className="py-12 border-t border-gray-100">
                 <div className="container mx-auto px-4 text-center">
-                    <h3 className="text-2xl md:text-3xl font-bold font-serif mb-4">
+                    <h3 className="text-xl md:text-2xl font-bold font-heading text-gray-900 mb-2">
                         Can&apos;t Find What You&apos;re Looking For?
                     </h3>
-                    <p className="text-muted-foreground mb-6 max-w-xl mx-auto">
-                        Our experts can help you find the perfect spiritual item for your needs
+                    <p className="text-sm text-gray-500 mb-6 max-w-md mx-auto">
+                        Our experts can help you find the perfect spiritual item for your needs.
                     </p>
-                    <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                        <Button size="lg" className="bg-gradient-to-r from-primary to-primary/80">
-                            Get Expert Advice
+                    <div className="flex items-center justify-center gap-3">
+                        <Button asChild className="bg-primary rounded-xl">
+                            <Link href="/contact">Get Expert Advice</Link>
                         </Button>
-                        <Button size="lg" variant="outline">
-                            WhatsApp Us
+                        <Button variant="outline" className="rounded-xl gap-2" asChild>
+                            <a href={`https://wa.me/${siteConfig.contact.whatsapp}`} target="_blank" rel="noopener noreferrer">
+                                <Phone className="h-4 w-4" />
+                                WhatsApp Us
+                            </a>
                         </Button>
                     </div>
                 </div>

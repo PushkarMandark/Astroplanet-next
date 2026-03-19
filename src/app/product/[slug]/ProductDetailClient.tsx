@@ -2,7 +2,6 @@
 
 import React from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { ChevronRight } from "lucide-react";
 import { toast } from "sonner";
 import { useCartStore } from "@/stores";
@@ -21,53 +20,58 @@ interface ProductDetailClientProps {
 }
 
 export function ProductDetailClient({ product, relatedProducts }: ProductDetailClientProps) {
-    const router = useRouter();
     const addItem = useCartStore((state) => state.addItem);
+    const openCart = useCartStore((state) => state.openCart);
 
     const handleAddToCart = (quantity: number) => {
         addItem(product, quantity);
-        toast.success("Added to cart", {
-            description: `${product.name} has been added to your cart.`,
+        toast.success(`${decodeHtmlEntities(product.name)} added to cart`, {
+            description: `Quantity: ${quantity} — ₹${(Number(product.price) * quantity).toLocaleString("en-IN")}`,
+            action: {
+                label: "View Cart",
+                onClick: () => openCart(),
+            },
         });
-    };
-
-    const handleBuyNow = (quantity: number) => {
-        addItem(product, quantity);
-        router.push("/cart");
     };
 
     return (
         <main className="min-h-screen bg-white">
             {/* Breadcrumbs */}
-            <div className="bg-gray-50 border-b">
-                <div className="container mx-auto px-4 py-4">
-                    <nav className="flex items-center gap-2 text-sm text-muted-foreground">
-                        <Link href="/" className="hover:text-primary transition-colors">Home</Link>
-                        <ChevronRight className="h-4 w-4" />
-                        <Link href="/shop" className="hover:text-primary transition-colors">Shop</Link>
+            <nav className="border-b border-gray-100 bg-gray-50/60">
+                <div className="container mx-auto px-4 py-3">
+                    <ol className="flex items-center gap-1.5 text-sm text-gray-500 overflow-x-auto">
+                        <li>
+                            <Link href="/" className="hover:text-primary transition-colors whitespace-nowrap">Home</Link>
+                        </li>
+                        <li><ChevronRight className="h-3.5 w-3.5 text-gray-300" /></li>
+                        <li>
+                            <Link href="/shop" className="hover:text-primary transition-colors whitespace-nowrap">Shop</Link>
+                        </li>
                         {product.categories?.[0] && (
                             <>
-                                <ChevronRight className="h-4 w-4" />
-                                <Link
-                                    href={`/shop?category=${product.categories[0].id}`}
-                                    className="hover:text-primary transition-colors"
-                                >
-                                    {decodeHtmlEntities(product.categories[0].name)}
-                                </Link>
+                                <li><ChevronRight className="h-3.5 w-3.5 text-gray-300" /></li>
+                                <li>
+                                    <Link
+                                        href={`/shop/${product.categories[0].slug}`}
+                                        className="hover:text-primary transition-colors whitespace-nowrap"
+                                    >
+                                        {decodeHtmlEntities(product.categories[0].name)}
+                                    </Link>
+                                </li>
                             </>
                         )}
-                        <ChevronRight className="h-4 w-4" />
-                        <span className="text-gray-900 font-medium line-clamp-1">
+                        <li><ChevronRight className="h-3.5 w-3.5 text-gray-300" /></li>
+                        <li className="text-gray-900 font-medium truncate max-w-50 sm:max-w-none">
                             {decodeHtmlEntities(product.name)}
-                        </span>
-                    </nav>
+                        </li>
+                    </ol>
                 </div>
-            </div>
+            </nav>
 
             {/* Main Product Section */}
-            <section className="py-12 md:py-20">
+            <section className="py-8 md:py-14">
                 <div className="container mx-auto px-4">
-                    <div className="grid lg:grid-cols-2 gap-12 lg:gap-20">
+                    <div className="grid lg:grid-cols-2 gap-8 lg:gap-16">
                         {/* Left: Image Gallery */}
                         <ProductImageGallery
                             images={product.images || []}
@@ -78,7 +82,6 @@ export function ProductDetailClient({ product, relatedProducts }: ProductDetailC
                         <ProductInfo
                             product={product}
                             onAddToCart={handleAddToCart}
-                            onBuyNow={handleBuyNow}
                         />
                     </div>
                 </div>
