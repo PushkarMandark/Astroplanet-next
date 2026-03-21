@@ -1,6 +1,7 @@
 import { Phone, MessageCircle, CheckCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { ConsultationButton } from "@/components/molecules/consultation-button";
 
 interface ExpertSectionProps {
     title?: string;
@@ -48,7 +49,7 @@ export function ExpertSection({
     whatsappNumber = "+919971000226",
 }: ExpertSectionProps) {
     return (
-        <section className="py-20 bg-gradient-to-r from-primary/5 via-secondary/5 to-accent/5">
+        <section className="py-20 bg-linear-to-r from-primary/5 via-secondary/5 to-accent/5">
             <div className="container mx-auto px-4">
                 <div className="grid lg:grid-cols-2 gap-12 items-center">
                     <div className="relative">
@@ -104,10 +105,10 @@ export function ExpertSection({
                         </div>
 
                         <div className="flex flex-wrap gap-4">
-                            <Button size="lg" className="bg-gradient-to-r from-primary to-primary/80">
+                            <ConsultationButton size="lg" service="Expert Consultation" className="bg-linear-to-r from-primary to-primary/80">
                                 <Phone className="h-4 w-4 mr-2" />
                                 Book Consultation
-                            </Button>
+                            </ConsultationButton>
                             <Button
                                 size="lg"
                                 variant="outline"

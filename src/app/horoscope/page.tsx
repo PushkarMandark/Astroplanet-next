@@ -6,6 +6,7 @@ import { zodiacSigns } from "@/lib/data/zodiac";
 import { getDailyHoroscope } from "@/lib/api/horoscope";
 import { useState } from "react";
 import { Star, Sparkles, Calendar, Flame, Droplets, Wind, Mountain, ArrowRight } from "lucide-react";
+import { ConsultationButton } from "@/components/molecules/consultation-button";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
@@ -264,11 +265,11 @@ export default function HoroscopePage() {
                         Get a personalized reading from our expert astrologers based on your exact birth details.
                     </p>
                     <div className="flex items-center justify-center gap-3">
-                        <Button asChild className="bg-primary rounded-xl">
-                            <Link href="/services">Our Services</Link>
-                        </Button>
+                        <ConsultationButton service="Birth Chart Analysis" className="bg-primary rounded-xl">
+                            Book Consultation
+                        </ConsultationButton>
                         <Button variant="outline" className="rounded-xl" asChild>
-                            <Link href="/contact">Contact an Expert</Link>
+                            <Link href="/contact">Contact Us</Link>
                         </Button>
                     </div>
                 </div>

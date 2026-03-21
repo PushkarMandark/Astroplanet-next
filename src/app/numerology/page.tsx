@@ -179,7 +179,7 @@ export default function NumerologyPage() {
                         <div className="max-w-4xl mx-auto space-y-8">
                             {/* Main Life Path Card */}
                             <Card className="bg-gradient-to-br from-primary/10 to-secondary/10">
-                                <CardContent className="pt-8 text-center">
+                                <CardContent className="text-center">
                                     <div className="w-24 h-24 mx-auto mb-4 rounded-full bg-primary text-primary-foreground flex items-center justify-center">
                                         <span className="text-4xl font-bold">{result.lifePath}</span>
                                     </div>
@@ -196,7 +196,7 @@ export default function NumerologyPage() {
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                                 {numberCards.map((card) => (
                                     <Card key={card.label}>
-                                        <CardContent className="pt-6">
+                                        <CardContent>
                                             <div className="flex items-start gap-4">
                                                 <div className="w-12 h-12 rounded-full bg-accent/20 flex items-center justify-center flex-shrink-0">
                                                     <span className="text-xl font-bold text-accent">{card.value}</span>

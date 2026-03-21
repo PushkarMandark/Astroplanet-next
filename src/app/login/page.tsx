@@ -29,7 +29,9 @@ function LoginForm() {
     const authLogin = useAuthStore((state) => state.login);
     const isAuthenticated = useAuthStore((state) => state.isAuthenticated());
 
-    const redirectTo = searchParams.get("redirect") || "/dashboard";
+    const rawRedirect = searchParams.get("redirect") || "/dashboard";
+    // Prevent open redirect — only allow relative paths
+    const redirectTo = rawRedirect.startsWith("/") && !rawRedirect.startsWith("//") ? rawRedirect : "/dashboard";
 
     useEffect(() => {
         setMounted(true);

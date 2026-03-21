@@ -16,6 +16,7 @@ import {
 import { categoryIcons } from "@/lib/category-icons";
 import { ALL_PRODUCTS_FETCH_LIMIT } from "@/lib/constants";
 import { siteConfig } from "@/config/site";
+import { ConsultationButton } from "@/components/molecules/consultation-button";
 
 interface CategoryPageProps {
     params: Promise<{ category: string }>;
@@ -205,9 +206,9 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
                         Our experts can help you find the perfect item based on your birth chart.
                     </p>
                     <div className="flex items-center justify-center gap-3">
-                        <Button asChild className="bg-primary rounded-xl">
-                            <Link href="/contact">Get Expert Advice</Link>
-                        </Button>
+                        <ConsultationButton service="Product Guidance" className="bg-primary rounded-xl">
+                            Get Expert Advice
+                        </ConsultationButton>
                         <Button variant="outline" className="rounded-xl gap-2" asChild>
                             <a href={`https://wa.me/${siteConfig.contact.whatsapp}`} target="_blank" rel="noopener noreferrer">
                                 <Phone className="h-4 w-4" />

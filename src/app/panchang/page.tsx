@@ -22,6 +22,7 @@ import {
 import { cn } from "@/lib/utils";
 import { calculatePanchang } from "@/lib/panchang";
 import Link from "next/link";
+import { ConsultationButton } from "@/components/molecules/consultation-button";
 
 // Hindi day names
 const hindiDays: Record<string, string> = {
@@ -304,12 +305,10 @@ export default function PanchangPage() {
                         Our expert astrologers can find the most auspicious dates and timings for your important events.
                     </p>
                     <div className="flex items-center justify-center gap-3">
-                        <Button asChild className="bg-primary rounded-xl">
-                            <Link href="/services">
-                                Book Consultation
-                                <ArrowRight className="h-4 w-4 ml-1.5" />
-                            </Link>
-                        </Button>
+                        <ConsultationButton service="Muhurta Guidance" className="bg-primary rounded-xl">
+                            Book Consultation
+                            <ArrowRight className="h-4 w-4 ml-1.5" />
+                        </ConsultationButton>
                         <Button variant="outline" className="rounded-xl" asChild>
                             <Link href="/horoscope">Daily Horoscope</Link>
                         </Button>

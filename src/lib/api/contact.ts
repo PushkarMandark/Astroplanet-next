@@ -6,6 +6,8 @@ interface InquiryData {
     phone?: string;
     subject: string;
     message: string;
+    source?: "contact_form" | "lead_capture";
+    service?: string;
 }
 
 interface InquiryResponse {
@@ -27,7 +29,8 @@ export async function submitInquiry(
                 customer_phone: data.phone || "",
                 inquiry_subject: data.subject,
                 inquiry_message: data.message,
-                inquiry_source: "contact_form",
+                inquiry_source: data.source || "contact_form",
+                inquiry_service: data.service || "",
                 inquiry_status: "new",
                 inquiry_timestamp: new Date().toISOString(),
             }),

@@ -10,6 +10,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
+import { ConsultationButton } from "@/components/molecules/consultation-button";
 import {
   Star,
   Sparkles,
@@ -869,14 +870,12 @@ export default function KundliPage() {
             astrologers with remedies and predictions.
           </p>
           <div className="flex items-center justify-center gap-3">
-            <Button asChild className="bg-primary rounded-xl">
-              <Link href="/services">
-                Our Services
-                <ArrowRight className="h-4 w-4 ml-1.5" />
-              </Link>
-            </Button>
+            <ConsultationButton service="Detailed Kundli Reading" className="bg-primary rounded-xl">
+              Book Consultation
+              <ArrowRight className="h-4 w-4 ml-1.5" />
+            </ConsultationButton>
             <Button variant="outline" className="rounded-xl" asChild>
-              <Link href="/contact">Contact an Expert</Link>
+              <Link href="/contact">Contact Us</Link>
             </Button>
           </div>
         </div>

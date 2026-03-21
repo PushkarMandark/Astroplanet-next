@@ -26,6 +26,7 @@ import {
   Clock,
 } from "lucide-react";
 import { LocationSearch } from "@/components/molecules/location-search";
+import { ConsultationButton } from "@/components/molecules/consultation-button";
 import {
   getKundli,
   matchKundli,
@@ -702,16 +703,14 @@ export default function CompatibilityPage() {
             astrologers with complete Kundli analysis.
           </p>
           <div className="flex items-center justify-center gap-3">
-            <Button asChild className="bg-primary rounded-xl">
-              <Link href="/services">
-                Our Services
-                <ArrowRight className="h-4 w-4 ml-1.5" />
-              </Link>
-            </Button>
+            <ConsultationButton service="Marriage Compatibility Analysis" className="bg-primary rounded-xl">
+              Book Consultation
+              <ArrowRight className="h-4 w-4 ml-1.5" />
+            </ConsultationButton>
             <Button variant="outline" className="rounded-xl" asChild>
               <Link href="/contact">
                 <Star className="h-4 w-4 mr-1.5" />
-                Contact an Expert
+                Contact Us
               </Link>
             </Button>
           </div>

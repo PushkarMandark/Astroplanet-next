@@ -48,10 +48,11 @@ export function LocationSearch({
         }
         setIsSearching(true);
         searchTimeout.current = setTimeout(async () => {
+            if (q.length > 100) { setIsSearching(false); return; }
             try {
                 const res = await fetch(
                     `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q)}&format=json&limit=5&countrycodes=in`,
-                    { headers: { "Accept-Language": "en" } }
+                    { headers: { "Accept-Language": "en", "User-Agent": "AstroEshop/1.0 (https://astroeshop.com)" } }
                 );
                 const data: LocationResult[] = await res.json();
                 setResults(data);

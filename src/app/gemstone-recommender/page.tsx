@@ -11,6 +11,7 @@ import { Calendar as CalendarPicker } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { format } from "date-fns";
 import { LocationSearch } from "@/components/molecules/location-search";
+import { ConsultationButton } from "@/components/molecules/consultation-button";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { getKundli, Observer, rashiNames } from "@ishubhamx/panchangam-js";
@@ -284,7 +285,7 @@ export default function GemstoneRecommenderPage() {
                   Enter Your Birth Details
                 </CardTitle>
               </CardHeader>
-              <CardContent className="space-y-5 pt-4">
+              <CardContent className="space-y-5">
                 <div className="space-y-2">
                   <Label className="text-sm font-medium text-gray-700 flex items-center gap-1.5">
                     <CalendarDays className="h-3.5 w-3.5 text-primary" />
@@ -584,12 +585,10 @@ export default function GemstoneRecommenderPage() {
               analysis of your complete birth chart.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href="/services">
-                <Button className="bg-primary hover:bg-primary/90 text-white font-semibold px-8">
-                  Get Personalized Consultation
-                  <ArrowRight className="h-4 w-4 ml-2" />
-                </Button>
-              </Link>
+              <ConsultationButton service="Gemstone Consultation" className="bg-primary hover:bg-primary/90 text-white font-semibold px-8">
+                Get Personalized Consultation
+                <ArrowRight className="h-4 w-4 ml-2" />
+              </ConsultationButton>
               <Link href="/shop">
                 <Button
                   variant="outline"
