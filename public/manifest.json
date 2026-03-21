@@ -1,0 +1,21 @@
+{
+  "name": "AstroEshop - Vedic Astrology Products & Services",
+  "short_name": "AstroEshop",
+  "description": "Authentic Vedic astrology products, gemstones, and expert consultations.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#FFF9F0",
+  "theme_color": "#800909",
+  "icons": [
+    {
+      "src": "/images/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/images/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
