@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { sanitizeHtml, stripHtml } from "@/lib/sanitize";
 import Link from "next/link";
 import {
     ArrowLeft,
@@ -162,7 +163,7 @@ export function BlogPostClient({ post, recentPosts, featuredImage, authorName }:
                         {/* Title */}
                         <h1
                             className="text-3xl md:text-4xl lg:text-5xl font-bold font-serif mb-6 leading-tight"
-                            dangerouslySetInnerHTML={{ __html: post.title.rendered }}
+                            dangerouslySetInnerHTML={{ __html: stripHtml(post.title.rendered) }}
                         />
 
                         {/* Meta Info */}
@@ -332,7 +333,7 @@ export function BlogPostClient({ post, recentPosts, featuredImage, authorName }:
                                 {/* Article Body with clean, readable typography */}
                                 <div
                                     className="blog-content"
-                                    dangerouslySetInnerHTML={{ __html: processedContent }}
+                                    dangerouslySetInnerHTML={{ __html: sanitizeHtml(processedContent) }}
                                 />
 
                                 <Separator className="my-10" />
@@ -438,7 +439,7 @@ export function BlogPostClient({ post, recentPosts, featuredImage, authorName }:
                                             <CardContent className="p-4">
                                                 <h4
                                                     className="font-semibold line-clamp-2 group-hover:text-primary transition-colors"
-                                                    dangerouslySetInnerHTML={{ __html: recentPost.title.rendered }}
+                                                    dangerouslySetInnerHTML={{ __html: stripHtml(recentPost.title.rendered) }}
                                                 />
                                                 <p className="text-xs text-muted-foreground mt-2 flex items-center gap-1">
                                                     <Calendar className="h-3 w-3" />

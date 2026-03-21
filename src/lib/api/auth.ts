@@ -1,5 +1,5 @@
 import { AuthCredentials, RegisterData, AuthResponse, User } from "@/types";
-import { wpRequest, wcRequest, WP_URL } from "./client";
+import { wpRequest, WP_URL } from "./client";
 
 // Clean HTML tags from WordPress error messages
 function cleanErrorMessage(message: string): string {
@@ -60,26 +60,27 @@ export async function login(
     };
 }
 
-// Register new customer
+// Register new customer via custom WP endpoint (no WC credentials needed)
 export async function register(data: RegisterData): Promise<AuthResponse> {
-    const response = await wcRequest<{ id: number; email: string }>(
-        "/wc/v3/customers",
-        {
-            method: "POST",
-            body: JSON.stringify({
-                email: data.email,
-                username: data.username,
-                password: data.password,
-                first_name: data.firstName || data.username,
-                last_name: data.lastName || "",
-            }),
-        }
-    );
+    const response = await wpRequest<{
+        success: boolean;
+        message: string;
+        data?: { id: number; email: string; username: string };
+    }>("/astroeshop/v1/register", {
+        method: "POST",
+        body: JSON.stringify({
+            email: data.email,
+            username: data.username,
+            password: data.password,
+            first_name: data.firstName || data.username,
+            last_name: data.lastName || "",
+        }),
+    });
 
-    if (!response.success || !response.data) {
+    if (!response.success || !response.data?.success) {
         return {
             success: false,
-            message: response.error || "Registration failed",
+            message: response.data?.message || response.error || "Registration failed",
         };
     }
 

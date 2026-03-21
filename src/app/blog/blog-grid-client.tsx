@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
+import { sanitizeHtml, stripHtml } from "@/lib/sanitize";
 import Link from "next/link";
 import { OptimizedImage } from "@/components/atoms/image";
 import { Card, CardContent } from "@/components/ui/card";
@@ -197,13 +198,13 @@ export function BlogGridClient({ posts, categories = [], perPage = 9 }: BlogGrid
                                         {/* Title */}
                                         <h2
                                             className="text-lg font-bold font-heading mb-3 group-hover:text-primary transition-colors duration-300 line-clamp-2 leading-tight"
-                                            dangerouslySetInnerHTML={{ __html: post.title.rendered }}
+                                            dangerouslySetInnerHTML={{ __html: stripHtml(post.title.rendered) }}
                                         />
 
                                         {/* Excerpt */}
                                         <div
                                             className="text-muted-foreground text-sm line-clamp-2 leading-relaxed"
-                                            dangerouslySetInnerHTML={{ __html: post.excerpt.rendered }}
+                                            dangerouslySetInnerHTML={{ __html: sanitizeHtml(post.excerpt.rendered) }}
                                         />
 
                                         {/* Divider & Read Indicator */}

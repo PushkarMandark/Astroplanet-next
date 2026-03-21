@@ -41,7 +41,7 @@ import { submitInquiry } from "@/lib/api/contact";
 const contactSchema = z.object({
     name: z.string().min(2, "Name must be at least 2 characters"),
     email: z.string().email("Please enter a valid email"),
-    phone: z.string().optional(),
+    phone: z.string().regex(/^[6-9]\d{9}$/, "Enter a valid 10-digit Indian mobile number").optional().or(z.literal("")),
     subject: z.string().min(1, "Please select a subject"),
     message: z.string().min(10, "Message must be at least 10 characters"),
 });

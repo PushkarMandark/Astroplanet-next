@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { sanitizeHtml } from "@/lib/sanitize";
 import Link from "next/link";
 import { Star, Truck, Shield, Clock, ShoppingCart, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -65,7 +66,7 @@ export function ProductInfo({ product, onAddToCart }: ProductInfoProps) {
             {product.short_description && (
                 <div
                     className="text-gray-600 leading-relaxed text-[15px] [&_p]:mb-2 [&_strong]:text-gray-800"
-                    dangerouslySetInnerHTML={{ __html: product.short_description }}
+                    dangerouslySetInnerHTML={{ __html: sanitizeHtml(product.short_description) }}
                 />
             )}
 

@@ -1,4 +1,7 @@
+"use client";
+
 import React from "react";
+import { sanitizeHtml } from "@/lib/sanitize";
 import { Star, FileText, Info, MessageSquare } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -33,7 +36,7 @@ export function ProductAbout({ product }: ProductAboutProps) {
                             <TabsContent value="description" className="mt-0">
                                 <div
                                     className="prose prose-sm md:prose-base max-w-none text-gray-600 leading-relaxed [&_p]:mb-4 [&_h2]:text-xl [&_h2]:font-heading [&_h2]:text-gray-900 [&_h2]:mt-6 [&_h2]:mb-3 [&_h3]:text-lg [&_h3]:font-heading [&_h3]:text-gray-900 [&_strong]:text-gray-800 [&_ul]:space-y-2 [&_li]:text-gray-600"
-                                    dangerouslySetInnerHTML={{ __html: product.description }}
+                                    dangerouslySetInnerHTML={{ __html: sanitizeHtml(product.description) }}
                                 />
                             </TabsContent>
 
