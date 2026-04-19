@@ -9,7 +9,7 @@ import {
     useState,
 } from "react";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 import {
     Activity,
@@ -920,7 +920,6 @@ function QuickSwitchRow({ currentSignKey, onSelect }: QuickSwitchRowProps) {
 
 function HoroscopeContent() {
     const mounted = useMounted();
-    const router = useRouter();
     const searchParams = useSearchParams();
     const readingRef = useRef<HTMLDivElement | null>(null);
 
@@ -964,21 +963,25 @@ function HoroscopeContent() {
         return getHoroscopeData(selectedSign.sign, period);
     }, [selectedSign, period]);
 
-    const handleSignSelect = useCallback(
-        (sign: HoroscopeSign) => {
-            setSelectedSign(sign);
-            router.replace(`/horoscope?sign=${sign.sign}`, { scroll: false });
+    const handleSignSelect = useCallback((sign: HoroscopeSign) => {
+        setSelectedSign(sign);
 
-            // Smooth scroll to reading section after paint
-            window.requestAnimationFrame(() => {
-                readingRef.current?.scrollIntoView({
-                    behavior: "smooth",
-                    block: "start",
-                });
+        // Update URL without triggering Next.js navigation (static export safe).
+        // router.replace() causes a full reload on Apache because the query-param
+        // change is resolved against a new HTML file — use native history API instead.
+        if (typeof window !== "undefined") {
+            const url = `/horoscope/?sign=${sign.sign}`;
+            window.history.replaceState(window.history.state, "", url);
+        }
+
+        // Smooth scroll to reading section after paint
+        window.requestAnimationFrame(() => {
+            readingRef.current?.scrollIntoView({
+                behavior: "smooth",
+                block: "start",
             });
-        },
-        [router]
-    );
+        });
+    }, []);
 
     const today = new Date().toLocaleDateString("en-IN", {
         weekday: "long",
