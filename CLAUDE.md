@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ```bash
 npm run dev      # Dev server at localhost:3000
-npm run build    # Static export to /out directory
+npm run build    # Clears .next/ (via npx rimraf) then runs next build → /out
 npm run start    # Serve built output (npx serve out)
 npm run lint     # ESLint (eslint-config-next core-web-vitals + typescript)
 ```
@@ -26,6 +26,7 @@ No test suite is configured. TypeScript strict mode is enabled. Package manager:
 - Image optimization is disabled (`unoptimized: true`).
 - No server-side middleware — there is no `middleware.ts`.
 - Non-`NEXT_PUBLIC_*` env vars (e.g. `WC_CONSUMER_KEY`) exist only at build time; they are **not** available to client bundles. This is why `wcRequest()` works in server components but would send empty credentials if called from a client component.
+- **`npm run build` clears `.next/` first** via `npx rimraf`. Turbopack's incremental cache has silently failed to detect `generateStaticParams()` on dynamic routes after large refactors — always building from a clean cache prevents this. If `npm run dev` ever reports the same detection issue after a big refactor, stop and restart the dev server to clear the hot-reload cache.
 
 **Dead code warning:** `src/components/organisms/product-grid-loadmore/index.tsx` calls `/api/products` — this endpoint does not exist under static export and the component is not imported anywhere. Do not use it; delete if cleaning up.
 
