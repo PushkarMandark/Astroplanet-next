@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useState, useEffect } from "react";
+import { useCallback, useState } from "react";
 import { cn } from "@/lib/utils";
 
 const PLACEHOLDER = "/images/placeholder.svg";
@@ -27,11 +27,9 @@ export function OptimizedImage({
     className,
     objectFit = "cover",
 }: OptimizedImageProps) {
-    const [imgSrc, setImgSrc] = useState(src || PLACEHOLDER);
-
-    useEffect(() => {
-        setImgSrc(src || PLACEHOLDER);
-    }, [src]);
+    const [failed, setFailed] = useState(false);
+    const imgSrc = failed ? PLACEHOLDER : (src || PLACEHOLDER);
+    const handleError = useCallback(() => setFailed(true), []);
 
     const isExternal = imgSrc.startsWith("http");
 
@@ -45,7 +43,7 @@ export function OptimizedImage({
                 className={cn(`object-${objectFit}`, className)}
                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                 unoptimized={isExternal}
-                onError={() => setImgSrc(PLACEHOLDER)}
+                onError={handleError}
             />
         );
     }
@@ -59,7 +57,7 @@ export function OptimizedImage({
             priority={priority}
             className={cn(`object-${objectFit}`, className)}
             unoptimized={isExternal}
-            onError={() => setImgSrc(PLACEHOLDER)}
+            onError={handleError}
         />
     );
 }

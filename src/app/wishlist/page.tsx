@@ -9,16 +9,12 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useWishlistStore, useCartStore } from "@/stores";
 import { formatPrice } from "@/lib/api/client";
-import { useState, useEffect } from "react";
+import { useMounted } from "@/lib/hooks/use-mounted";
 
 export default function WishlistPage() {
-    const [mounted, setMounted] = useState(false);
+    const mounted = useMounted();
     const { items, removeItem, clearWishlist } = useWishlistStore();
     const addToCart = useCartStore((state) => state.addItem);
-
-    useEffect(() => {
-        setMounted(true);
-    }, []);
 
     const handleAddToCart = (item: typeof items[0]) => {
         addToCart({

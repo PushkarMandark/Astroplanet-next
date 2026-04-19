@@ -1,6 +1,5 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import Link from "next/link";
 import { ShoppingBag, Trash2, ArrowRight, LogIn, Minus, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -17,6 +16,7 @@ import {
     SheetFooter,
     SheetClose,
 } from "@/components/ui/sheet";
+import { useMounted } from "@/lib/hooks/use-mounted";
 
 interface CartSidebarProps {
     open: boolean;
@@ -24,13 +24,9 @@ interface CartSidebarProps {
 }
 
 export function CartSidebar({ open, onOpenChange }: CartSidebarProps) {
-    const [mounted, setMounted] = useState(false);
+    const mounted = useMounted();
     const { items, updateQuantity, removeItem, getSubtotal } = useCartStore();
     const isAuthenticated = useAuthStore((state) => state.isAuthenticated());
-
-    useEffect(() => {
-        setMounted(true);
-    }, []);
 
     const subtotal = getSubtotal();
     const shipping = subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : FLAT_SHIPPING_RATE;

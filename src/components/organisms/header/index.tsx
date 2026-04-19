@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import Link from "next/link";
 import {
     Menu,
@@ -34,17 +34,14 @@ import { siteConfig } from "@/config/site";
 import { navigationConfig } from "@/config/navigation";
 import { decodeHtmlEntities } from "@/lib/utils/decode";
 import { CartSidebar } from "@/components/molecules/cart-sidebar";
+import { useMounted } from "@/lib/hooks/use-mounted";
 
 export function Header() {
-    const [mounted, setMounted] = useState(false);
+    const mounted = useMounted();
     const [isCartOpen, setIsCartOpen] = useState(false);
     const cartItemCount = useCartStore((state) => state.getItemCount());
     const isAuthenticated = useAuthStore((state) => state.isAuthenticated());
     const { isMobileMenuOpen, toggleMobileMenu, closeMobileMenu } = useUIStore();
-
-    useEffect(() => {
-        setMounted(true);
-    }, []);
 
     const freeToolsIcons: Record<string, React.ReactNode> = {
         star: <Star className="h-5 w-5" />,

@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ArrowLeft } from "lucide-react";
@@ -19,8 +18,6 @@ import { OrderSummary } from "@/components/checkout/order-summary";
 
 export default function CheckoutPage() {
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const [isLoading, setIsLoading] = useState(true);
-    const router = useRouter();
     const { items, getSubtotal, clearCart } = useCartStore();
     const { user, token } = useAuthStore();
 
@@ -53,7 +50,7 @@ export default function CheckoutPage() {
                     postcode: savedAddress.postcode || "",
                     notes: "",
                 });
-                setIsLoading(false);
+
                 return;
             }
 
@@ -75,7 +72,7 @@ export default function CheckoutPage() {
                         postcode: addressData.billing.postcode || "",
                         notes: "",
                     });
-                    setIsLoading(false);
+    
                     return;
                 }
 
@@ -87,7 +84,6 @@ export default function CheckoutPage() {
                     email: current.email || user.email || "",
                 }));
             }
-            setIsLoading(false);
         };
 
         fetchUserAddress();
@@ -163,7 +159,7 @@ export default function CheckoutPage() {
             } else {
                 toast.error(result.message || "Failed to create order");
             }
-        } catch (error) {
+        } catch {
             toast.error("An error occurred. Please try again.");
         } finally {
             setIsSubmitting(false);

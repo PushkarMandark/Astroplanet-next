@@ -1,17 +1,11 @@
 import Link from "next/link";
 import {
   ArrowRight,
-  BookOpen,
-  Heart,
-  Gem,
-  Home,
-  Briefcase,
-  Baby
 } from "lucide-react";
 import { MainLayout } from "@/components/templates/main-layout";
 import { HeroSection } from "@/components/organisms/hero-section";
 import { ProductGrid } from "@/components/organisms/product-grid";
-import { ServicesSection, Service } from "@/components/organisms/services-section";
+import { ServicesSection } from "@/components/organisms/services-section";
 import { ToolsSection } from "@/components/organisms/tools-section";
 import { TestimonialsSection } from "@/components/organisms/testimonials-section";
 import { FeaturesSection } from "@/components/organisms/features-section";

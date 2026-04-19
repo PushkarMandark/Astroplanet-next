@@ -1,18 +1,16 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { sanitizeHtml, stripHtml } from "@/lib/sanitize";
 import Link from "next/link";
 import {
     ArrowLeft,
     Calendar,
-    User,
     Clock,
     Share2,
     Heart,
     Facebook,
     Twitter,
-    Linkedin,
     Copy,
     Check,
     ChevronUp,
@@ -44,8 +42,6 @@ export function BlogPostClient({ post, recentPosts, featuredImage, authorName }:
     const [likeCount, setLikeCount] = useState(42);
     const [copied, setCopied] = useState(false);
     const [showScrollTop, setShowScrollTop] = useState(false);
-    const [activeSection, setActiveSection] = useState("");
-    const [tocItems, setTocItems] = useState<TOCItem[]>([]);
     const [showTOC, setShowTOC] = useState(false);
 
     // Calculate reading time
@@ -53,20 +49,20 @@ export function BlogPostClient({ post, recentPosts, featuredImage, authorName }:
     const readingTime = Math.max(1, Math.ceil(wordCount / 200));
 
     // Extract table of contents from headings
-    useEffect(() => {
-        const parser = new DOMParser();
-        const doc = parser.parseFromString(post.content.rendered, "text/html");
-        const headings = doc.querySelectorAll("h2, h3");
+    const tocItems = useMemo(() => {
         const items: TOCItem[] = [];
+        const headingRegex = /<h([23])[^>]*>(.*?)<\/h\1>/gi;
+        let match;
+        let index = 0;
 
-        headings.forEach((heading, index) => {
-            const id = `section-${index}`;
-            const text = heading.textContent || "";
-            const level = parseInt(heading.tagName.charAt(1));
-            items.push({ id, text, level });
-        });
+        while ((match = headingRegex.exec(post.content.rendered)) !== null) {
+            const level = parseInt(match[1]);
+            const text = match[2].replace(/<[^>]*>/g, "");
+            items.push({ id: `section-${index}`, text, level });
+            index++;
+        }
 
-        setTocItems(items);
+        return items;
     }, [post.content.rendered]);
 
     // Handle scroll to show/hide scroll-to-top button
@@ -236,8 +232,7 @@ export function BlogPostClient({ post, recentPosts, featuredImage, authorName }:
                                                         <button
                                                             key={item.id}
                                                             onClick={() => scrollToSection(item.id)}
-                                                            className={`block text-left text-sm py-1.5 px-2 rounded transition-colors w-full hover:bg-muted ${item.level === 3 ? "pl-4 text-muted-foreground" : "font-medium"
-                                                                } ${activeSection === item.id ? "bg-primary/10 text-primary" : ""}`}
+                                                            className={`block text-left text-sm py-1.5 px-2 rounded transition-colors w-full hover:bg-muted ${item.level === 3 ? "pl-4 text-muted-foreground" : "font-medium"}`}
                                                         >
                                                             {item.text}
                                                         </button>

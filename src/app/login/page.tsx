@@ -67,7 +67,7 @@ function LoginForm() {
             } else {
                 toast.error(result.message || "Invalid credentials");
             }
-        } catch (error) {
+        } catch {
             toast.error("An error occurred. Please try again.");
         } finally {
             setIsLoading(false);

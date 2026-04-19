@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { MainLayout } from "@/components/templates/main-layout";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { getProducts, getCategories } from "@/lib/api/products";
@@ -8,12 +8,9 @@ import { OptimizedImage } from "@/components/atoms/image";
 import {
     Star,
     ChevronRight,
-    Phone,
     Sparkles,
     ArrowRight,
-    Calendar,
     MessageCircle,
-    ShoppingCart
 } from "lucide-react";
 
 export const metadata = {

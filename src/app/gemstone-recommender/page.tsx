@@ -169,8 +169,6 @@ interface AdditionalRec {
 }
 
 // --- Default observer: Gurugram ---
-const DEFAULT_LAT = 28.4595;
-const DEFAULT_LON = 77.0266;
 const DEFAULT_ELEVATION = 217;
 
 export default function GemstoneRecommenderPage() {
@@ -236,8 +234,7 @@ export default function GemstoneRecommenderPage() {
       }
 
       setResult({ kundli, primaryPlanet, primaryGemstone, additional });
-    } catch (err) {
-      console.error(err);
+    } catch {
       setError("Could not calculate Kundli. Please check your inputs and try again.");
     }
   }

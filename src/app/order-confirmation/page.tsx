@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { siteConfig } from "@/config/site";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useCartStore, useCheckoutStore } from "@/stores";
 
 function OrderConfirmationContent() {
@@ -18,28 +18,26 @@ function OrderConfirmationContent() {
     const status = searchParams.get("status");
     const clearCart = useCartStore((state) => state.clearCart);
     const [copied, setCopied] = useState(false);
-    const [orderId, setOrderId] = useState<string | null>(urlOrderId);
 
     const { pendingOrder, clearPendingOrder } = useCheckoutStore();
 
-    // Check zustand store for pending order if no order_id in URL
-    useEffect(() => {
-        if (!urlOrderId) {
-            if (pendingOrder) {
-                setOrderId(pendingOrder.order_id?.toString());
-                clearPendingOrder();
-            }
-        }
-    }, [urlOrderId, pendingOrder, clearPendingOrder]);
+    // Derive orderId from URL or pending store
+    const orderId = urlOrderId ?? pendingOrder?.order_id?.toString() ?? null;
 
-    // Clear cart on successful order
+    // One-time cleanup: clear cart and pending order on mount
+    const didCleanup = useRef(false);
     useEffect(() => {
-        if (status === "success") {
-            clearCart();
-            // Also clear pending order
+        if (didCleanup.current) return;
+        didCleanup.current = true;
+        if (!urlOrderId && pendingOrder) {
             clearPendingOrder();
         }
-    }, [status, clearCart, clearPendingOrder]);
+        if (status === "success") {
+            clearCart();
+            clearPendingOrder();
+        }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     const copyOrderId = () => {
         if (orderId) {

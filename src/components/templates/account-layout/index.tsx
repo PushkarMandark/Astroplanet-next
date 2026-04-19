@@ -16,15 +16,22 @@ import {
 import { MainLayout } from "@/components/templates/main-layout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useAuthStore } from "@/stores";
 import { cn } from "@/lib/utils";
+import { useMounted } from "@/lib/hooks/use-mounted";
 
 interface AccountLayoutProps {
     children: React.ReactNode;
     title: string;
     description?: string;
+}
+
+interface SidebarContentProps {
+    user: { displayName?: string; username?: string; email?: string } | null;
+    pathname: string;
+    onNavClick: () => void;
+    onLogout: () => void;
 }
 
 const navigationItems = [
@@ -34,16 +41,74 @@ const navigationItems = [
     { href: "/account", label: "Account Settings", icon: Settings },
 ];
 
+function SidebarContent({ user, pathname, onNavClick, onLogout }: SidebarContentProps) {
+    return (
+        <>
+            {/* User Info */}
+            <div className="p-4 border-b">
+                <div className="flex items-center gap-3">
+                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center text-white font-bold text-lg">
+                        {user?.displayName?.charAt(0) || user?.email?.charAt(0) || "U"}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                        <p className="font-semibold truncate">
+                            {user?.displayName || user?.username || "User"}
+                        </p>
+                        <p className="text-xs text-muted-foreground truncate">
+                            {user?.email || ""}
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            {/* Navigation */}
+            <nav className="p-2 flex-1">
+                {navigationItems.map((item) => {
+                    const isActive = pathname === item.href ||
+                        (item.href !== "/dashboard" && pathname.startsWith(item.href));
+                    const Icon = item.icon;
+
+                    return (
+                        <Link
+                            key={item.href}
+                            href={item.href}
+                            onClick={onNavClick}
+                            className={cn(
+                                "flex items-center gap-3 px-4 py-3 rounded-lg mb-1 transition-all",
+                                isActive
+                                    ? "bg-primary text-primary-foreground font-medium shadow-sm"
+                                    : "hover:bg-muted text-muted-foreground hover:text-foreground"
+                            )}
+                        >
+                            <Icon className="h-5 w-5" />
+                            <span className="flex-1">{item.label}</span>
+                            {isActive && <ChevronRight className="h-4 w-4" />}
+                        </Link>
+                    );
+                })}
+            </nav>
+
+            {/* Logout */}
+            <div className="p-2 border-t">
+                <Button
+                    variant="ghost"
+                    onClick={onLogout}
+                    className="w-full justify-start text-destructive hover:text-destructive hover:bg-destructive/10"
+                >
+                    <LogOut className="h-5 w-5 mr-3" />
+                    Sign Out
+                </Button>
+            </div>
+        </>
+    );
+}
+
 export function AccountLayout({ children, title, description }: AccountLayoutProps) {
-    const [mounted, setMounted] = useState(false);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+    const mounted = useMounted();
     const pathname = usePathname();
     const router = useRouter();
     const { user, isAuthenticated, logout } = useAuthStore();
-
-    useEffect(() => {
-        setMounted(true);
-    }, []);
 
     useEffect(() => {
         if (mounted && !isAuthenticated()) {
@@ -55,6 +120,8 @@ export function AccountLayout({ children, title, description }: AccountLayoutPro
         logout();
         router.push("/");
     };
+
+    const handleNavClick = () => setMobileMenuOpen(false);
 
     // Loading state
     if (!mounted) {
@@ -115,66 +182,6 @@ export function AccountLayout({ children, title, description }: AccountLayoutPro
         );
     }
 
-    const SidebarContent = () => (
-        <>
-            {/* User Info */}
-            <div className="p-4 border-b">
-                <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center text-white font-bold text-lg">
-                        {user?.displayName?.charAt(0) || user?.email?.charAt(0) || "U"}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                        <p className="font-semibold truncate">
-                            {user?.displayName || user?.username || "User"}
-                        </p>
-                        <p className="text-xs text-muted-foreground truncate">
-                            {user?.email || ""}
-                        </p>
-                    </div>
-                </div>
-            </div>
-
-            {/* Navigation */}
-            <nav className="p-2 flex-1">
-                {navigationItems.map((item) => {
-                    const isActive = pathname === item.href ||
-                        (item.href !== "/dashboard" && pathname.startsWith(item.href));
-                    const Icon = item.icon;
-
-                    return (
-                        <Link
-                            key={item.href}
-                            href={item.href}
-                            onClick={() => setMobileMenuOpen(false)}
-                            className={cn(
-                                "flex items-center gap-3 px-4 py-3 rounded-lg mb-1 transition-all",
-                                isActive
-                                    ? "bg-primary text-primary-foreground font-medium shadow-sm"
-                                    : "hover:bg-muted text-muted-foreground hover:text-foreground"
-                            )}
-                        >
-                            <Icon className="h-5 w-5" />
-                            <span className="flex-1">{item.label}</span>
-                            {isActive && <ChevronRight className="h-4 w-4" />}
-                        </Link>
-                    );
-                })}
-            </nav>
-
-            {/* Logout */}
-            <div className="p-2 border-t">
-                <Button
-                    variant="ghost"
-                    onClick={handleLogout}
-                    className="w-full justify-start text-destructive hover:text-destructive hover:bg-destructive/10"
-                >
-                    <LogOut className="h-5 w-5 mr-3" />
-                    Sign Out
-                </Button>
-            </div>
-        </>
-    );
-
     return (
         <MainLayout>
             {/* Page Header */}
@@ -189,7 +196,12 @@ export function AccountLayout({ children, title, description }: AccountLayoutPro
                                 </Button>
                             </SheetTrigger>
                             <SheetContent side="left" className="w-72 p-0 flex flex-col">
-                                <SidebarContent />
+                                <SidebarContent
+                                    user={user}
+                                    pathname={pathname}
+                                    onNavClick={handleNavClick}
+                                    onLogout={handleLogout}
+                                />
                             </SheetContent>
                         </Sheet>
 
@@ -211,7 +223,12 @@ export function AccountLayout({ children, title, description }: AccountLayoutPro
                         <aside className="hidden lg:block">
                             <Card className="border-0 shadow-lg sticky top-24 overflow-hidden">
                                 <CardContent className="p-0 flex flex-col">
-                                    <SidebarContent />
+                                    <SidebarContent
+                                        user={user}
+                                        pathname={pathname}
+                                        onNavClick={handleNavClick}
+                                        onLogout={handleLogout}
+                                    />
                                 </CardContent>
                             </Card>
                         </aside>

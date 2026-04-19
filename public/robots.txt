@@ -1,3 +1,5 @@
-# Block all crawlers - site not production ready
+# Allow all crawlers
 User-agent: *
-Disallow: /
+Allow: /
+
+Sitemap: https://astroeshop.com/sitemap.xml

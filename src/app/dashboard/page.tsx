@@ -6,18 +6,13 @@ import { AccountLayout } from "@/components/templates/account-layout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAuthStore, useCartStore, useWishlistStore } from "@/stores";
-import { formatPrice } from "@/lib/api/client";
-import { useState, useEffect } from "react";
+import { useMounted } from "@/lib/hooks/use-mounted";
 
 export default function DashboardPage() {
-    const [mounted, setMounted] = useState(false);
+    const mounted = useMounted();
     const user = useAuthStore((state) => state.user);
     const cartItemCount = useCartStore((state) => state.getItemCount());
     const wishlistCount = useWishlistStore((state) => state.items.length);
-
-    useEffect(() => {
-        setMounted(true);
-    }, []);
 
     // Quick stats for dashboard
     const stats = [
