@@ -37,6 +37,7 @@ import {
 } from "lucide-react";
 import { siteConfig } from "@/config/site";
 import { submitInquiry } from "@/lib/api/contact";
+import { toast } from "sonner";
 
 const contactSchema = z.object({
     name: z.string().min(2, "Name must be at least 2 characters"),
@@ -80,11 +81,12 @@ export default function ContactPage() {
 
             if (result.success) {
                 setIsSubmitted(true);
+                toast.success("Your message has been sent. We'll be in touch soon.");
             } else {
-                alert(result.message || "Failed to send message. Please try again.");
+                toast.error(result.message || "Failed to send message. Please try again.");
             }
         } catch {
-            alert("An error occurred. Please try again.");
+            toast.error("An error occurred. Please try again.");
         } finally {
             setIsSubmitting(false);
         }
@@ -403,7 +405,8 @@ export default function ContactPage() {
                     </div>
                     <Card className="border-0 shadow-lg overflow-hidden">
                         <iframe
-                            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3507.5033092752895!2d77.0853!3d28.4579!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x390d18e9d0000001%3A0x0!2sChakkarpur%2C%20Gurugram%2C%20Haryana!5e0!3m2!1sen!2sin!4v1"
+                            title="AstroEshop office location — Udyog Vihar Phase 5, Gurgaon"
+                            src="https://www.google.com/maps?q=Plot+No.+845,+Udyog+Vihar,+Phase+5,+Gurgaon+122016,+Haryana&output=embed"
                             width="100%"
                             height="400"
                             style={{ border: 0 }}

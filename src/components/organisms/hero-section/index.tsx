@@ -56,7 +56,7 @@ export function HeroSection({
                     <div className="flex justify-center mb-6">
                         <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-sm border border-white/20">
                             <Sparkles className="h-4 w-4 text-accent" />
-                            <span className="text-sm font-medium">{subtitle || "Welcome to AstroPlanet"}</span>
+                            <span className="text-sm font-medium">{subtitle || "Welcome to AstroEshop"}</span>
                         </div>
                     </div>
 

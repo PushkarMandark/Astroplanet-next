@@ -89,7 +89,7 @@ export function Header() {
                             {/* Mobile Menu Button */}
                             <Sheet open={isMobileMenuOpen} onOpenChange={toggleMobileMenu}>
                                 <SheetTrigger asChild className="md:hidden">
-                                    <Button variant="ghost" size="icon" className="hover:bg-primary/10">
+                                    <Button variant="ghost" size="icon" className="hover:bg-primary/10" aria-label="Open navigation menu">
                                         <Menu className="h-6 w-6" />
                                     </Button>
                                 </SheetTrigger>
@@ -198,7 +198,7 @@ export function Header() {
 
                             {/* Actions */}
                             <div className="flex items-center gap-2">
-                                <Button variant="ghost" size="icon" className="hidden md:flex hover:bg-primary/10">
+                                <Button variant="ghost" size="icon" className="hidden md:flex hover:bg-primary/10" aria-label="Search">
                                     <Search className="h-5 w-5" />
                                 </Button>
 
@@ -207,6 +207,7 @@ export function Header() {
                                     size="icon"
                                     className="relative hover:bg-primary/10"
                                     onClick={() => setIsCartOpen(true)}
+                                    aria-label={mounted && cartItemCount > 0 ? `Cart (${cartItemCount} items)` : "Cart"}
                                 >
                                     <ShoppingCart className="h-5 w-5" />
                                     {mounted && cartItemCount > 0 && (
@@ -220,7 +221,7 @@ export function Header() {
                                     isAuthenticated ? (
                                         <DropdownMenu>
                                             <DropdownMenuTrigger asChild>
-                                                <Button variant="ghost" size="icon" className="hover:bg-primary/10">
+                                                <Button variant="ghost" size="icon" className="hover:bg-primary/10" aria-label="Account menu">
                                                     <User className="h-5 w-5" />
                                                 </Button>
                                             </DropdownMenuTrigger>

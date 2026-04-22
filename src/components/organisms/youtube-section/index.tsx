@@ -29,7 +29,7 @@ export function YouTubeSection({
     title = "Watch & Learn",
     subtitle = "On YouTube",
     description = "Subscribe to our channel for astrology tips, predictions, and spiritual guidance",
-    channelUrl = "https://youtube.com/astroplanet",
+    channelUrl = "https://youtube.com/astroeshop",
 }: YouTubeSectionProps) {
     return (
         <section className="py-20 bg-gray-50">

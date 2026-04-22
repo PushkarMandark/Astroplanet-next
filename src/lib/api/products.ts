@@ -56,7 +56,23 @@ export async function getProductsByCategory(
     return getProducts({ category: categoryId, ...params });
 }
 
-
+// Fetch up to `maxTotal` products in parallel batches.
+// WooCommerce returns heavy payloads (images, attributes, variations) and a single
+// per_page=100 request can exceed wcRequest's 30s timeout when the API is slow.
+// Splitting into parallel smaller pages keeps every request well under the limit.
+export async function getAllProducts(
+    maxTotal = 100,
+    pageSize = 25,
+    extraParams: ProductListParams = {}
+): Promise<Product[]> {
+    const batches = Math.ceil(maxTotal / pageSize);
+    const requests: Promise<Product[]>[] = [];
+    for (let page = 1; page <= batches; page++) {
+        requests.push(getProducts({ ...extraParams, per_page: pageSize, page }));
+    }
+    const results = await Promise.all(requests);
+    return results.flat().slice(0, maxTotal);
+}
 
 // Get product categories
 export async function getCategories(): Promise<ProductCategory[]> {

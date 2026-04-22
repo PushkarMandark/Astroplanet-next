@@ -2,4 +2,17 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://astroeshop.com/sitemap.xml
+# Disallow account / cart / auth pages from indexing
+Disallow: /cart/
+Disallow: /checkout/
+Disallow: /account/
+Disallow: /dashboard/
+Disallow: /orders/
+Disallow: /wishlist/
+Disallow: /login/
+Disallow: /register/
+Disallow: /logout/
+Disallow: /order-confirmation/
+Disallow: /payment-failed/
+
+Sitemap: https://www.astroeshop.com/sitemap.xml

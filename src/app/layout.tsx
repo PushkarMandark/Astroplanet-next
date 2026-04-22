@@ -18,13 +18,17 @@ const inter = Inter({
   display: "swap",
 });
 
+const siteUrl = "https://www.astroeshop.com";
+const siteDescription =
+  "Discover authentic astrology products and services. Birth charts, gemstones, puja services, and expert consultations.";
+
 export const metadata: Metadata = {
+  metadataBase: new URL(siteUrl),
   title: {
     default: "AstroEshop - Your Cosmic Journey Starts Here",
     template: "%s | AstroEshop",
   },
-  description:
-    "Discover authentic astrology products and services. Birth charts, gemstones, puja services, and expert consultations.",
+  description: siteDescription,
   keywords: [
     "astrology",
     "horoscope",
@@ -37,24 +41,40 @@ export const metadata: Metadata = {
   ],
   authors: [{ name: "AstroEshop" }],
   creator: "AstroEshop",
+  alternates: {
+    canonical: "/",
+  },
   openGraph: {
     type: "website",
     locale: "en_IN",
-    url: "https://astroeshop.com",
+    url: siteUrl,
     siteName: "AstroEshop",
     title: "AstroEshop - Your Cosmic Journey Starts Here",
-    description:
-      "Discover authentic astrology products and services. Birth charts, gemstones, puja services, and expert consultations.",
+    description: siteDescription,
+    images: [
+      {
+        url: "/og-image.jpg",
+        width: 1200,
+        height: 630,
+        alt: "AstroEshop — Vedic astrology products, gemstones, and consultations",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
     title: "AstroEshop - Your Cosmic Journey Starts Here",
-    description:
-      "Discover authentic astrology products and services. Birth charts, gemstones, puja services, and expert consultations.",
+    description: siteDescription,
+    images: ["/og-image.jpg"],
   },
   robots: {
     index: true,
     follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
   },
 };
 

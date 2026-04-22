@@ -105,7 +105,7 @@ export function BlogGridClient({ posts, categories = [], perPage = 9 }: BlogGrid
                     <div className="flex items-center gap-3">
                         <Filter className="h-4 w-4 text-muted-foreground" />
                         <Select value={selectedCategory} onValueChange={handleCategoryChange}>
-                            <SelectTrigger className="w-[200px] bg-card border-border/50 shadow-md hover:shadow-lg transition-shadow">
+                            <SelectTrigger className="w-full sm:w-[200px] bg-card border-border/50 shadow-md hover:shadow-lg transition-shadow">
                                 <SelectValue placeholder="All Categories" />
                             </SelectTrigger>
                             <SelectContent className="bg-card border-border/50 shadow-xl">

@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { MainLayout } from "@/components/templates/main-layout";
-import { getProductBySlug, getProducts } from "@/lib/api/products";
+import { getProductBySlug, getProducts, getAllProducts } from "@/lib/api/products";
 import { ProductDetailClient } from "./ProductDetailClient";
 
 interface ProductPageProps {
@@ -10,7 +10,7 @@ interface ProductPageProps {
 }
 
 export async function generateStaticParams() {
-    const products = await getProducts({ per_page: 100 });
+    const products = await getAllProducts(100, 25);
     return products.map((product) => ({
         slug: product.slug,
     }));
@@ -25,8 +25,8 @@ export async function generateMetadata({ params }: ProductPageProps) {
     }
 
     return {
-        title: `${product.name} | AstroPlanet`,
-        description: product.short_description?.replace(/<[^>]*>/g, "") || `Buy ${product.name} - authentic astrology products at AstroPlanet`,
+        title: `${product.name} | AstroEshop`,
+        description: product.short_description?.replace(/<[^>]*>/g, "") || `Buy ${product.name} - authentic astrology products at AstroEshop`,
         openGraph: {
             title: product.name,
             description: product.short_description?.replace(/<[^>]*>/g, "") || product.name,

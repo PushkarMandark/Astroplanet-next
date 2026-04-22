@@ -1,5 +1,5 @@
 import { MainLayout } from "@/components/templates/main-layout";
-import { getPosts, getPostCategories } from "@/lib/api/blog";
+import { getAllPosts, getPostCategories } from "@/lib/api/blog";
 import { BookOpen } from "lucide-react";
 import { BlogGridClient } from "./blog-grid-client";
 
@@ -10,7 +10,7 @@ export const metadata = {
 
 export default async function BlogPage() {
     const [posts, categories] = await Promise.all([
-        getPosts({ per_page: 100 }),
+        getAllPosts(100, 25),
         getPostCategories(),
     ]);
 

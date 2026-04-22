@@ -2,7 +2,10 @@
   "permissions": {
     "allow": [
       "Bash(awk '{print $5, $9}')",
-      "Bash(tee /tmp/build-output.log)"
+      "Bash(tee /tmp/build-output.log)",
+      "Bash(grep -oE '\"rendered\":\"[^\"]{10,80}\"' out/blog/index.html)",
+      "Bash(grep -oE \"Showing[^<]{0,60}articles|No Blog Posts|No Articles|[0-9]+ Articles\" out/blog/index.html)",
+      "Bash(xargs basename *)"
     ]
   }
 }

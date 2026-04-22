@@ -14,7 +14,7 @@ import {
 } from "lucide-react";
 
 export const metadata = {
-    title: "Services | AstroPlanet",
+    title: "Services | AstroEshop",
     description: "Professional astrology consultation and pooja services. Get expert guidance from experienced astrologers.",
 };
 
@@ -116,7 +116,7 @@ export default async function ServicesPage() {
                                     <Link
                                         key={product.id}
                                         href={`/product/${product.slug}`}
-                                        className="w-[280px] flex-shrink-0"
+                                        className="w-[260px] sm:w-[280px] flex-shrink-0"
                                     >
                                         <Card className="h-full overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border-0 shadow-lg group">
                                             <div className="relative aspect-[4/3] bg-gradient-to-br from-primary/5 to-accent/5">
@@ -212,7 +212,7 @@ export default async function ServicesPage() {
                                     <Link
                                         key={product.id}
                                         href={`/product/${product.slug}`}
-                                        className="w-[280px] flex-shrink-0"
+                                        className="w-[260px] sm:w-[280px] flex-shrink-0"
                                     >
                                         <Card className="h-full overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border-0 shadow-lg group">
                                             <div className="relative aspect-[4/3] bg-gradient-to-br from-amber-50 to-orange-50">

@@ -1,6 +1,6 @@
 import { MainLayout } from "@/components/templates/main-layout";
 import { PaginatedProductGrid } from "@/components/organisms/paginated-product-grid";
-import { getProducts, getCategories, buildCategoryTree } from "@/lib/api/products";
+import { getAllProducts, getCategories, buildCategoryTree } from "@/lib/api/products";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { decodeHtmlEntities } from "@/lib/utils/decode";
@@ -24,7 +24,7 @@ export const metadata = {
 
 export default async function ShopPage() {
     const [products, categories] = await Promise.all([
-        getProducts({ per_page: ALL_PRODUCTS_FETCH_LIMIT }),
+        getAllProducts(ALL_PRODUCTS_FETCH_LIMIT, 25),
         getCategories(),
     ]);
 

@@ -57,6 +57,19 @@ export async function getRecentPosts(limit = 5): Promise<BlogPost[]> {
     return getPosts({ per_page: limit });
 }
 
+// Fetch up to `maxTotal` posts in parallel batches.
+// WP REST with _embed is slow (~30s for per_page=100) and hits wpRequest's timeout.
+// Splitting into parallel pages of `pageSize` each keeps every request well under the limit.
+export async function getAllPosts(maxTotal = 100, pageSize = 25): Promise<BlogPost[]> {
+    const batches = Math.ceil(maxTotal / pageSize);
+    const requests: Promise<BlogPost[]>[] = [];
+    for (let page = 1; page <= batches; page++) {
+        requests.push(getPosts({ per_page: pageSize, page }));
+    }
+    const results = await Promise.all(requests);
+    return results.flat().slice(0, maxTotal);
+}
+
 // Lightweight slug-only fetch for generateStaticParams (no _embed, no extra fields)
 export async function getPostSlugs(limit = 100): Promise<string[]> {
     const response = await wpRequest<{ slug: string }[]>(
@@ -78,7 +91,7 @@ export function getAuthorName(post: BlogPost): string {
     if (post._embedded?.author?.[0]?.name) {
         return post._embedded.author[0].name;
     }
-    return "AstroPlanet";
+    return "AstroEshop";
 }
 
 // Helper to format post URL

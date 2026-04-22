@@ -28,7 +28,7 @@ No test suite is configured. TypeScript strict mode is enabled. Package manager:
 - Non-`NEXT_PUBLIC_*` env vars (e.g. `WC_CONSUMER_KEY`) exist only at build time; they are **not** available to client bundles. This is why `wcRequest()` works in server components but would send empty credentials if called from a client component.
 - **`npm run build` clears `.next/` first** via `npx rimraf`. Turbopack's incremental cache has silently failed to detect `generateStaticParams()` on dynamic routes after large refactors — always building from a clean cache prevents this. If `npm run dev` ever reports the same detection issue after a big refactor, stop and restart the dev server to clear the hot-reload cache.
 
-**Dead code warning:** `src/components/organisms/product-grid-loadmore/index.tsx` calls `/api/products` — this endpoint does not exist under static export and the component is not imported anywhere. Do not use it; delete if cleaning up.
+**API timeout awareness:** `wpRequest`/`wcRequest` in `src/lib/api/client.ts` have a 30-second timeout. A single `getPosts({ per_page: 100, _embed: true })` against a slow WP backend can exceed it and silently return `[]` (rendering "No Blog Posts Found" into the built HTML). Always use the parallel batching helpers when fetching many items at build time: `getAllPosts(100, 25)` from `src/lib/api/blog.ts` and `getAllProducts(100, 25)` from `src/lib/api/products.ts`. They split into 4× per_page=25 parallel requests (~5s total instead of 30s+).
 
 ## Path Alias
 

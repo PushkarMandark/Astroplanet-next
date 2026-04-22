@@ -37,7 +37,7 @@ interface FeaturesSectionProps {
 
 export function FeaturesSection({
     features = defaultFeatures,
-    title = "Why Choose AstroPlanet?",
+    title = "Why Choose AstroEshop?",
     description = "We're committed to providing authentic products and services backed by centuries of Vedic tradition",
 }: FeaturesSectionProps) {
     return (

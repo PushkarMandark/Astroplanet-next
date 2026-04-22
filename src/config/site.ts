@@ -4,7 +4,7 @@ import { BookOpen, Heart, Gem, Home, Briefcase, Baby } from "lucide-react";
 export const siteConfig = {
     name: "AstroEshop",
     tagline: "Your Cosmic Journey Starts Here",
-    url: process.env.NEXT_PUBLIC_SITE_URL || "https://astroeshop.com",
+    url: process.env.NEXT_PUBLIC_SITE_URL || "https://www.astroeshop.com",
     wpUrl: process.env.NEXT_PUBLIC_WP_URL || "https://api.astroeshop.com",
 
     // Contact Info
@@ -13,7 +13,7 @@ export const siteConfig = {
         phone: "+91 9971 000226",
         whatsapp: "+919971000226",
         address:
-            "Shop No. 25, Lambardar Market, Chakkarpur, Gurugram, Haryana - 122001",
+            "Plot No. 845, Udyog Vihar, Phase 5, Gurgaon 122016, Haryana, India",
     },
 
     // Social Links

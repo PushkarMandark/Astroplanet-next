@@ -23,7 +23,7 @@ export async function generateMetadata({ params }: BlogPostPageProps) {
     }
 
     return {
-        title: `${post.title.rendered.replace(/<[^>]*>/g, "")} | AstroPlanet`,
+        title: `${post.title.rendered.replace(/<[^>]*>/g, "")} | AstroEshop`,
         description: (post.excerpt?.rendered ?? "").replace(/<[^>]*>/g, "").slice(0, 160),
     };
 }
