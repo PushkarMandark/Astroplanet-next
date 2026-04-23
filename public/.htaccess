@@ -12,10 +12,38 @@ RewriteEngine On
     Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: blob: https://api.astroeshop.com https://*.openstreetmap.org https://*.wp.com; connect-src 'self' https://api.astroeshop.com https://nominatim.openstreetmap.org https://ohmanda.com; frame-src https://www.google.com https://www.youtube.com; font-src 'self' https://fonts.gstatic.com"
 </IfModule>
 
-# Redirect http to https
+# ── Canonical host: apex → www (301) ─────────────────
+RewriteCond %{HTTP_HOST} ^astroeshop\.com$ [NC]
+RewriteRule ^(.*)$ https://www.astroeshop.com/$1 [R=301,L]
+
+# ── Force HTTPS (uncomment once SSL is confirmed working) ─
 # RewriteCond %{HTTPS} off
 # RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 
+# ── Custom error documents ───────────────────────────
+ErrorDocument 404 /404.html
+
+# ── Static asset caching ─────────────────────────────
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresByType text/html "access plus 0 seconds"
+    ExpiresByType text/css "access plus 1 year"
+    ExpiresByType application/javascript "access plus 1 year"
+    ExpiresByType image/jpeg "access plus 6 months"
+    ExpiresByType image/png "access plus 6 months"
+    ExpiresByType image/svg+xml "access plus 6 months"
+    ExpiresByType image/webp "access plus 6 months"
+    ExpiresByType font/woff2 "access plus 1 year"
+</IfModule>
+
+# Immutable caching for fingerprinted Next.js chunks
+<IfModule mod_headers.c>
+    <FilesMatch "\.(?:css|js|woff2|woff)$">
+        Header set Cache-Control "public, max-age=31536000, immutable"
+    </FilesMatch>
+</IfModule>
+
+# ── Routing rules ────────────────────────────────────
 # If the request is for an existing file or directory, serve it directly
 RewriteCond %{REQUEST_FILENAME} -f [OR]
 RewriteCond %{REQUEST_FILENAME} -d

@@ -5,7 +5,10 @@
       "Bash(tee /tmp/build-output.log)",
       "Bash(grep -oE '\"rendered\":\"[^\"]{10,80}\"' out/blog/index.html)",
       "Bash(grep -oE \"Showing[^<]{0,60}articles|No Blog Posts|No Articles|[0-9]+ Articles\" out/blog/index.html)",
-      "Bash(xargs basename *)"
+      "Bash(xargs basename *)",
+      "WebFetch(domain:www.astroeshop.com)",
+      "WebFetch(domain:api.astroeshop.com)",
+      "Bash(grep -oE 'iframe[^>]{0,100}|google\\\\.com/maps')"
     ]
   }
 }
