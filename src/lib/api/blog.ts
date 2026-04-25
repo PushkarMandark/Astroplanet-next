@@ -65,19 +65,29 @@ export async function getRecentPosts(limit = 5): Promise<BlogPost[]> {
 const BLOG_LIST_FIELDS =
     "id,slug,title,excerpt,date,modified,author,featured_media,categories,tags,_links,_embedded,yoast_head_json";
 
-// Fetch up to `maxTotal` posts in parallel batches.
-// WP REST with _embed is slow (~30s for per_page=100) and hits wpRequest's timeout.
-// Splitting into parallel pages of `pageSize` each keeps every request well under the limit.
-// If a batch returns [] (timeout / 5xx), we log a warning so build-time failures are
-// visible instead of silently producing an empty index page.
-export async function getAllPosts(maxTotal = 100, pageSize = 15): Promise<BlogPost[]> {
-    const batches = Math.ceil(maxTotal / pageSize);
-    const requests: Promise<BlogPost[]>[] = [];
-    for (let page = 1; page <= batches; page++) {
-        requests.push(getPosts({ per_page: pageSize, page, fields: BLOG_LIST_FIELDS }));
+// The WP shared host (api.astroeshop.com) chokes on more than ~2 concurrent
+// _embed=true requests — each triggers per-post media + author DB joins. Limiting
+// in-flight requests keeps each batch well under the 30s wpRequest timeout.
+const MAX_CONCURRENT_BATCHES = 2;
+
+// Fetch up to `maxTotal` posts. WP REST with _embed is slow on a shared host;
+// we paginate into small `pageSize` batches and run only N at a time. Logs each
+// empty batch loudly so build-time failures don't silently ship an empty index.
+export async function getAllPosts(maxTotal = 100, pageSize = 10): Promise<BlogPost[]> {
+    const totalBatches = Math.ceil(maxTotal / pageSize);
+    const allResults: BlogPost[][] = [];
+
+    for (let start = 1; start <= totalBatches; start += MAX_CONCURRENT_BATCHES) {
+        const wave: Promise<BlogPost[]>[] = [];
+        const end = Math.min(start + MAX_CONCURRENT_BATCHES - 1, totalBatches);
+        for (let page = start; page <= end; page++) {
+            wave.push(getPosts({ per_page: pageSize, page, fields: BLOG_LIST_FIELDS }));
+        }
+        const waveResults = await Promise.all(wave);
+        allResults.push(...waveResults);
     }
-    const results = await Promise.all(requests);
-    results.forEach((batch, idx) => {
+
+    allResults.forEach((batch, idx) => {
         if (batch.length === 0) {
             console.warn(
                 `[getAllPosts] batch page=${idx + 1} returned 0 posts ` +
@@ -85,8 +95,11 @@ export async function getAllPosts(maxTotal = 100, pageSize = 15): Promise<BlogPo
             );
         }
     });
-    const posts = results.flat().slice(0, maxTotal);
-    console.log(`[getAllPosts] fetched ${posts.length} posts across ${batches} batches`);
+    const posts = allResults.flat().slice(0, maxTotal);
+    console.log(
+        `[getAllPosts] fetched ${posts.length} posts across ${totalBatches} batches ` +
+        `(per_page=${pageSize}, concurrency=${MAX_CONCURRENT_BATCHES})`
+    );
     return posts;
 }
 

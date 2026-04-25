@@ -12,7 +12,7 @@ export const metadata = {
 
 export default async function BlogPage() {
     const [posts, categories] = await Promise.all([
-        getAllPosts(100, 25),
+        getAllPosts(100),
         getPostCategories(),
     ]);
 
