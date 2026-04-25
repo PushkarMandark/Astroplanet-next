@@ -18,7 +18,7 @@ export const siteConfig = {
 
     // Social Links
     social: {
-        facebook: "https://facebook.com/astroeshop",
+        facebook: "https://www.facebook.com/astroeshoponline",
         instagram: "https://instagram.com/astroeshop",
         twitter: "https://twitter.com/astroeshop",
         youtube: "https://youtube.com/astroeshop",

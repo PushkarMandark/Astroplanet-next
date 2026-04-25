@@ -17,6 +17,38 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { getProducts, getFeaturedProducts } from "@/lib/api/products";
 import { servicesConfig } from "@/config/site";
+import { organizationJsonLd, faqJsonLd } from "@/lib/structured-data";
+
+export const metadata = {
+  alternates: { canonical: "/" },
+};
+
+const homepageFaqs = [
+  {
+    question: "What is Vedic astrology and how is it different from Western astrology?",
+    answer: "Vedic astrology (Jyotish) is the traditional Indian system of astrology dating back thousands of years. It uses the sidereal zodiac based on actual star positions, while Western astrology uses the tropical zodiac based on the Sun's relationship to Earth's seasons. Vedic astrology focuses heavily on karma, dashas (planetary periods), and predictive techniques like Kundli analysis.",
+  },
+  {
+    question: "How accurate is a free online Kundli?",
+    answer: "AstroEshop's free Kundli generator uses precise astronomical calculations to produce a birth chart with planetary positions, houses, nakshatras, and Vimshottari Dasha — the same data a professional astrologer uses. For deeper personalized predictions, we recommend a paid consultation with one of our certified Vedic astrologers.",
+  },
+  {
+    question: "Are AstroEshop's gemstones authentic and certified?",
+    answer: "Yes. Every gemstone we sell is sourced from trusted suppliers and comes with a lab certificate of authenticity. We also offer a personalized Gemstone Recommender tool that suggests the right stone based on your birth chart before you buy.",
+  },
+  {
+    question: "Do you ship across India?",
+    answer: "Yes. We ship pan-India with tracked delivery. Orders above ₹500 qualify for free shipping; below that, a flat ₹50 shipping fee applies. Estimated delivery is 3–7 business days depending on your location.",
+  },
+  {
+    question: "How does Kundli matching (Guna Milan) work?",
+    answer: "Kundli matching uses the 36-point Ashtakoot system to compare two birth charts across 8 compatibility factors — Varna, Vashya, Tara, Yoni, Graha Maitri, Gana, Bhakoot, and Nadi. A score of 18 or higher is generally considered compatible for marriage. Try our free Kundli Matching tool to see your score instantly.",
+  },
+  {
+    question: "Can I get a refund or return a product?",
+    answer: "Yes. We accept returns within the timeframe specified in our Return Policy, provided the product is unused and in its original packaging. Personalized consultations and digital readings are non-refundable once delivered. See our Refund & Cancellation Policy for full details.",
+  },
+];
 
 export default async function HomePage() {
   // Fetch products server-side
@@ -28,8 +60,19 @@ export default async function HomePage() {
   // Use all products if no featured found
   const displayProducts = featuredProducts.length > 0 ? featuredProducts : allProducts.slice(0, 8);
 
+  const organizationSchema = organizationJsonLd();
+  const faqSchema = faqJsonLd(homepageFaqs);
+
   return (
     <MainLayout>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+      />
       {/* Hero Section */}
       <HeroSection
         subtitle="✨ Your Cosmic Journey Starts Here"

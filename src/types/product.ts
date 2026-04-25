@@ -1,3 +1,5 @@
+import type { YoastHeadJson } from "./blog";
+
 // Product types matching WooCommerce API
 export interface Product {
     id: number;
@@ -30,6 +32,7 @@ export interface Product {
         width: string;
         height: string;
     };
+    yoast_head_json?: YoastHeadJson;
 }
 
 export interface ProductCategory {

@@ -3,6 +3,7 @@ import { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Refund & Cancellation Policy",
   description: "AstroEshop refund and order cancellation policy.",
+  alternates: { canonical: "/refund-cancellation-policy/" },
   openGraph: {
     title: "Refund & Cancellation Policy | AstroEshop",
     description: "AstroEshop refund and order cancellation policy.",

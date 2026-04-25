@@ -18,13 +18,17 @@ function absoluteUrl(path: string): string {
  * JSON-LD schema for a single Product (schema.org/Product).
  */
 export function productJsonLd(product: Product) {
+    const yoast = product.yoast_head_json;
     const description =
+        yoast?.description ||
         stripHtml(product.short_description || product.description || "") ||
         `Buy ${product.name} from AstroEshop. Authentic Vedic astrology products.`;
 
-    const images = (product.images || [])
+    const yoastImage = yoast?.og_image?.[0]?.url;
+    const productImages = (product.images || [])
         .map((img) => img?.src)
         .filter((src): src is string => Boolean(src));
+    const images = yoastImage ? [yoastImage, ...productImages.filter((src) => src !== yoastImage)] : productImages;
 
     const availability =
         product.stock_status === "instock"
@@ -71,10 +75,18 @@ export function productJsonLd(product: Product) {
  * JSON-LD schema for a blog Article (schema.org/Article).
  */
 export function articleJsonLd(post: BlogPost, url: string) {
+    const yoast = post.yoast_head_json;
+    // schema.org `headline` should match the visible page title (Google's
+    // structured-data guideline, ≤110 chars). Yoast's SEO title can include
+    // the site suffix and exceed that, so prefer the natural rendered title.
     const headline = stripHtml(post.title?.rendered || "");
-    const description = stripHtml(post.excerpt?.rendered || "").slice(0, 200);
+    const description = (
+        yoast?.description || stripHtml(post.excerpt?.rendered || "")
+    ).slice(0, 200);
     const featuredImage =
-        post._embedded?.["wp:featuredmedia"]?.[0]?.source_url || "";
+        yoast?.og_image?.[0]?.url ||
+        post._embedded?.["wp:featuredmedia"]?.[0]?.source_url ||
+        "";
     const authorName = post._embedded?.author?.[0]?.name || "AstroEshop";
 
     return {
@@ -136,6 +148,25 @@ export function organizationJsonLd() {
             siteConfig.social.twitter,
             siteConfig.social.youtube,
         ],
+    };
+}
+
+/**
+ * JSON-LD schema for an FAQ block (schema.org/FAQPage).
+ * Pass an array of {question, answer} pairs (answer can be plain text or simple HTML).
+ */
+export function faqJsonLd(faqs: Array<{ question: string; answer: string }>) {
+    return {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        mainEntity: faqs.map((faq) => ({
+            "@type": "Question",
+            name: faq.question,
+            acceptedAnswer: {
+                "@type": "Answer",
+                text: faq.answer,
+            },
+        })),
     };
 }
 

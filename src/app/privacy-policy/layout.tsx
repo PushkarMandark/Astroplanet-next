@@ -3,6 +3,7 @@ import { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Privacy Policy",
   description: "How AstroEshop collects, uses, and protects your personal information.",
+  alternates: { canonical: "/privacy-policy/" },
   openGraph: {
     title: "Privacy Policy | AstroEshop",
     description: "How AstroEshop collects, uses, and protects your personal information.",

@@ -16,10 +16,12 @@ import { categoryIcons } from "@/lib/category-icons";
 import { ALL_PRODUCTS_FETCH_LIMIT } from "@/lib/constants";
 import { siteConfig } from "@/config/site";
 import { ConsultationButton } from "@/components/molecules/consultation-button";
+import { breadcrumbJsonLd } from "@/lib/structured-data";
 
 export const metadata = {
     title: "Shop",
     description: "Browse our collection of authentic astrology products, gemstones, and spiritual items.",
+    alternates: { canonical: "/shop/" },
 };
 
 export default async function ShopPage() {
@@ -30,8 +32,17 @@ export default async function ShopPage() {
 
     const categoryTree = buildCategoryTree(categories);
 
+    const breadcrumbSchema = breadcrumbJsonLd([
+        { name: "Home", url: "/" },
+        { name: "Shop", url: "/shop/" },
+    ]);
+
     return (
         <MainLayout>
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+            />
             {/* Main Content */}
             <section className="py-8">
                 <div className="container mx-auto px-4">

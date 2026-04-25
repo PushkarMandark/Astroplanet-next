@@ -27,7 +27,8 @@
       "PowerShell(Stop-Process -Id 5040,31604,5488,29596,31612,28728 -Force -ErrorAction SilentlyContinue)",
       "PowerShell(Wait-Process -Id 16712 -Timeout 540 -ErrorAction SilentlyContinue)",
       "Bash(NEXT_DEBUG_BUILD=1 npx next build --webpack)",
-      "PowerShell(Wait-Process -Id 1988 -Timeout 540 -ErrorAction SilentlyContinue)"
+      "PowerShell(Wait-Process -Id 1988 -Timeout 540 -ErrorAction SilentlyContinue)",
+      "Bash([ -f \"src/app/$d/layout.tsx\" ])"
     ]
   }
 }

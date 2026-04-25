@@ -14,8 +14,9 @@ import {
 } from "lucide-react";
 
 export const metadata = {
-    title: "Services | AstroEshop",
-    description: "Professional astrology consultation and pooja services. Get expert guidance from experienced astrologers.",
+    title: "Services",
+    description: "Personalized Vedic astrology services — Kundli analysis, match making, gemstone consultation, Vastu, career guidance, and more from certified astrologers.",
+    alternates: { canonical: "/services/" },
 };
 
 export default async function ServicesPage() {

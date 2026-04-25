@@ -2,10 +2,12 @@ import { MainLayout } from "@/components/templates/main-layout";
 import { getAllPosts, getPostCategories } from "@/lib/api/blog";
 import { BookOpen } from "lucide-react";
 import { BlogGridClient } from "./blog-grid-client";
+import { breadcrumbJsonLd } from "@/lib/structured-data";
 
 export const metadata = {
     title: "Blog",
     description: "Read our latest articles on astrology, horoscopes, gemstones, and spiritual guidance.",
+    alternates: { canonical: "/blog/" },
 };
 
 export default async function BlogPage() {
@@ -14,8 +16,17 @@ export default async function BlogPage() {
         getPostCategories(),
     ]);
 
+    const breadcrumbSchema = breadcrumbJsonLd([
+        { name: "Home", url: "/" },
+        { name: "Blog", url: "/blog/" },
+    ]);
+
     return (
         <MainLayout>
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+            />
             {/* Compact Page Header */}
             <section className="bg-gradient-to-r from-primary to-secondary text-primary-foreground py-8">
                 <div className="container mx-auto px-4">

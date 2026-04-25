@@ -3,6 +3,7 @@ import { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Gemstone Recommender",
   description: "Find your ideal Vedic gemstone based on your birth chart. Personalized recommendations with wearing guidelines.",
+  alternates: { canonical: "/gemstone-recommender/" },
   openGraph: {
     title: "Gemstone Recommender | AstroEshop",
     description: "Find your ideal Vedic gemstone based on your birth chart. Personalized recommendations with wearing guidelines.",

@@ -199,12 +199,12 @@ export function BlogPostClient({ post, recentPosts, featuredImage, authorName }:
             {featuredImage && featuredImage !== "/images/placeholder.svg" && (
                 <div className="container mx-auto px-4 -mt-8 relative z-20">
                     <div className="max-w-4xl mx-auto">
-                        <div className="relative aspect-[21/9] rounded-2xl overflow-hidden shadow-2xl">
+                        <div className="relative aspect-[5/3] rounded-2xl overflow-hidden shadow-2xl bg-black/5">
                             <OptimizedImage
                                 src={featuredImage}
                                 alt={post.title.rendered.replace(/<[^>]*>/g, "")}
                                 fill
-                                className="object-cover"
+                                className="object-contain"
                                 priority
                             />
                         </div>

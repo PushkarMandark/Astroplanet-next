@@ -17,6 +17,7 @@ import { categoryIcons } from "@/lib/category-icons";
 import { ALL_PRODUCTS_FETCH_LIMIT } from "@/lib/constants";
 import { siteConfig } from "@/config/site";
 import { ConsultationButton } from "@/components/molecules/consultation-button";
+import { breadcrumbJsonLd } from "@/lib/structured-data";
 
 interface CategoryPageProps {
     params: Promise<{ category: string }>;
@@ -41,6 +42,7 @@ export async function generateMetadata({ params }: CategoryPageProps) {
     return {
         title: `${categoryData.name} | Shop`,
         description: `Browse our collection of ${categoryData.name.toLowerCase()} - authentic astrology products and spiritual items.`,
+        alternates: { canonical: `/shop/${category}/` },
     };
 }
 
@@ -60,8 +62,18 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
 
     const categoryTree = buildCategoryTree(categories);
 
+    const breadcrumbSchema = breadcrumbJsonLd([
+        { name: "Home", url: "/" },
+        { name: "Shop", url: "/shop/" },
+        { name: decodeHtmlEntities(selectedCategory.name), url: `/shop/${categorySlug}/` },
+    ]);
+
     return (
         <MainLayout>
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+            />
             {/* Hero */}
             <section className="relative bg-primary text-white overflow-hidden">
                 <div className="absolute inset-0">

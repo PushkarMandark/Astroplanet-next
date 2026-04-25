@@ -26,25 +26,37 @@ export async function generateMetadata({ params }: ProductPageProps) {
         return { title: "Product Not Found" };
     }
 
-    const description = stripHtml(
+    const yoast = product.yoast_head_json;
+    const fallbackTitle = product.name;
+    const fallbackDescription = stripHtml(
         product.short_description ||
             `Buy ${product.name} from AstroEshop. Authentic Vedic astrology products.`
     );
+    const fallbackImage = product.images?.[0]?.src;
 
-    const ogImage = product.images?.[0]?.src;
+    const description = yoast?.description || fallbackDescription;
+    const ogTitle = yoast?.og_title || yoast?.title || fallbackTitle;
+    const ogDescription = yoast?.og_description || description;
+    const ogImage = yoast?.og_image?.[0]?.url || fallbackImage;
+    const twitterTitle = yoast?.twitter_title || ogTitle;
+    const twitterDescription = yoast?.twitter_description || ogDescription;
+    const twitterImage = yoast?.twitter_image || ogImage;
 
     return {
-        title: product.name,
+        // Yoast outputs a fully-formed page title (already includes site suffix
+        // via its template), so bypass the layout-level "%s | AstroEshop" wrap.
+        title: yoast?.title ? { absolute: yoast.title } : fallbackTitle,
         description,
+        alternates: { canonical: `/product/${slug}/` },
         openGraph: {
-            title: product.name,
-            description,
+            title: ogTitle,
+            description: ogDescription,
             images: ogImage ? [ogImage] : undefined,
         },
         twitter: {
-            title: product.name,
-            description,
-            images: ogImage ? [ogImage] : undefined,
+            title: twitterTitle,
+            description: twitterDescription,
+            images: twitterImage ? [twitterImage] : undefined,
         },
     };
 }
