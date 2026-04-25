@@ -12,9 +12,11 @@ export function AuthLayout({ children, title, description }: AuthLayoutProps) {
         <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-cream to-cream-light p-4">
             {/* Logo */}
             <Link href="/" className="mb-8">
-                <span className="text-3xl font-bold font-serif bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-                    {siteConfig.name}
-                </span>
+                <img
+                    src="/images/logo.webp"
+                    alt={siteConfig.name}
+                    className="h-14 w-auto"
+                />
             </Link>
 
             {/* Auth Card */}

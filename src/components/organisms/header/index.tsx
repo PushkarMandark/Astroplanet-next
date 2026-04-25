@@ -139,12 +139,11 @@ export function Header() {
 
                             {/* Logo */}
                             <Link href="/" className="flex items-center gap-3">
-                                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center">
-                                    <Star className="h-5 w-5 text-white" />
-                                </div>
-                                <span className="text-2xl font-bold font-serif bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-                                    {siteConfig.name}
-                                </span>
+                                <img
+                                    src="/images/logo.webp"
+                                    alt={siteConfig.name}
+                                    className="h-10 w-auto"
+                                />
                             </Link>
 
                             {/* Desktop Navigation */}

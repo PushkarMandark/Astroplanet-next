@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Mail, Phone, MapPin, Star, Facebook, Instagram, Twitter, Youtube } from "lucide-react";
+import { Mail, Phone, MapPin, Facebook, Instagram, Twitter, Youtube } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -42,12 +42,11 @@ export function Footer() {
                         {/* Brand */}
                         <div className="lg:col-span-1">
                             <div className="flex items-center gap-3 mb-6">
-                                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-accent to-yellow-400 flex items-center justify-center">
-                                    <Star className="h-6 w-6 text-black" />
-                                </div>
-                                <span className="text-2xl font-bold font-serif">
-                                    {siteConfig.name}
-                                </span>
+                                <img
+                                    src="/images/logo.webp"
+                                    alt={siteConfig.name}
+                                    className="h-12 w-auto bg-white/95 rounded-lg p-1.5"
+                                />
                             </div>
                             <p className="text-white/70 mb-6 leading-relaxed">
                                 {siteConfig.tagline}. Your trusted destination for authentic Vedic astrology products and personalized spiritual guidance.
