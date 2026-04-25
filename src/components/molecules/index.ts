@@ -7,3 +7,4 @@ export * from "./zodiac-sign";
 export * from "./pagination";
 export * from "./empty-state";
 export * from "./page-header";
+export * from "./cookie-consent";

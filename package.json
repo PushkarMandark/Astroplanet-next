@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "npx rimraf .next && next build",
+    "sitemap": "node scripts/generate-sitemap.mjs",
+    "build": "npx rimraf .next && npm run sitemap && next build",
     "start": "npx serve out",
     "lint": "eslint"
   },

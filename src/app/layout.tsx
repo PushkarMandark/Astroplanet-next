@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Playfair_Display, Inter } from "next/font/google";
 import { Toaster } from "@/components/ui/sonner";
 import { LeadPopupProvider } from "@/components/molecules/lead-popup/LeadPopupProvider";
+import { CookieConsent } from "@/components/molecules/cookie-consent";
 import "./globals.css";
 
 const playfairDisplay = Playfair_Display({
@@ -89,6 +90,7 @@ export default function RootLayout({
         className={`${playfairDisplay.variable} ${inter.variable} antialiased`}
       >
         {children}
+        <CookieConsent />
         <Toaster position="top-right" />
         <LeadPopupProvider />
         <a

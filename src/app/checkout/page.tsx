@@ -30,7 +30,14 @@ export default function CheckoutPage() {
         resolver: zodResolver(checkoutSchema),
     });
 
-    const { savedAddress, setSavedAddress, setPendingOrder } = useCheckoutStore();
+    const {
+        savedAddress,
+        setSavedAddress,
+        setPendingOrder,
+        idempotencyKey,
+        setIdempotencyKey,
+        clearIdempotencyKey,
+    } = useCheckoutStore();
 
     // Fetch user's saved address - check Zustand first, then WordPress
     useEffect(() => {
@@ -102,6 +109,18 @@ export default function CheckoutPage() {
 
         setIsSubmitting(true);
 
+        // Reuse an existing idempotency key across retries; only generate a new
+        // one for the first Pay attempt of this checkout session. The key is
+        // cleared after a successful order is created.
+        let key = idempotencyKey;
+        if (!key) {
+            key =
+                typeof crypto !== "undefined" && typeof crypto.randomUUID === "function"
+                    ? crypto.randomUUID()
+                    : `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+            setIdempotencyKey(key);
+        }
+
         try {
             const result = await createOrder(
                 items,
@@ -116,7 +135,8 @@ export default function CheckoutPage() {
                     postcode: data.postcode,
                     country: "IN",
                 },
-                data.notes || ""
+                data.notes || "",
+                key
             );
 
             if (result.success && result.checkout_url) {
@@ -154,6 +174,9 @@ export default function CheckoutPage() {
                 });
 
                 clearCart();
+                // Order successfully created — clear the idempotency key so the
+                // next checkout session starts fresh.
+                clearIdempotencyKey();
                 // Redirect to WooCommerce payment page
                 window.location.href = result.checkout_url;
             } else {

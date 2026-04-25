@@ -78,6 +78,42 @@ export async function getPostSlugs(limit = 100): Promise<string[]> {
     return response.success && response.data ? response.data.map((p) => p.slug) : [];
 }
 
+// Paginated slug-only fetch for generateStaticParams. WP REST caps per_page at 100,
+// so to cover more than 100 posts we fan out parallel page=N requests, dedupe, and
+// return the merged result. Used in /blog/[slug] where missing slugs would 404.
+export async function getAllPostSlugs(
+    total = 200,
+    perBatch = 50
+): Promise<{ slug: string }[]> {
+    const batches = Math.ceil(total / perBatch);
+    const requests: Promise<{ success: boolean; data?: { slug: string }[] }>[] = [];
+    for (let page = 1; page <= batches; page++) {
+        requests.push(
+            wpRequest<{ slug: string }[]>(
+                `/wp/v2/posts?_fields=slug&per_page=${perBatch}&page=${page}`
+            )
+        );
+    }
+    const results = await Promise.all(requests);
+    const seen = new Set<string>();
+    const slugs: { slug: string }[] = [];
+    results.forEach((response, idx) => {
+        if (!response.success || !response.data) {
+            console.warn(
+                `getAllPostSlugs: batch page=${idx + 1} failed; skipping`
+            );
+            return;
+        }
+        for (const item of response.data) {
+            if (item?.slug && !seen.has(item.slug)) {
+                seen.add(item.slug);
+                slugs.push({ slug: item.slug });
+            }
+        }
+    });
+    return slugs;
+}
+
 // Helper to get featured image URL
 export function getFeaturedImage(post: BlogPost): string {
     if (post._embedded?.["wp:featuredmedia"]?.[0]?.source_url) {

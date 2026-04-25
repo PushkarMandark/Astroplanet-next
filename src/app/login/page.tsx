@@ -14,6 +14,7 @@ import { login } from "@/lib/api/auth";
 import { toast } from "sonner";
 import { useSearchParams } from "next/navigation";
 import { Loader2 } from "lucide-react";
+import { useMounted } from "@/lib/hooks/use-mounted";
 
 const loginSchema = z.object({
     username: z.string().min(1, "Username is required"),
@@ -24,7 +25,7 @@ type LoginFormData = z.infer<typeof loginSchema>;
 
 function LoginForm() {
     const [isLoading, setIsLoading] = useState(false);
-    const [mounted, setMounted] = useState(false);
+    const mounted = useMounted();
     const searchParams = useSearchParams();
     const authLogin = useAuthStore((state) => state.login);
     const isAuthenticated = useAuthStore((state) => state.isAuthenticated());
@@ -32,10 +33,6 @@ function LoginForm() {
     const rawRedirect = searchParams.get("redirect") || "/dashboard";
     // Prevent open redirect — only allow relative paths
     const redirectTo = rawRedirect.startsWith("/") && !rawRedirect.startsWith("//") ? rawRedirect : "/dashboard";
-
-    useEffect(() => {
-        setMounted(true);
-    }, []);
 
     // If already authenticated (e.g. user navigates to /login while logged in), redirect
     useEffect(() => {

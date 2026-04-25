@@ -19,6 +19,7 @@ import {
     Save
 } from "lucide-react";
 import { AccountLayout } from "@/components/templates/account-layout";
+import { useMounted } from "@/lib/hooks/use-mounted";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -59,7 +60,7 @@ const INDIAN_STATES = [
 ];
 
 export default function AccountPage() {
-    const [mounted, setMounted] = useState(false);
+    const mounted = useMounted();
     const [isEditingProfile, setIsEditingProfile] = useState(false);
     const [showPasswordForm, setShowPasswordForm] = useState(false);
     const [showAddressDialog, setShowAddressDialog] = useState(false);
@@ -103,7 +104,6 @@ export default function AccountPage() {
     const token = useAuthStore((state) => state.token);
 
     useEffect(() => {
-        setMounted(true);
         if (user) {
             setProfileForm({
                 firstName: user.firstName || "",

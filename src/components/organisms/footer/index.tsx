@@ -153,6 +153,8 @@ export function Footer() {
                             <p>© {currentYear} {siteConfig.name}. All rights reserved.</p>
                             <span className="hidden md:inline">|</span>
                             <p>{siteConfig.business.name}</p>
+                            <span className="hidden md:inline">|</span>
+                            <p>GST: {siteConfig.business.gst}</p>
                         </div>
                         <div className="flex items-center gap-6 text-sm">
                             {navigationConfig.footer.policies.map((link) => (

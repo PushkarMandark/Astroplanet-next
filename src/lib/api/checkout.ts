@@ -45,11 +45,14 @@ interface UserAddressApiResponse {
     };
 }
 
-// Create order via custom WordPress plugin endpoint
+// Create order via custom WordPress plugin endpoint.
+// `idempotencyKey` is forwarded as the `Idempotency-Key` HTTP header so retries
+// of the same logical order do not produce duplicate orders on the WP side.
 export async function createOrder(
     items: CartItem[],
     billing: CheckoutBilling,
-    customerNote: string
+    customerNote: string,
+    idempotencyKey?: string
 ): Promise<CreateOrderApiResponse> {
     const frontendUrl = siteConfig.url;
     const payload: CreateOrderPayload = {
@@ -63,11 +66,17 @@ export async function createOrder(
         cancel_url: `${frontendUrl}/payment-failed`,
     };
 
+    const headers: Record<string, string> = {};
+    if (idempotencyKey) {
+        headers["Idempotency-Key"] = idempotencyKey;
+    }
+
     const response = await wpRequest<CreateOrderApiResponse>(
         "/astroeshop/v1/create-order",
         {
             method: "POST",
             body: JSON.stringify(payload),
+            headers,
         }
     );
 

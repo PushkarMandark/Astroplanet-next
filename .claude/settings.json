@@ -8,7 +8,26 @@
       "Bash(xargs basename *)",
       "WebFetch(domain:www.astroeshop.com)",
       "WebFetch(domain:api.astroeshop.com)",
-      "Bash(grep -oE 'iframe[^>]{0,100}|google\\\\.com/maps')"
+      "Bash(grep -oE 'iframe[^>]{0,100}|google\\\\.com/maps')",
+      "Bash(npm audit *)",
+      "Bash(git diff *)",
+      "Bash(ls src/app/api)",
+      "Bash(ls src/middleware.ts)",
+      "Bash(grep -v \"//.*placeholder\\\\.svg\\\\|images/placeholder\\\\|node_modules\")",
+      "Bash(ls public/og-image.jpg)",
+      "Bash(find public *)",
+      "Bash(NEXT_PUBLIC_WP_URL=https://api.astroeshop.com NEXT_PUBLIC_SITE_URL=https://astroeshop.com WP_API_BASE=https://api.astroeshop.com/wp-json WC_CONSUMER_KEY=test WC_CONSUMER_SECRET=test JWT_SECRET_KEY=test npm run build)",
+      "Bash(npm ls *)",
+      "Bash(ls \".next/server/app/shop/\")",
+      "Bash(ls \"src/app/shop/\")",
+      "Bash(npx rimraf *)",
+      "Bash(git check-ignore *)",
+      "Bash(tasklist)",
+      "PowerShell(Get-CimInstance Win32_Process -Filter \"Name = 'node.exe'\")",
+      "PowerShell(Stop-Process -Id 5040,31604,5488,29596,31612,28728 -Force -ErrorAction SilentlyContinue)",
+      "PowerShell(Wait-Process -Id 16712 -Timeout 540 -ErrorAction SilentlyContinue)",
+      "Bash(NEXT_DEBUG_BUILD=1 npx next build --webpack)",
+      "PowerShell(Wait-Process -Id 1988 -Timeout 540 -ErrorAction SilentlyContinue)"
     ]
   }
 }

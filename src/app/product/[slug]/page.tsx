@@ -1,6 +1,8 @@
 import { notFound } from "next/navigation";
 import { MainLayout } from "@/components/templates/main-layout";
 import { getProductBySlug, getProducts, getAllProducts } from "@/lib/api/products";
+import { stripHtml } from "@/lib/sanitize";
+import { productJsonLd, breadcrumbJsonLd } from "@/lib/structured-data";
 import { ProductDetailClient } from "./ProductDetailClient";
 
 interface ProductPageProps {
@@ -24,14 +26,26 @@ export async function generateMetadata({ params }: ProductPageProps) {
         return { title: "Product Not Found" };
     }
 
+    const description = stripHtml(
+        product.short_description ||
+            `Buy ${product.name} from AstroEshop. Authentic Vedic astrology products.`
+    );
+
+    const ogImage = product.images?.[0]?.src;
+
     return {
-        title: `${product.name} | AstroEshop`,
-        description: product.short_description?.replace(/<[^>]*>/g, "") || `Buy ${product.name} - authentic astrology products at AstroEshop`,
+        title: product.name,
+        description,
         openGraph: {
             title: product.name,
-            description: product.short_description?.replace(/<[^>]*>/g, "") || product.name,
-            images: product.images?.[0]?.src ? [product.images[0].src] : [],
-        }
+            description,
+            images: ogImage ? [ogImage] : undefined,
+        },
+        twitter: {
+            title: product.name,
+            description,
+            images: ogImage ? [ogImage] : undefined,
+        },
     };
 }
 
@@ -53,8 +67,34 @@ export default async function ProductPage({ params }: ProductPageProps) {
         relatedProducts = categoryProducts.filter(p => p.id !== product.id).slice(0, 4);
     }
 
+    const productSchema = productJsonLd(product);
+    const breadcrumbItems: Array<{ name: string; url: string }> = [
+        { name: "Home", url: "/" },
+        { name: "Shop", url: "/shop/" },
+    ];
+    const primaryCategory = product.categories?.[0];
+    if (primaryCategory) {
+        breadcrumbItems.push({
+            name: primaryCategory.name,
+            url: `/shop/${primaryCategory.slug}/`,
+        });
+    }
+    breadcrumbItems.push({
+        name: product.name,
+        url: `/product/${product.slug}/`,
+    });
+    const breadcrumbSchema = breadcrumbJsonLd(breadcrumbItems);
+
     return (
         <MainLayout>
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(productSchema) }}
+            />
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+            />
             <ProductDetailClient
                 product={product}
                 relatedProducts={relatedProducts}

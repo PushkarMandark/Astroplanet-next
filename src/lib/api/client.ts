@@ -11,6 +11,26 @@ interface ApiResponse<T> {
     httpCode?: number;
 }
 
+// Module-level handler invoked when an authenticated request returns 401.
+// Wired by the auth store on rehydrate so an expired JWT triggers a clean logout.
+let onUnauthorized: (() => void) | null = null;
+
+export function setUnauthorizedHandler(fn: (() => void) | null): void {
+    onUnauthorized = fn;
+}
+
+// Determine whether a RequestInit has an Authorization header (case-insensitive).
+function hasAuthorizationHeader(headers: HeadersInit | undefined): boolean {
+    if (!headers) return false;
+    if (headers instanceof Headers) {
+        return headers.has("Authorization");
+    }
+    if (Array.isArray(headers)) {
+        return headers.some(([k]) => k.toLowerCase() === "authorization");
+    }
+    return Object.keys(headers).some((k) => k.toLowerCase() === "authorization");
+}
+
 // Server-side WooCommerce request (includes credentials)
 export async function wcRequest<T>(
     endpoint: string,
@@ -37,6 +57,11 @@ export async function wcRequest<T>(
         const data = await response.json();
 
         if (!response.ok) {
+            // wcRequest is server-only; the 401 handler is a no-op there but we
+            // fire it for symmetry if a JWT was passed.
+            if (response.status === 401 && hasAuthorizationHeader(options.headers) && onUnauthorized) {
+                onUnauthorized();
+            }
             return {
                 success: false,
                 error: data.message || "Request failed",
@@ -53,7 +78,9 @@ export async function wcRequest<T>(
     }
 }
 
-// Client-side WordPress request (no credentials needed)
+// Client-side WordPress request (no credentials needed by default, but callers
+// may pass an Authorization header — e.g. validateToken — in which case a 401
+// should fire the unauthorized handler).
 export async function wpRequest<T>(
     endpoint: string,
     options: RequestInit = {}
@@ -74,6 +101,9 @@ export async function wpRequest<T>(
         const data = await response.json();
 
         if (!response.ok) {
+            if (response.status === 401 && hasAuthorizationHeader(options.headers) && onUnauthorized) {
+                onUnauthorized();
+            }
             return {
                 success: false,
                 error: data.message || "Request failed",
@@ -113,6 +143,9 @@ export async function authenticatedWpRequest<T>(
         const data = await response.json();
 
         if (!response.ok) {
+            if (response.status === 401 && onUnauthorized) {
+                onUnauthorized();
+            }
             return {
                 success: false,
                 error: data.message || "Request failed",

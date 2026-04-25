@@ -1,6 +1,6 @@
 import { MainLayout } from "@/components/templates/main-layout";
 import { PaginatedProductGrid } from "@/components/organisms/paginated-product-grid";
-import { getProducts, getCategories, buildCategoryTree } from "@/lib/api/products";
+import { getAllProducts, getCategories, buildCategoryTree } from "@/lib/api/products";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -54,8 +54,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
         notFound();
     }
 
-    const products = await getProducts({
-        per_page: ALL_PRODUCTS_FETCH_LIMIT,
+    const products = await getAllProducts(ALL_PRODUCTS_FETCH_LIMIT, 25, {
         category: selectedCategory.id,
     });
 

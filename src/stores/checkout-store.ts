@@ -22,12 +22,15 @@ export interface PendingOrder {
 interface CheckoutState {
     savedAddress: CheckoutAddress | null;
     pendingOrder: PendingOrder | null;
+    idempotencyKey: string | null;
 
     // Actions
     setSavedAddress: (address: CheckoutAddress) => void;
     clearSavedAddress: () => void;
     setPendingOrder: (order: PendingOrder) => void;
     clearPendingOrder: () => void;
+    setIdempotencyKey: (key: string) => void;
+    clearIdempotencyKey: () => void;
 }
 
 export const useCheckoutStore = create<CheckoutState>()(
@@ -35,15 +38,24 @@ export const useCheckoutStore = create<CheckoutState>()(
         (set) => ({
             savedAddress: null,
             pendingOrder: null,
+            idempotencyKey: null,
 
             setSavedAddress: (address) => set({ savedAddress: address }),
             clearSavedAddress: () => set({ savedAddress: null }),
-            
+
             setPendingOrder: (order) => set({ pendingOrder: order }),
             clearPendingOrder: () => set({ pendingOrder: null }),
+
+            setIdempotencyKey: (key) => set({ idempotencyKey: key }),
+            clearIdempotencyKey: () => set({ idempotencyKey: null }),
         }),
         {
             name: "astroplanet-checkout",
+            partialize: (state) => ({
+                savedAddress: state.savedAddress,
+                pendingOrder: state.pendingOrder,
+                idempotencyKey: state.idempotencyKey,
+            }),
         }
     )
 );
