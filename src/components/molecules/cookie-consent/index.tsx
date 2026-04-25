@@ -50,14 +50,14 @@ export function CookieConsent() {
                     personalized astrology recommendations. By continuing, you
                     agree to our{" "}
                     <Link
-                        href="/privacy"
+                        href="/privacy-policy/"
                         className="underline text-primary hover:text-primary/80"
                     >
                         Privacy Policy
                     </Link>{" "}
                     and{" "}
                     <Link
-                        href="/terms"
+                        href="/terms-of-use/"
                         className="underline text-primary hover:text-primary/80"
                     >
                         Terms

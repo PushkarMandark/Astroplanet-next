@@ -7,6 +7,7 @@ export async function getPosts(params: {
     page?: number;
     category?: number;
     search?: string;
+    fields?: string;
 } = {}): Promise<BlogPost[]> {
     const queryParams = new URLSearchParams();
     queryParams.append("_embed", "true");
@@ -15,6 +16,7 @@ export async function getPosts(params: {
     if (params.page) queryParams.append("page", String(params.page));
     if (params.category) queryParams.append("categories", String(params.category));
     if (params.search) queryParams.append("search", params.search);
+    if (params.fields) queryParams.append("_fields", params.fields);
 
     const response = await wpRequest<BlogPost[]>(
         `/wp/v2/posts?${queryParams.toString()}`
@@ -57,17 +59,35 @@ export async function getRecentPosts(limit = 5): Promise<BlogPost[]> {
     return getPosts({ per_page: limit });
 }
 
+// Fields the blog list page actually consumes — drops the heavy `content.rendered`
+// payload from the request, which on a slow shared host is the difference between
+// a batch finishing in 5s and timing out at 30s.
+const BLOG_LIST_FIELDS =
+    "id,slug,title,excerpt,date,modified,author,featured_media,categories,tags,_links,_embedded,yoast_head_json";
+
 // Fetch up to `maxTotal` posts in parallel batches.
 // WP REST with _embed is slow (~30s for per_page=100) and hits wpRequest's timeout.
 // Splitting into parallel pages of `pageSize` each keeps every request well under the limit.
-export async function getAllPosts(maxTotal = 100, pageSize = 25): Promise<BlogPost[]> {
+// If a batch returns [] (timeout / 5xx), we log a warning so build-time failures are
+// visible instead of silently producing an empty index page.
+export async function getAllPosts(maxTotal = 100, pageSize = 15): Promise<BlogPost[]> {
     const batches = Math.ceil(maxTotal / pageSize);
     const requests: Promise<BlogPost[]>[] = [];
     for (let page = 1; page <= batches; page++) {
-        requests.push(getPosts({ per_page: pageSize, page }));
+        requests.push(getPosts({ per_page: pageSize, page, fields: BLOG_LIST_FIELDS }));
     }
     const results = await Promise.all(requests);
-    return results.flat().slice(0, maxTotal);
+    results.forEach((batch, idx) => {
+        if (batch.length === 0) {
+            console.warn(
+                `[getAllPosts] batch page=${idx + 1} returned 0 posts ` +
+                `(likely timed out or 5xx). Built blog index will be missing posts.`
+            );
+        }
+    });
+    const posts = results.flat().slice(0, maxTotal);
+    console.log(`[getAllPosts] fetched ${posts.length} posts across ${batches} batches`);
+    return posts;
 }
 
 // Lightweight slug-only fetch for generateStaticParams (no _embed, no extra fields)

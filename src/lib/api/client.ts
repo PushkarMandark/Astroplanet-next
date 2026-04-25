@@ -81,24 +81,45 @@ export async function wcRequest<T>(
 // Client-side WordPress request (no credentials needed by default, but callers
 // may pass an Authorization header — e.g. validateToken — in which case a 401
 // should fire the unauthorized handler).
+// Build-time calls retry once on timeout/network error with a doubled timeout —
+// the WP shared host occasionally drops the first request when warm-starting.
 export async function wpRequest<T>(
     endpoint: string,
     options: RequestInit = {}
 ): Promise<ApiResponse<T>> {
     const url = `${WP_URL}/wp-json${endpoint}`;
+    const headers = {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+        ...options.headers,
+    };
 
-    try {
+    const attemptFetch = async (timeoutMs: number) => {
         const response = await fetch(url, {
             ...options,
-            signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
-            headers: {
-                "Content-Type": "application/json",
-                Accept: "application/json",
-                ...options.headers,
-            },
+            signal: AbortSignal.timeout(timeoutMs),
+            headers,
         });
-
         const data = await response.json();
+        return { response, data };
+    };
+
+    try {
+        let result;
+        try {
+            result = await attemptFetch(FETCH_TIMEOUT_MS);
+        } catch (firstErr) {
+            const isTimeout =
+                firstErr instanceof Error &&
+                (firstErr.name === "TimeoutError" ||
+                    firstErr.name === "AbortError" ||
+                    /timeout/i.test(firstErr.message));
+            if (!isTimeout) throw firstErr;
+            console.warn(`[wpRequest] timeout on ${endpoint} — retrying with doubled timeout`);
+            result = await attemptFetch(FETCH_TIMEOUT_MS * 2);
+        }
+
+        const { response, data } = result;
 
         if (!response.ok) {
             if (response.status === 401 && hasAuthorizationHeader(options.headers) && onUnauthorized) {
