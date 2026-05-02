@@ -2,189 +2,99 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://www.astroeshop.com/</loc>
-    <lastmod>2026-04-25</lastmod>
+    <lastmod>2026-05-02</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
     <loc>https://www.astroeshop.com/shop/</loc>
-    <lastmod>2026-04-25</lastmod>
+    <lastmod>2026-05-02</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://www.astroeshop.com/blog/</loc>
-    <lastmod>2026-04-25</lastmod>
+    <lastmod>2026-05-02</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.astroeshop.com/services/</loc>
-    <lastmod>2026-04-25</lastmod>
+    <lastmod>2026-05-02</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.astroeshop.com/contact/</loc>
-    <lastmod>2026-04-25</lastmod>
+    <lastmod>2026-05-02</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://www.astroeshop.com/horoscope/</loc>
-    <lastmod>2026-04-25</lastmod>
+    <lastmod>2026-05-02</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://www.astroeshop.com/panchang/</loc>
-    <lastmod>2026-04-25</lastmod>
+    <lastmod>2026-05-02</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://www.astroeshop.com/numerology/</loc>
-    <lastmod>2026-04-25</lastmod>
+    <lastmod>2026-05-02</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://www.astroeshop.com/kundli/</loc>
-    <lastmod>2026-04-25</lastmod>
+    <lastmod>2026-05-02</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://www.astroeshop.com/compatibility/</loc>
-    <lastmod>2026-04-25</lastmod>
+    <lastmod>2026-05-02</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://www.astroeshop.com/gemstone-recommender/</loc>
-    <lastmod>2026-04-25</lastmod>
+    <lastmod>2026-05-02</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://www.astroeshop.com/privacy-policy/</loc>
-    <lastmod>2026-04-25</lastmod>
+    <lastmod>2026-05-02</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
   <url>
     <loc>https://www.astroeshop.com/terms-of-use/</loc>
-    <lastmod>2026-04-25</lastmod>
+    <lastmod>2026-05-02</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
   <url>
     <loc>https://www.astroeshop.com/refund-cancellation-policy/</loc>
-    <lastmod>2026-04-25</lastmod>
+    <lastmod>2026-05-02</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
   <url>
     <loc>https://www.astroeshop.com/return-policy/</loc>
-    <lastmod>2026-04-25</lastmod>
+    <lastmod>2026-05-02</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
   <url>
     <loc>https://www.astroeshop.com/shipment-policy/</loc>
-    <lastmod>2026-04-25</lastmod>
+    <lastmod>2026-05-02</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/shop/astrology-products-services/</loc>
-    <lastmod>2026-04-25</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/shop/astrology-reports/</loc>
-    <lastmod>2026-04-25</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/shop/basic-kundli/</loc>
-    <lastmod>2026-04-25</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/shop/consultation/</loc>
-    <lastmod>2026-04-25</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/shop/crystal/</loc>
-    <lastmod>2026-04-25</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/shop/crystal-bracelet/</loc>
-    <lastmod>2026-04-25</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/shop/crystal-mala/</loc>
-    <lastmod>2026-04-25</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/shop/gemstones/</loc>
-    <lastmod>2026-04-25</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/shop/kundli/</loc>
-    <lastmod>2026-04-25</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/shop/miscellaneous/</loc>
-    <lastmod>2026-04-25</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/shop/pooja-services/</loc>
-    <lastmod>2026-04-25</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/shop/premium-kundli/</loc>
-    <lastmod>2026-04-25</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/shop/rudraksha/</loc>
-    <lastmod>2026-04-25</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/shop/services/</loc>
-    <lastmod>2026-04-25</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/shop/yantras/</loc>
-    <lastmod>2026-04-25</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.astroeshop.com/product/10-year-kundli/</loc>
@@ -205,32 +115,32 @@
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://www.astroeshop.com/product/6-mukhi-rudraksha-mala-1081-2/</loc>
-    <lastmod>2026-04-25</lastmod>
+    <loc>https://www.astroeshop.com/product/6-mukhi-rudraksha-mala/</loc>
+    <lastmod>2026-04-27</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.astroeshop.com/product/7-mukhi-rudraksha-bracelet/</loc>
-    <lastmod>2026-04-24</lastmod>
+    <lastmod>2026-04-25</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://www.astroeshop.com/product/7-mukhi-rudraksha-mala-1081/</loc>
-    <lastmod>2026-04-25</lastmod>
+    <loc>https://www.astroeshop.com/product/7-mukhi-rudraksha-mala/</loc>
+    <lastmod>2026-04-27</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.astroeshop.com/product/8-mukhi-rudraksha-bracelet/</loc>
-    <lastmod>2026-04-24</lastmod>
+    <lastmod>2026-04-25</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://www.astroeshop.com/product/8-mukhi-rudraksha-mala-1081/</loc>
-    <lastmod>2026-04-25</lastmod>
+    <loc>https://www.astroeshop.com/product/8-mukhi-rudraksha-mala/</loc>
+    <lastmod>2026-04-27</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -241,8 +151,8 @@
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://www.astroeshop.com/product/9-mukhi-rudraksha-mala-1081/</loc>
-    <lastmod>2026-04-25</lastmod>
+    <loc>https://www.astroeshop.com/product/9-mukhi-rudraksha-mala/</loc>
+    <lastmod>2026-04-27</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -368,7 +278,7 @@
   </url>
   <url>
     <loc>https://www.astroeshop.com/product/ganesh-career-success-yantra/</loc>
-    <lastmod>2026-04-24</lastmod>
+    <lastmod>2026-04-25</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -404,7 +314,7 @@
   </url>
   <url>
     <loc>https://www.astroeshop.com/product/kamdev-love-attraction-harmony-yantra/</loc>
-    <lastmod>2026-04-24</lastmod>
+    <lastmod>2026-04-25</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -434,7 +344,7 @@
   </url>
   <url>
     <loc>https://www.astroeshop.com/product/lakshmi-kuber-prosperity-yantra/</loc>
-    <lastmod>2026-04-24</lastmod>
+    <lastmod>2026-04-25</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -464,7 +374,7 @@
   </url>
   <url>
     <loc>https://www.astroeshop.com/product/maha-mrityunjaya-healing-yantra/</loc>
-    <lastmod>2026-04-24</lastmod>
+    <lastmod>2026-04-25</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -500,7 +410,7 @@
   </url>
   <url>
     <loc>https://www.astroeshop.com/product/navagraha-family-harmony-yantra/</loc>
-    <lastmod>2026-04-24</lastmod>
+    <lastmod>2026-04-25</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -769,12 +679,6 @@
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://www.astroeshop.com/blog/108-rudraksha-mala-who-can-wear-it-and-its-significances/</loc>
-    <lastmod>2023-09-19</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
     <loc>https://www.astroeshop.com/blog/16-somvar-vrat-everything-you-should-know-about-somvar-vrat/</loc>
     <lastmod>2024-07-17</lastmod>
     <changefreq>monthly</changefreq>
@@ -811,14 +715,8 @@
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://www.astroeshop.com/blog/2027-2/</loc>
-    <lastmod>2021-07-26</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/3-suns-shine-together-on-this-planet-scientists-made-surprising-discovery/</loc>
-    <lastmod>2021-10-27</lastmod>
+    <loc>https://www.astroeshop.com/blog/6-mukhi-rudraksha-benefits-wearing-method-original-guide/</loc>
+    <lastmod>2026-04-30</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
@@ -829,8 +727,14 @@
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://www.astroeshop.com/blog/8-mukhi-rudraksha-benefits-and-mantra/</loc>
-    <lastmod>2022-12-13</lastmod>
+    <loc>https://www.astroeshop.com/blog/7-mukhi-rudraksha-benefits-wearing-method-guide/</loc>
+    <lastmod>2026-04-29</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://www.astroeshop.com/blog/8-mukhi-rudraksha-benefits-wearing-method-guide/</loc>
+    <lastmod>2026-04-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
@@ -853,18 +757,6 @@
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://www.astroeshop.com/blog/akarshan-yantra-benefits/</loc>
-    <lastmod>2022-03-31</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/akarshan-yantra-benefits-2/</loc>
-    <lastmod>2022-11-22</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
     <loc>https://www.astroeshop.com/blog/akshaya-tritiya-2024-date-significance-ritual-and-celebrations/</loc>
     <lastmod>2024-04-15</lastmod>
     <changefreq>monthly</changefreq>
@@ -877,68 +769,14 @@
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://www.astroeshop.com/blog/all-about-kundli-using-the-planets-for-insight/</loc>
-    <lastmod>2021-07-13</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/amalaki-ekadashi-why-amla-tree-is-worshipped-on-this-day/</loc>
-    <lastmod>2023-02-06</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/anant-chaturdashi-2021-why-its-important-to-keep-fast-on-this-day/</loc>
-    <lastmod>2021-07-28</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/annaprashan-ceremony-pooja-vidhanam-procedure-significance/</loc>
-    <lastmod>2023-04-12</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
     <loc>https://www.astroeshop.com/blog/aparajita-flower-in-hinduism-benefits-and-significance/</loc>
     <lastmod>2024-06-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://www.astroeshop.com/blog/aquamarine-is-the-lucky-stone-of-people-born-in-the-month-of-march/</loc>
-    <lastmod>2021-11-17</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
     <loc>https://www.astroeshop.com/blog/aries-horoscope-2026-new-year-predictions-for-aries-natives/</loc>
     <lastmod>2025-11-25</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/ashadh-purnima-2023-know-time-method-and-benefits/</loc>
-    <lastmod>2023-06-10</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/astro-tips-follow-these-measures-for-love-money-health-and-progress/</loc>
-    <lastmod>2021-11-23</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/astro-tips-get-benefits-in-these-diseases-from-nagkesar/</loc>
-    <lastmod>2021-11-29</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/astrological-benefits-of-cats-eye-gemstone/</loc>
-    <lastmod>2022-01-27</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
@@ -979,12 +817,6 @@
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://www.astroeshop.com/blog/astrological-remedies-that-should-be-done-on-thursday/</loc>
-    <lastmod>2021-12-04</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
     <loc>https://www.astroeshop.com/blog/astrological-remedies-to-attract-good-luck-and-abundance/</loc>
     <lastmod>2024-11-11</lastmod>
     <changefreq>monthly</changefreq>
@@ -1003,12 +835,6 @@
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://www.astroeshop.com/blog/astrological-solutions-and-remedies-by-acharya-indu-prakash-ji/</loc>
-    <lastmod>2022-01-13</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
     <loc>https://www.astroeshop.com/blog/astrological-solutions-to-get-rid-of-debt/</loc>
     <lastmod>2023-10-28</lastmod>
     <changefreq>monthly</changefreq>
@@ -1017,12 +843,6 @@
   <url>
     <loc>https://www.astroeshop.com/blog/astrological-tips-powerful-nakshatras-for-business-in-astrology/</loc>
     <lastmod>2024-04-10</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/astrology-behind-hanuman-chalisa/</loc>
-    <lastmod>2020-12-03</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
@@ -1039,44 +859,8 @@
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://www.astroeshop.com/blog/astrology-tips-that-can-help-you-focus-better-on-your-goals/</loc>
-    <lastmod>2023-07-24</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/astrology-tips-to-awaken-your-higher-self/</loc>
-    <lastmod>2023-07-04</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/astrology-top-signs-that-tell-you-should-move-on-or-not/</loc>
-    <lastmod>2023-07-28</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
     <loc>https://www.astroeshop.com/blog/astrology-when-will-i-get-married-get-an-accurate-prediction/</loc>
     <lastmod>2024-05-10</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/auspicious-items-to-buy-on-dhanteras-2022/</loc>
-    <lastmod>2022-10-13</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/basant-panchami-2022-worship-in-this-way-to-please-goddess-sarasvati/</loc>
-    <lastmod>2021-12-13</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/basant-panchami-2023-saraswati-puja-history/</loc>
-    <lastmod>2023-01-17</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
@@ -1089,24 +873,6 @@
   <url>
     <loc>https://www.astroeshop.com/blog/basant-panchami-2026-astrology-education-career-marriage/</loc>
     <lastmod>2025-12-29</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/basoda-2023-date-time-rituals-and-significance/</loc>
-    <lastmod>2023-02-18</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/benefits-of-chandra-yantra/</loc>
-    <lastmod>2021-12-07</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/benefits-of-wearing-black-thread-in-feets/</loc>
-    <lastmod>2020-12-21</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
@@ -1129,12 +895,6 @@
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://www.astroeshop.com/blog/bhai-dooj-2021-wish-for-the-long-life-of-your-brother/</loc>
-    <lastmod>2021-08-10</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
     <loc>https://www.astroeshop.com/blog/bhai-dooj-2023-when-is-bhai-dooj-know-its-timings/</loc>
     <lastmod>2023-10-18</lastmod>
     <changefreq>monthly</changefreq>
@@ -1147,26 +907,8 @@
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://www.astroeshop.com/blog/bhaumvati-amavasya-2021/</loc>
-    <lastmod>2021-07-22</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
     <loc>https://www.astroeshop.com/blog/blue-sapphire-astrological-benefits-of-a-blue-sapphire-stone/</loc>
     <lastmod>2024-09-10</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/blue-sapphire-saturn-benefits/</loc>
-    <lastmod>2022-01-25</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/brihaspati-yantra-benefits/</loc>
-    <lastmod>2022-11-09</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
@@ -1183,50 +925,14 @@
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://www.astroeshop.com/blog/budh-yantra-and-its-benefits/</loc>
-    <lastmod>2022-02-04</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/business-how-can-we-complete-a-dream-to-become-a-successful-businessman/</loc>
-    <lastmod>2023-10-03</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
     <loc>https://www.astroeshop.com/blog/business-planetary-movement-will-tell-you-the-right-time-to-star-new-usiness/</loc>
     <lastmod>2023-10-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://www.astroeshop.com/blog/buy-kundli-online-will-tell-you-about-your-future-predictions/</loc>
-    <lastmod>2023-01-13</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
     <loc>https://www.astroeshop.com/blog/by-kundli-know-what-you-should-do-to-get-successful-in-a-business/</loc>
     <lastmod>2023-10-19</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/by-observing-this-fast-on-every-thursday-you-can-get-blessings-of-lord-vishnu-ji/</loc>
-    <lastmod>2021-09-21</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/can-astrology-brighten-your-luck/</loc>
-    <lastmod>2021-11-17</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/can-by-astrology-be-truly-possible-to-make-a-difference-in-our-life/</loc>
-    <lastmod>2021-09-08</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
@@ -1255,68 +961,14 @@
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://www.astroeshop.com/blog/chaitra-navratri-2023-know-the-date-and-worship-method/</loc>
-    <lastmod>2023-03-14</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/chaitra-purnima-2023-celebration-date-and-time/</loc>
-    <lastmod>2023-03-01</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/chandra-grahan-2023-2nd-grahan-of-the-year-know-will-be-visible-in-india-or-not/</loc>
-    <lastmod>2023-09-18</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/chandra-grahan-2023-date-time-red-moon-2023/</loc>
-    <lastmod>2023-05-04</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
     <loc>https://www.astroeshop.com/blog/chandra-mantra-know-how-to-chant-the-chandra-mantra-2/</loc>
     <lastmod>2025-06-17</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://www.astroeshop.com/blog/chandra-yantra-chandra-yantra-increases-self-confidence-by-removing-mental-stress/</loc>
-    <lastmod>2021-11-24</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/chant-santan-gopal-mantra-to-get-the-best-baby/</loc>
-    <lastmod>2021-10-18</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/chaturmasya-2021-how-to-spend-it-well-to-attract-happiness/</loc>
-    <lastmod>2021-08-02</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/chhath-puja-2021-celebrate-in-this-way-to-please-chhath-mata/</loc>
-    <lastmod>2021-08-15</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
     <loc>https://www.astroeshop.com/blog/chhath-puja-2023-muhurta-significances-and-puja-vidhi/</loc>
     <lastmod>2023-11-09</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/chhoti-holi-2023-holika-dahan-story/</loc>
-    <lastmod>2023-02-08</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
@@ -1339,30 +991,6 @@
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://www.astroeshop.com/blog/crystals-not-only-strengthen-the-planets-but-also-increase-immunity/</loc>
-    <lastmod>2021-11-10</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/dash-mata-worship-her-can-improves-the-condition-of-the-family/</loc>
-    <lastmod>2021-11-06</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/dates-of-griha-parvesh-muhurta-in-2022/</loc>
-    <lastmod>2021-12-08</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/deepavali-rangoli-traditional-indian-art/</loc>
-    <lastmod>2022-10-18</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
     <loc>https://www.astroeshop.com/blog/dev-diwali-2023-relation-of-dev-diwali-with-our-life/</loc>
     <lastmod>2023-10-26</lastmod>
     <changefreq>monthly</changefreq>
@@ -1375,36 +1003,6 @@
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://www.astroeshop.com/blog/devotthan-ekadashi-2021-celebrate-ekadashi-like-this-way-to-welcome-immense-happiness-to-your-life/</loc>
-    <lastmod>2021-08-18</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/dhan-vriddhi-yantra-benefits/</loc>
-    <lastmod>2022-11-14</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/dhan-vridhi-yantra-hindus-powerful-yantra/</loc>
-    <lastmod>2022-11-08</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/dhanteras-2022-tips-for-laxmi-pooja-on-diwali/</loc>
-    <lastmod>2022-10-15</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/dhanteras-2023-know-what-to-buy-and-what-not-to-buy/</loc>
-    <lastmod>2023-10-06</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
     <loc>https://www.astroeshop.com/blog/dhanteras-2024-auspicious-and-vedic-astrology-tips-for-wealth/</loc>
     <lastmod>2024-10-23</lastmod>
     <changefreq>monthly</changefreq>
@@ -1413,24 +1011,6 @@
   <url>
     <loc>https://www.astroeshop.com/blog/dhanteras-2025-date-puja-muhurata-rituals/</loc>
     <lastmod>2025-09-11</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/diamonds-what-are-the-benefits-of-wearing-a-diamond/</loc>
-    <lastmod>2021-10-14</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/divine-tree-is-sycamore-know-its-surprising-benefits/</loc>
-    <lastmod>2021-11-30</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/diwali-2022-when-how-to-celebrate/</loc>
-    <lastmod>2022-10-14</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
@@ -1465,18 +1045,6 @@
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://www.astroeshop.com/blog/double-fate-line-is-not-always-auspicious-know-why/</loc>
-    <lastmod>2021-11-10</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/double-fate-line-is-not-always-lucky-know-why/</loc>
-    <lastmod>2021-11-29</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
     <loc>https://www.astroeshop.com/blog/dreaming-signs-the-symbolism-of-elephant-dreams-in-astrology/</loc>
     <lastmod>2024-05-23</lastmod>
     <changefreq>monthly</changefreq>
@@ -1485,18 +1053,6 @@
   <url>
     <loc>https://www.astroeshop.com/blog/durga-ashtami-2025-horoscope-insights-reveal-heavenly-secrets/</loc>
     <lastmod>2025-05-17</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/dussehra-2021-how-to-attract-prosperity-on-vijay-dashami/</loc>
-    <lastmod>2021-07-29</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/dussehra-2023-vijayadashami-date-and-celebration/</loc>
-    <lastmod>2023-09-12</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
@@ -1513,68 +1069,14 @@
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://www.astroeshop.com/blog/ek-mukhi-rudraksha/</loc>
-    <lastmod>2020-12-22</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/every-month-of-pregnancy-has-a-ruling-planet/</loc>
-    <lastmod>2021-11-18</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/feng-shui-tips-and-products-for-career-and-wealth-astroeshop/</loc>
-    <lastmod>2021-12-30</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/feng-shui-tips-improve-your-bedroom-life-with-these-tips/</loc>
-    <lastmod>2021-11-15</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/find-the-beauty-prosperity-and-joy-of-children-in-the-trees/</loc>
-    <lastmod>2021-11-26</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/firoza-gemstone/</loc>
-    <lastmod>2021-12-29</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
     <loc>https://www.astroeshop.com/blog/first-day-2026-astrology-predictions-significance/</loc>
     <lastmod>2025-12-18</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://www.astroeshop.com/blog/follow-these-easy-tips-for-good-cash-flow-in-business/</loc>
-    <lastmod>2021-11-13</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
     <loc>https://www.astroeshop.com/blog/foot-reading-basics-interpretations-and-secrets-in-palmistry/</loc>
     <lastmod>2024-07-06</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/for-happiness-make-matangi-yantra-sadhana/</loc>
-    <lastmod>2021-10-27</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/ganesh-chaturthi-2023-know-date-how-and-why-to-celebrate/</loc>
-    <lastmod>2023-08-25</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
@@ -1633,32 +1135,8 @@
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://www.astroeshop.com/blog/get-beauty-prosperity-and-child-happiness-from-trees/</loc>
-    <lastmod>2021-11-01</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/goddess-sati-was-born-from-the-fruits-of-her-father-dakshas-penance/</loc>
-    <lastmod>2021-12-06</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
     <loc>https://www.astroeshop.com/blog/gold-benefits-of-wearing-it-in-astrology/</loc>
     <lastmod>2023-12-15</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/gomed-stone/</loc>
-    <lastmod>2021-02-08</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/gomti-chakra-to-remove-evil-eye-and-gain-financial-blessing/</loc>
-    <lastmod>2020-12-11</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
@@ -1671,18 +1149,6 @@
   <url>
     <loc>https://www.astroeshop.com/blog/govardhan-pooja-2024-spiritual-astrological-connection/</loc>
     <lastmod>2024-10-26</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/govardhan-puja-2021/</loc>
-    <lastmod>2021-08-16</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/govardhan-puja-2022-date-shubh-muhurta/</loc>
-    <lastmod>2022-10-20</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
@@ -1705,20 +1171,8 @@
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://www.astroeshop.com/blog/gudi-padwa-2023-when-is-it-know-the-date-and-time-of-worship/</loc>
-    <lastmod>2023-02-24</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
     <loc>https://www.astroeshop.com/blog/gudi-padwa-2024-welcome-a-new-year-with-fun-and-joy/</loc>
     <lastmod>2024-04-03</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/guru-chandal-yoga-effects-and-remedies/</loc>
-    <lastmod>2020-12-16</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
@@ -1729,68 +1183,14 @@
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://www.astroeshop.com/blog/guru-purnima-2023-date-history-significance-celebrations/</loc>
-    <lastmod>2023-06-07</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
     <loc>https://www.astroeshop.com/blog/guru-purnima-2024-honoring-the-divine-teacher/</loc>
     <lastmod>2024-05-17</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://www.astroeshop.com/blog/guru-venus-is-making-a-great-union-on-dhanteras-know-the-method-of-worship-importance-and-auspicious-time/</loc>
-    <lastmod>2021-10-27</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/guru-yantra-benefits/</loc>
-    <lastmod>2022-12-03</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/hanuman-chalisa-miraculous-and-astrological-significances/</loc>
-    <lastmod>2023-04-22</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
     <loc>https://www.astroeshop.com/blog/hanuman-jayanti-2024-date-muhurat-and-specific-mantra-to-recite/</loc>
     <lastmod>2024-04-09</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/hanuman-jis-fast-why-these-fast-are-fruitful/</loc>
-    <lastmod>2021-09-01</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/haridra-mala-removes-obstacles-in-marriage/</loc>
-    <lastmod>2021-10-28</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/haryali-teej-2021-the-right-way-to-celebrate-and-fulfill-your-desires/</loc>
-    <lastmod>2021-07-19</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/head-of-the-house-jupiter-is-bad-so-there-will-be-no-peace-in-the-house/</loc>
-    <lastmod>2021-11-10</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/health-and-astrological-benefits-of-cloves/</loc>
-    <lastmod>2021-12-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
@@ -1807,68 +1207,8 @@
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://www.astroeshop.com/blog/holi-india-the-festival-of-colours/</loc>
-    <lastmod>2022-03-15</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
     <loc>https://www.astroeshop.com/blog/holika-dahan-2024-story-of-holika-dahan-date-and-timings-of-puja/</loc>
     <lastmod>2024-03-21</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/hora-horoscope-gives-information-about-wealth-without-it-the-statement-is-incomplete/</loc>
-    <lastmod>2021-10-27</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/horoscope-by-date-of-birth-in-hindi/</loc>
-    <lastmod>2022-05-25</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/how-and-where-death-will-occur-the-eighth-house-will-reveal-a-secret/</loc>
-    <lastmod>2021-10-29</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/how-can-you-get-an-accurate-horoscope-prediction-analysis/</loc>
-    <lastmod>2022-01-14</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/how-can-you-know-the-answer-to-your-questions-with-the-help-of-prashna-kundli/</loc>
-    <lastmod>2021-12-02</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/how-can-you-recognize-the-mantras-what-mantra-is-used-there/</loc>
-    <lastmod>2021-10-14</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/how-do-kundli-works-how-to-get-free-online-janam-kundli/</loc>
-    <lastmod>2021-07-12</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/how-does-kundli-milan-help-us-in-marriage/</loc>
-    <lastmod>2022-08-25</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/how-does-luck-happen-what-measures-to-take/</loc>
-    <lastmod>2021-11-09</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
@@ -1879,20 +1219,8 @@
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://www.astroeshop.com/blog/how-maha-mrityunjaya-yantra-works/</loc>
-    <lastmod>2022-12-07</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
     <loc>https://www.astroeshop.com/blog/how-numbers-can-ruin-your-life-according-to-astrology/</loc>
     <lastmod>2025-02-18</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/how-to-get-positive-energy-of-planets-without-gems/</loc>
-    <lastmod>2021-11-11</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
@@ -1909,104 +1237,14 @@
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://www.astroeshop.com/blog/husband-and-wife-relationship-love-problem-solution/</loc>
-    <lastmod>2022-06-27</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
     <loc>https://www.astroeshop.com/blog/if-kundli-doesnt-match-should-you-get-married-complete-guide/</loc>
     <lastmod>2026-04-25</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://www.astroeshop.com/blog/if-the-moon-is-in-the-seventh-house-then-who-should-wear-pearl/</loc>
-    <lastmod>2021-11-24</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/if-you-are-going-to-make-furniture-then-keep-these-things-in-mind/</loc>
-    <lastmod>2021-10-25</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/if-you-are-not-getting-promotion-despite-hard-work-then-follow-these-astro-tips/</loc>
-    <lastmod>2021-10-27</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/if-you-do-not-take-care-of-these-things-before-getting-the-ring-of-navratna-then-you-will-not-get-the-benefit/</loc>
-    <lastmod>2021-10-28</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/if-you-plant-these-plants-on-deepawali-there-will-never-be-a-shortage-of-money/</loc>
-    <lastmod>2021-11-01</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/if-you-want-to-grow-your-business-read-it/</loc>
-    <lastmod>2021-10-11</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/if-you-wear-this-stone-there-will-be-no-effect-of-aging-you-will-remain-young-forever/</loc>
-    <lastmod>2021-11-23</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/if-you-will-not-get-enough-respect-in-the-society/</loc>
-    <lastmod>2021-09-15</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/importance-of-amavasya-follow-these-steps-to-get-special-blessings-from-your-ancestral/</loc>
-    <lastmod>2021-09-06</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/importance-of-brihaspati-yantra/</loc>
-    <lastmod>2022-01-04</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/in-peacock-feather-all-the-gods-and-9-planets-resides/</loc>
-    <lastmod>2021-12-09</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
     <loc>https://www.astroeshop.com/blog/independence-day-celebrations-2025-astroeshop/</loc>
     <lastmod>2025-05-03</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/independence-day-historical-significance/</loc>
-    <lastmod>2023-08-10</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/indira-ekadashi-2021-gets-an-abundance-of-happiness-and-prosperity/</loc>
-    <lastmod>2021-08-09</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/is-your-horoscope-meant-to-be-an-actor/</loc>
-    <lastmod>2021-10-11</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
@@ -2023,74 +1261,8 @@
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://www.astroeshop.com/blog/jamuniya-stone-gives-maximum-benefits-for-which-zodiac-sign/</loc>
-    <lastmod>2023-05-24</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/janam-kundali-by-date-of-birth-and-time-in-hindi/</loc>
-    <lastmod>2023-07-20</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/janam-kundali-online-for-business-strategy-and-decision-making/</loc>
-    <lastmod>2023-06-15</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/janam-kundli-analysis-future-prediction/</loc>
-    <lastmod>2022-11-03</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/janam-kundli-how-will-be-my-life-partner/</loc>
-    <lastmod>2023-06-06</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/janam-kundli-in-hindi-learn-about-your-past-and-future/</loc>
-    <lastmod>2023-02-04</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/janam-kundli-will-you-get-money-or-not/</loc>
-    <lastmod>2023-06-14</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/janmashtami-2021-do-this-and-get-immense-blessings-of-shri-krishna/</loc>
-    <lastmod>2021-07-17</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/janmashtami-2022-date-meaning-significance-and-mythology/</loc>
-    <lastmod>2022-07-29</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
     <loc>https://www.astroeshop.com/blog/janmashtami-2025-krishna-janmashtami-vastu-expert-2025/</loc>
     <lastmod>2025-05-07</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/jyotish-know-how-to-make-a-dream-to-become-wealthy-successful/</loc>
-    <lastmod>2023-09-27</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/kaal-bhairav-jayanti-2021/</loc>
-    <lastmod>2021-08-19</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
@@ -2101,38 +1273,8 @@
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://www.astroeshop.com/blog/kajari-teej-2023-know-auspicious-time-and-fast/</loc>
-    <lastmod>2023-08-17</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/kalawa-spiritual-significance-vedic-protection-and-traditions/</loc>
-    <lastmod>2020-12-18</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/kamika-ekadashi-2023-puja-muhurta-rituals-story-and-mantra/</loc>
-    <lastmod>2023-06-21</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
     <loc>https://www.astroeshop.com/blog/karwa-chauth-2025-shubh-muhurat-vrat-katha-astrology-guidance/</loc>
     <lastmod>2025-09-24</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/karwachauth-2021-celebrate-in-this-way-and-get-the-immense-blessings-of-goddess-parvati/</loc>
-    <lastmod>2021-08-03</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/karwachauth-2022-date-time-worship-method-and-story/</loc>
-    <lastmod>2022-10-11</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
@@ -2161,74 +1303,8 @@
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://www.astroeshop.com/blog/know-everything-about-cats-eye-gemstone/</loc>
-    <lastmod>2022-01-07</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/know-how-to-cure-deadly-diseases-like-cancer-through-astrology/</loc>
-    <lastmod>2021-12-02</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/know-the-future-of-people-born-on-monday/</loc>
-    <lastmod>2021-11-30</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/know-what-is-the-connection-between-writing-and-planets/</loc>
-    <lastmod>2021-11-18</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/know-when-and-how-ravi-yoga-and-sarvarthasiddhi-yoga-are-formed/</loc>
-    <lastmod>2021-10-27</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/know-when-and-who-should-not-wear-rudraksh/</loc>
-    <lastmod>2021-10-28</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/know-which-day-is-considered-auspicious-to-apply-which-tilak/</loc>
-    <lastmod>2021-12-04</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/know-why-silver-is-considered-the-most-sacred-metal/</loc>
-    <lastmod>2021-11-22</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/know-your-online-janam-kundli-in-hindi-by-date-of-birth-and-time/</loc>
-    <lastmod>2022-02-17</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/krishna-janmashtami-2023-when-know-the-date-and-timings/</loc>
-    <lastmod>2023-08-19</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
     <loc>https://www.astroeshop.com/blog/krishna-janmashtami-2024-divine-and-astrological-guidance/</loc>
     <lastmod>2024-08-16</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/kuber-yantra-benefits/</loc>
-    <lastmod>2022-11-16</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
@@ -2241,12 +1317,6 @@
   <url>
     <loc>https://www.astroeshop.com/blog/kumbh-rashi-2026-career-finance-love-health-predictions/</loc>
     <lastmod>2025-11-22</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/kundali-matching-by-date-of-birth-%e0%a4%9c%e0%a4%a8%e0%a5%8d%e0%a4%ae%e0%a4%a4%e0%a4%bf%e0%a4%a5%e0%a4%bf-%e0%a4%b8%e0%a5%87-%e0%a4%95%e0%a5%81%e0%a4%82%e0%a4%a1%e0%a4%b2%e0%a5%80-%e0%a4%ae%e0%a4%bf/</loc>
-    <lastmod>2023-08-01</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
@@ -2275,24 +1345,6 @@
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://www.astroeshop.com/blog/kundli-know-at-what-age-you-will-get-married-will-you-find-a-beautiful-partner-or-not/</loc>
-    <lastmod>2023-09-30</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/kundli-match-making-is-very-important-for-a-marriage/</loc>
-    <lastmod>2023-01-18</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/kundli-matching-for-marriage/</loc>
-    <lastmod>2022-11-10</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
     <loc>https://www.astroeshop.com/blog/kundli-matching-for-marriage-guna-milan-doshas-and-remedies/</loc>
     <lastmod>2026-04-23</lastmod>
     <changefreq>monthly</changefreq>
@@ -2305,30 +1357,6 @@
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://www.astroeshop.com/blog/kundli-matchmaking-ancient-art-and-its-significance/</loc>
-    <lastmod>2023-01-27</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/kundli-matchmaking-finding-your-soulmate-through-the-power/</loc>
-    <lastmod>2023-03-02</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/kundli-matchmaking-unlocking-the-secrets-of-happy-relationships/</loc>
-    <lastmod>2023-02-27</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/kundli-online-will-tell-you-about-your-marriage-prediction/</loc>
-    <lastmod>2023-01-11</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
     <loc>https://www.astroeshop.com/blog/kundli-predictions-2025-monthly-guide-to-success-and-happiness/</loc>
     <lastmod>2024-12-18</lastmod>
     <changefreq>monthly</changefreq>
@@ -2337,12 +1365,6 @@
   <url>
     <loc>https://www.astroeshop.com/blog/kundli-predictions-can-help-you-overcome-lifes-challenges/</loc>
     <lastmod>2024-11-07</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/kurma-jayanti-is-best-for-vaastu-defects/</loc>
-    <lastmod>2021-12-07</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
@@ -2365,18 +1387,6 @@
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://www.astroeshop.com/blog/laxmi-ganesh-yantra-plate-benefits/</loc>
-    <lastmod>2022-11-28</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/laxmi-yantra-benefits/</loc>
-    <lastmod>2022-11-14</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
     <loc>https://www.astroeshop.com/blog/left-eye-twitching-for-female-meaning-in-astrology/</loc>
     <lastmod>2023-11-21</lastmod>
     <changefreq>monthly</changefreq>
@@ -2395,18 +1405,6 @@
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://www.astroeshop.com/blog/lohri-2022-celebrate-in-this-way-to-bring-happiness-at-home/</loc>
-    <lastmod>2021-12-10</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/lohri-2023-lohri-why-is-it-celebrated/</loc>
-    <lastmod>2022-12-23</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
     <loc>https://www.astroeshop.com/blog/lohri-2025-a-festival-of-joy-and-prosperity/</loc>
     <lastmod>2025-01-06</lastmod>
     <changefreq>monthly</changefreq>
@@ -2419,12 +1417,6 @@
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://www.astroeshop.com/blog/love-and-relationship-horoscope-for-november-2022/</loc>
-    <lastmod>2022-10-28</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
     <loc>https://www.astroeshop.com/blog/love-horoscope-2026-relationship-marriage-emotional-forecast/</loc>
     <lastmod>2025-11-13</lastmod>
     <changefreq>monthly</changefreq>
@@ -2433,12 +1425,6 @@
   <url>
     <loc>https://www.astroeshop.com/blog/love-marriage-astrology-2026-jupiter-venus-rahu/</loc>
     <lastmod>2026-01-02</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/lunar-eclipse-2021-date-visibility-and-yogini-dasha-effects/</loc>
-    <lastmod>2021-10-22</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
@@ -2461,38 +1447,8 @@
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://www.astroeshop.com/blog/magha-purnima-2023-date-timings-and-significance/</loc>
-    <lastmod>2023-01-31</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/maha-mrityunjaya-yantra-a-powerful-yantra-to-end-all-the-fear/</loc>
-    <lastmod>2021-12-06</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
     <loc>https://www.astroeshop.com/blog/mahalakshmi-vrat-2021-powerful-and-auspicious-fast-to-attract-wealth/</loc>
     <lastmod>2025-06-23</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/mahalakshmi-vrat-2021-the-most-powerful-and-auspicious-fast-observed-to-welcome-immense-wealth/</loc>
-    <lastmod>2021-07-23</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/mahalakshmi-vrat-2023-know-date-mahalaxmi-vrat-information/</loc>
-    <lastmod>2023-08-29</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/mahamrityunjaya-mantra-powerful-mantra-mantra-to-reduce-the-risk-of-death/</loc>
-    <lastmod>2021-09-01</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
@@ -2515,50 +1471,14 @@
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://www.astroeshop.com/blog/main-belief-of-astrology/</loc>
-    <lastmod>2021-07-16</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/makar-sankranti-2022/</loc>
-    <lastmod>2021-12-10</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
     <loc>https://www.astroeshop.com/blog/makar-sankranti-2026-astrology-sun-transit-shubh-muhurat-remedies/</loc>
     <lastmod>2025-12-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://www.astroeshop.com/blog/mangal-dosh-how-can-it-be-cured/</loc>
-    <lastmod>2020-12-09</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
     <loc>https://www.astroeshop.com/blog/mangal-dosh-how-can-it-be-cured-2/</loc>
     <lastmod>2025-06-13</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/mangla-gauri-vrat-can-remove-all-the-sin-from-your-horoscope/</loc>
-    <lastmod>2021-08-31</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/manik-stone/</loc>
-    <lastmod>2021-02-05</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/mantra-to-get-wealth-according-to-the-zodiac-sign/</loc>
-    <lastmod>2021-10-08</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
@@ -2587,48 +1507,6 @@
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://www.astroeshop.com/blog/masik-shivaratri-2023-date-story-vrat-vidhi-benefits/</loc>
-    <lastmod>2023-08-04</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/matchmaking-kundali-the-most-accurate-premium-kundli/</loc>
-    <lastmod>2023-01-24</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/medicine-bath-removes-the-pain-of-evil-planets-know-everything-about-it/</loc>
-    <lastmod>2021-10-27</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/meena-sankranti-2023-date-time-significance-and-rituals/</loc>
-    <lastmod>2023-02-20</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/mercury-yoga-makes-the-king-of-the-world-of-business/</loc>
-    <lastmod>2021-11-06</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/mithuna-sankranti-2023-date-time-history-and-significances/</loc>
-    <lastmod>2023-05-05</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/mokshada-ekadashi-2021-follow-these-rules-to-get-moksha/</loc>
-    <lastmod>2021-08-09</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
     <loc>https://www.astroeshop.com/blog/most-dangerous-doshas-in-kundali-how-they-impact-your-life/</loc>
     <lastmod>2024-08-27</lastmod>
     <changefreq>monthly</changefreq>
@@ -2641,44 +1519,8 @@
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://www.astroeshop.com/blog/mundan-muhurat-in-2023-and-its-importance/</loc>
-    <lastmod>2023-05-26</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
     <loc>https://www.astroeshop.com/blog/mundan-muhurta-2024-auspicious-muhurta-that-you-should-know/</loc>
     <lastmod>2024-01-31</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/must-see-this-yoga-before-enrolling-in-engineering/</loc>
-    <lastmod>2021-11-13</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/mysterious-signals-from-19-stars-together-in-the-worlds-most-powerful-antenna-scientists-sleep/</loc>
-    <lastmod>2021-10-27</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/myth-and-facts-about-vedic-astrology/</loc>
-    <lastmod>2021-07-10</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/nadi-dosha-why-its-important-to-know-facts-about-nadi-dosha/</loc>
-    <lastmod>2021-09-15</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/nag-panchami-2023-when-date-muhurta-and-method-of-worship/</loc>
-    <lastmod>2023-08-03</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
@@ -2695,24 +1537,6 @@
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://www.astroeshop.com/blog/narak-chaturdashi-2021-remove-your-obstacles-on-this-day/</loc>
-    <lastmod>2021-07-30</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/narali-purnima-2021/</loc>
-    <lastmod>2021-07-21</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/narasimha-jayanti-2023-puja-muhurta-mantra-and-story/</loc>
-    <lastmod>2023-04-06</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
     <loc>https://www.astroeshop.com/blog/nature-and-future-of-people-born-in-january/</loc>
     <lastmod>2025-12-30</lastmod>
     <changefreq>monthly</changefreq>
@@ -2721,24 +1545,6 @@
   <url>
     <loc>https://www.astroeshop.com/blog/navagraha-puja-benefits-and-importance-of-navagraha-puja/</loc>
     <lastmod>2023-11-01</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/navagraha-will-be-peaceful-with-panch-pallav-the-crisis-will-be-averted/</loc>
-    <lastmod>2021-11-22</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/navpatrika-puja-2021-know-auspicious-timings-and-rituals/</loc>
-    <lastmod>2021-08-03</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/navratri-2023-know-the-time-importance-of-kalash-sthapana/</loc>
-    <lastmod>2023-09-06</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
@@ -2767,80 +1573,14 @@
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://www.astroeshop.com/blog/offering-water-to-sun-and-its-astrological-significance/</loc>
-    <lastmod>2020-12-05</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/onam-2021-celebrate-in-this-way-to-bring-happiness-to-the-home/</loc>
-    <lastmod>2021-07-19</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
     <loc>https://www.astroeshop.com/blog/onam-2025-indias-harvest-festival-astroeshop/</loc>
     <lastmod>2025-05-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://www.astroeshop.com/blog/padmini-ekadashi-2023-importance-history-and-fast/</loc>
-    <lastmod>2023-06-30</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/palmistry-answer-the-great-questions-related-to-your-children/</loc>
-    <lastmod>2021-12-02</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/panna-gemstone-benefits/</loc>
-    <lastmod>2022-12-28</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/panna-ratna-important-history-and-myths/</loc>
-    <lastmod>2023-06-24</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/panna-ratna-who-should-wear-it-when-and-how-to-wear/</loc>
-    <lastmod>2023-04-11</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
     <loc>https://www.astroeshop.com/blog/parshuram-jayanti-2024-date-timings-rituals-and-special-mantra/</loc>
     <lastmod>2024-04-25</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/pearl-moti-benefits-and-how-to-wear-it/</loc>
-    <lastmod>2023-04-08</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/people-with-radix-number-2-get-attracted-towards-beauty-very-quickly/</loc>
-    <lastmod>2021-11-15</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/people-with-radix-number-6-are-rich-and-beautiful/</loc>
-    <lastmod>2021-11-30</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/phalguna-purnima-2023-observance-and-significance/</loc>
-    <lastmod>2023-02-16</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
@@ -2857,38 +1597,8 @@
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://www.astroeshop.com/blog/pitru-paksha-2023-how-water-is-offer-to-ancestors-its-method/</loc>
-    <lastmod>2023-09-25</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
     <loc>https://www.astroeshop.com/blog/plan-your-2025-with-kundli-career-love-and-life-forecasts/</loc>
     <lastmod>2024-12-19</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/planets-in-different-houses/</loc>
-    <lastmod>2020-12-24</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/pongal-2022-importance-of-pongal-festival/</loc>
-    <lastmod>2021-12-13</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/positive-negative-energy-enters-from-the-main-door-of-the-house/</loc>
-    <lastmod>2021-11-15</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/power-and-benefits-of-sunderkand/</loc>
-    <lastmod>2022-01-03</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
@@ -2905,56 +1615,14 @@
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://www.astroeshop.com/blog/pradosh-vrat-auspicious-yoga-know-invocation-fasting-method/</loc>
-    <lastmod>2023-08-07</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/prem-prapti-yantra-benefits/</loc>
-    <lastmod>2022-11-28</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/previous-birth-what-were-you-in-your-last-life-you-will-reveal-the-secret/</loc>
-    <lastmod>2021-11-19</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
     <loc>https://www.astroeshop.com/blog/puja-niyam-things-to-keep-in-mind-during-evening-puja/</loc>
     <lastmod>2023-12-02</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://www.astroeshop.com/blog/quitting-alcohol-will-not-be-easy-if-these-planets-are-sitting-together-in-the-horoscope/</loc>
-    <lastmod>2021-11-18</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
     <loc>https://www.astroeshop.com/blog/rabindra-tagore-jayanti-2025-how-india-celebrates-astroeshop/</loc>
     <lastmod>2025-04-19</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/rahu-makes-you-from-chandal-to-very-wealthy/</loc>
-    <lastmod>2021-11-10</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/raksha-bandhan-2021-how-and-why-it-should-be-celebrated/</loc>
-    <lastmod>2021-07-26</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/raksha-bandhan-2022-with-shubh-muhrat-timings/</loc>
-    <lastmod>2022-06-16</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
@@ -2971,32 +1639,8 @@
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://www.astroeshop.com/blog/raksha-bandhan-historical-and-mythological-origins/</loc>
-    <lastmod>2023-08-09</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/ram-navami-2023-date-time-and-muhurat/</loc>
-    <lastmod>2023-03-11</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
     <loc>https://www.astroeshop.com/blog/ram-navami-2024-a-joyous-festival-honoring-lord-rama/</loc>
     <lastmod>2024-04-12</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/ram-navami-why-it-is-the-most-auspicious-day-for-hindus/</loc>
-    <lastmod>2021-08-30</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/rama-ekadashi-2021-welcome-maa-laxmi-with-vishnu-ji/</loc>
-    <lastmod>2021-08-08</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
@@ -3007,44 +1651,8 @@
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://www.astroeshop.com/blog/rashifal-decides-by-astrologers-on-daily-prediction/</loc>
-    <lastmod>2021-12-22</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/recitation-of-shri-ganesh-sahastranama-stotram-removes-poverty-of-seven-births/</loc>
-    <lastmod>2021-10-25</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/relationship-love-horoscope-prediction-2022/</loc>
-    <lastmod>2022-06-22</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/rohini-vrat-2021-this-fast-you-will-get-the-blessing-of-vasupujya-ji/</loc>
-    <lastmod>2021-08-25</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/rudraksha-and-its-benefits/</loc>
-    <lastmod>2020-11-24</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
     <loc>https://www.astroeshop.com/blog/rudraksha-for-shani-rahu-ketu-kaal-sarp-dosha/</loc>
     <lastmod>2025-12-20</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/rudraksha-know-an-appropriate-rudraksha-to-wear/</loc>
-    <lastmod>2023-06-01</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
@@ -3055,56 +1663,14 @@
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://www.astroeshop.com/blog/samudrika-shastra-ears-not-only-listen-but-also-say-something/</loc>
-    <lastmod>2021-11-22</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/sandalwood-garland-brings-prosperity-know-its-benefits/</loc>
-    <lastmod>2021-10-27</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
     <loc>https://www.astroeshop.com/blog/saraswati-puja-2025-date-significance-rituals-and-mantras/</loc>
     <lastmod>2025-01-31</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://www.astroeshop.com/blog/saturn-is-the-way-circumstances-will-change-there-will-be-reduction-in-inauspicious-results/</loc>
-    <lastmod>2021-11-17</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/satyanarayana-vrat-2021-katha-pooja-vidhi-dates-and-timings/</loc>
-    <lastmod>2021-07-21</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/sawan-2022-date-time-mantra-puja-vidhi-and-meaning-of-lord-shivas-favorite-month/</loc>
-    <lastmod>2022-07-22</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
     <loc>https://www.astroeshop.com/blog/sawan-2024-significances-date-timings-and-fasting/</loc>
     <lastmod>2024-07-15</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/sawan-somwar-2023-history-significances-method-and-mantras/</loc>
-    <lastmod>2023-07-06</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/science-vs-astrology/</loc>
-    <lastmod>2021-09-16</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
@@ -3121,38 +1687,8 @@
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://www.astroeshop.com/blog/seven-faced-rudraksha-benefits-mantra-authenticity/</loc>
-    <lastmod>2023-06-22</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/shaligram-can-make-you-the-richest-by-following-these-steps/</loc>
-    <lastmod>2021-08-25</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/shani-amavasya-seems-to-be-the-last-solar-eclipse-of-the-year-definitely-do-this-work/</loc>
-    <lastmod>2021-12-01</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/shani-jayanti-2023-know-story-mantra-and-significance/</loc>
-    <lastmod>2023-04-02</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
     <loc>https://www.astroeshop.com/blog/sharad-navratri-2024-planetary-alignments-and-affect-your-zodiac/</loc>
     <lastmod>2024-10-07</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/shardiya-navratri-2023-know-nine-days-puja-method-mantra-prasad-and-rules/</loc>
-    <lastmod>2023-09-08</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
@@ -3169,44 +1705,8 @@
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://www.astroeshop.com/blog/shukra-yantra-benefits-uses-how-to-wear-it/</loc>
-    <lastmod>2023-03-25</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/six-faced-rudraksha-benefits-significance-procedure-to-wear/</loc>
-    <lastmod>2023-05-17</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/solar-eclipse-2023october-14th-eclipse-what-will-happen-in-india/</loc>
-    <lastmod>2023-09-02</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/some-important-facts-related-to-mahabharata/</loc>
-    <lastmod>2021-12-08</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/somvati-amavasya-2023-know-when-is-somvati-amavasya/</loc>
-    <lastmod>2023-02-01</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
     <loc>https://www.astroeshop.com/blog/spouse-prediction-astrology-prediction-by-date-of-birth-and-time/</loc>
     <lastmod>2024-06-06</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/sundarkand-to-please-hanuman-ji-do-sunderkand-path-in-this-way/</loc>
-    <lastmod>2021-09-02</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
@@ -3223,98 +1723,14 @@
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://www.astroeshop.com/blog/teachers-day-2023-when-why-how-is-it-celebrated/</loc>
-    <lastmod>2023-08-30</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
     <loc>https://www.astroeshop.com/blog/the-5-most-romantic-zodiac-signs-are-you-one-of-them/</loc>
     <lastmod>2024-09-06</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://www.astroeshop.com/blog/the-fire-of-giant-asteroids-is-happening-in-the-universe-the-blazing-rocks-passing-by-the-earth-increased-the-tension/</loc>
-    <lastmod>2021-10-27</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/the-most-expensive-gemstones-in-the-world/</loc>
-    <lastmod>2022-01-29</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/the-positive-aspect-of-astrology/</loc>
-    <lastmod>2021-07-10</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
     <loc>https://www.astroeshop.com/blog/the-role-of-astrology-in-manifestation-aligning-with-the-universe/</loc>
     <lastmod>2024-09-26</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/the-wife-herself-had-cursed-so-the-sight-of-shani-dev-brings-destruction/</loc>
-    <lastmod>2021-11-01</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/there-are-also-anti-diabetic-remedies-for-astrology-acceptance-and-health/</loc>
-    <lastmod>2021-12-01</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/these-gems-are-effective-in-physical-and-mental-diseases/</loc>
-    <lastmod>2021-12-09</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/these-simple-tips-can-change-your-life/</loc>
-    <lastmod>2021-12-01</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/think-good-and-bad-with-the-things-seen-during-the-journey/</loc>
-    <lastmod>2021-11-01</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/three-faced-rudraksha-significance-and-wearing-process/</loc>
-    <lastmod>2023-05-19</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/thumb-palmistry-know-with-your-thumb-how-will-be-your-luck/</loc>
-    <lastmod>2021-11-29</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/to-get-a-desired-groom-worship-maa-kathyayini-in-this-way/</loc>
-    <lastmod>2021-12-04</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/to-please-shani-dev-chant-these-5-mantras-all-the-troubles-will-go-away/</loc>
-    <lastmod>2021-11-17</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/top-10-astrologers-in-india/</loc>
-    <lastmod>2020-11-30</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
@@ -3331,56 +1747,8 @@
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://www.astroeshop.com/blog/ugadi-2023-celebration-of-the-kannada-new-year/</loc>
-    <lastmod>2023-02-21</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/use-moon-rejuvenation-for-beauty-and-glowing-skin/</loc>
-    <lastmod>2021-10-27</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/use-these-mantras-to-stay-happy-and-healthy/</loc>
-    <lastmod>2021-11-13</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/utpanna-ekadashi-2021-the-best-way-to-observe-this-fast/</loc>
-    <lastmod>2021-08-09</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/vaastu-tips-it-is-important-to-keep-the-vaastu-of-your-vehicle-right/</loc>
-    <lastmod>2021-11-09</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/vaastu-tips-these-vaastu-astrology-measures-will-help-you-get-rid-of-exam-stress/</loc>
-    <lastmod>2021-11-11</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/vaastu-while-cooking-and-eating-in-which-direction-we-should-do-a-face/</loc>
-    <lastmod>2023-09-22</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
     <loc>https://www.astroeshop.com/blog/vaisakhi-2024-date-muhurat-and-rituals/</loc>
     <lastmod>2024-04-04</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/vaishakha-purnima-2023-date-time-and-significance/</loc>
-    <lastmod>2023-03-31</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
@@ -3391,20 +1759,8 @@
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://www.astroeshop.com/blog/varalakshmi-vrat-2021-attracts-wealth-and-prosperity-by-celebrating-in-this-way/</loc>
-    <lastmod>2021-07-19</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
     <loc>https://www.astroeshop.com/blog/varshik-rashifal-2026/</loc>
     <lastmod>2025-11-15</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/varuthini-ekadashi-2023-significances/</loc>
-    <lastmod>2023-03-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
@@ -3415,26 +1771,8 @@
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://www.astroeshop.com/blog/vastu-interior-house-according-to-best-vastu-tips/</loc>
-    <lastmod>2023-04-23</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
     <loc>https://www.astroeshop.com/blog/vastu-mistakes-5-mistakes-to-avoid-in-your-home-and-kitchen/</loc>
     <lastmod>2025-08-12</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/vastu-shashtra-which-day-is-auspicious-to-buy-furniture-and-its-importance/</loc>
-    <lastmod>2023-09-21</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/vastu-shastra-guidance-before-construct-a-house/</loc>
-    <lastmod>2020-11-25</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
@@ -3451,18 +1789,6 @@
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://www.astroeshop.com/blog/vastu-shastra-vastu-tips-for-prosperity-and-happiness-at-home/</loc>
-    <lastmod>2022-11-02</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/vastu-these-principles-of-vastu-will-help-in-increasing-wealth/</loc>
-    <lastmod>2021-11-08</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
     <loc>https://www.astroeshop.com/blog/vastu-tips-for-diwali-2024-how-to-bring-prosperity-into-your-home/</loc>
     <lastmod>2024-10-21</lastmod>
     <changefreq>monthly</changefreq>
@@ -3471,12 +1797,6 @@
   <url>
     <loc>https://www.astroeshop.com/blog/vastu-tips-for-kitchen-tips-that-really-work-for-peaceful-home/</loc>
     <lastmod>2025-08-02</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/vedic-astrology-or-western-astrology-what-should-we-prefer/</loc>
-    <lastmod>2023-07-01</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
@@ -3499,20 +1819,8 @@
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://www.astroeshop.com/blog/vidya-yantra-benefits/</loc>
-    <lastmod>2022-12-06</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
     <loc>https://www.astroeshop.com/blog/virgo-horoscope-2026-career-finance-love-health-predictions/</loc>
     <lastmod>2025-12-01</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/vishwakarma-puja-2023-know-the-importance-method-and-mantra/</loc>
-    <lastmod>2023-08-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
@@ -3523,68 +1831,8 @@
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://www.astroeshop.com/blog/wear-12-mukhi-rudraksha-in-pushya-nakshatra-on-the-first-day-of-the-year/</loc>
-    <lastmod>2021-10-28</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/wear-garnet-for-profit-in-business-and-share-market/</loc>
-    <lastmod>2021-10-27</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/what-are-the-five-major-defects-of-vaastu-what-is-the-effect/</loc>
-    <lastmod>2021-11-19</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/what-does-the-mole-on-the-forehead-say-know-whether-it-is-good-or-bad/</loc>
-    <lastmod>2021-11-01</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/what-happens-if-the-symbol-of-a-conch-is-made-in-the-hand/</loc>
-    <lastmod>2021-11-13</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/what-is-jamuniya-gemstone-which-looks-like-sapphire/</loc>
-    <lastmod>2022-12-26</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/what-is-life-how-to-live-a-good-life/</loc>
-    <lastmod>2021-12-08</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/what-is-the-fact-behind-wearing-rudraksha/</loc>
-    <lastmod>2021-12-18</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
     <loc>https://www.astroeshop.com/blog/what-remedies-should-be-done-before-diwali/</loc>
     <lastmod>2025-10-01</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/when-is-karwachauth-2023-know-its-timings-and-date/</loc>
-    <lastmod>2023-10-05</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/which-direction-is-auspicious-to-keep-temple-in-a-house/</loc>
-    <lastmod>2021-12-07</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
@@ -3595,44 +1843,8 @@
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://www.astroeshop.com/blog/which-gemstone-to-wear-as-per-kundli/</loc>
-    <lastmod>2021-12-19</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/why-astrology-is-important-in-our-life/</loc>
-    <lastmod>2021-09-16</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/why-christmas-is-celebrated/</loc>
-    <lastmod>2021-08-19</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
     <loc>https://www.astroeshop.com/blog/why-is-choti-diwali-called-narak-chaturdashi/</loc>
     <lastmod>2025-10-16</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/why-is-the-tenth-house-of-a-horoscope-important/</loc>
-    <lastmod>2021-11-13</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/why-is-tulsi-patra-prohibited-in-ganpati-puja/</loc>
-    <lastmod>2021-10-28</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/why-janam-kundli-is-necessary-for-business-progress-in-astrology/</loc>
-    <lastmod>2023-05-29</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
@@ -3643,56 +1855,14 @@
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://www.astroeshop.com/blog/why-matchmaking-kundli-is-important-in-vedic-astrology/</loc>
-    <lastmod>2021-12-28</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/why-should-you-keep-laxmi-kuber-dhan-varsha-yantra-in-your-house/</loc>
-    <lastmod>2022-01-08</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/why-you-should-do-this-on-every-amavasya/</loc>
-    <lastmod>2021-09-06</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
     <loc>https://www.astroeshop.com/blog/winter-solstice-2025-rashiyon-par-kya-hoga-asar/</loc>
     <lastmod>2025-12-16</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://www.astroeshop.com/blog/without-this-special-worship-the-marriage-of-the-native-of-libra-zodiac-would-not-have-happened/</loc>
-    <lastmod>2021-10-23</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
     <loc>https://www.astroeshop.com/blog/world-environment-day-2025-astrology-meets-ecology-astroeshop/</loc>
     <lastmod>2025-04-28</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/yellow-sapphire-stone/</loc>
-    <lastmod>2021-02-08</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/yogini-dasha-eight-types-of-yogini-dasha-which-affect-health/</loc>
-    <lastmod>2021-10-19</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://www.astroeshop.com/blog/your-worthiness-will-not-be-hidden-if-there-are-many-planets-in-this-part-of-the-horoscope/</loc>
-    <lastmod>2021-10-18</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
