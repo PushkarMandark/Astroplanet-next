@@ -80,42 +80,42 @@ export const servicesConfig = [
     icon: BookOpen,
     title: "Kundli Analysis",
     description: "Detailed birth chart reading",
-    href: "/services",
+    href: "/free-kundli-calculator/",
     color: "from-orange-500 to-red-500"
   },
   {
     icon: Heart,
     title: "Match Making",
     description: "Kundli matching for marriage",
-    href: "/services",
+    href: "/free-match-making-calculator/",
     color: "from-pink-500 to-rose-500"
   },
   {
     icon: Gem,
     title: "Gemstone Advice",
     description: "Personalized gem recommendations",
-    href: "/shop",
+    href: "/gemstone-recommender/",
     color: "from-purple-500 to-indigo-500"
   },
   {
     icon: Home,
     title: "Vastu Shastra",
     description: "Home & office Vastu consultation",
-    href: "/services",
+    href: "/services/",
     color: "from-green-500 to-emerald-500"
   },
   {
     icon: Briefcase,
     title: "Career Guidance",
     description: "Professional path insights",
-    href: "/services",
+    href: "/services/",
     color: "from-blue-500 to-cyan-500"
   },
   {
     icon: Baby,
     title: "Baby Names",
     description: "Auspicious names as per nakshatra",
-    href: "/services",
+    href: "/services/",
     color: "from-amber-500 to-yellow-500"
   },
 ];
