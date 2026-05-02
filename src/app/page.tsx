@@ -79,7 +79,7 @@ export default async function HomePage() {
         title="Discover Your Destiny"
         description="Unlock the secrets of the universe with authentic astrology products, personalized readings, and expert guidance from certified Vedic astrologers."
         primaryCta={{ label: "Explore Shop", href: "/shop" }}
-        secondaryCta={{ label: "Free Horoscope", href: "/horoscope" }}
+        secondaryCta={{ label: "Free Horoscope", href: "/free-horoscope" }}
       />
 
       {/* Our Services Section */}

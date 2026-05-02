@@ -68,10 +68,10 @@ export default function NotFound() {
                         </h2>
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                             {[
-                                { href: "/horoscope", label: "Horoscope", hindi: "राशिफल" },
-                                { href: "/kundli", label: "Kundli", hindi: "कुंडली" },
+                                { href: "/free-horoscope", label: "Horoscope", hindi: "राशिफल" },
+                                { href: "/free-kundli-calculator", label: "Kundli", hindi: "कुंडली" },
                                 { href: "/panchang", label: "Panchang", hindi: "पंचांग" },
-                                { href: "/numerology", label: "Numerology", hindi: "अंक शास्त्र" },
+                                { href: "/free-numerology-calculator", label: "Numerology", hindi: "अंक शास्त्र" },
                             ].map((item) => (
                                 <Link
                                     key={item.href}

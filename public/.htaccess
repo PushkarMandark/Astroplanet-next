@@ -16,6 +16,12 @@ RewriteEngine On
 RewriteCond %{HTTP_HOST} ^astroeshop\.com$ [NC]
 RewriteRule ^(.*)$ https://www.astroeshop.com/$1 [R=301,L]
 
+# ── Legacy free-tool URL renames (2026-04 → SEO-friendly slugs) ──
+RedirectMatch 301 ^/kundli/?$ /free-kundli-calculator/
+RedirectMatch 301 ^/compatibility/?$ /free-match-making-calculator/
+RedirectMatch 301 ^/horoscope/?$ /free-horoscope/
+RedirectMatch 301 ^/numerology/?$ /free-numerology-calculator/
+
 # ── Force HTTPS (uncomment once SSL is confirmed working) ─
 # RewriteCond %{HTTPS} off
 # RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]

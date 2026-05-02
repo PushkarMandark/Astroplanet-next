@@ -1,11 +1,11 @@
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Daily Horoscope",
+  title: "Free Horoscope",
   description: "Free daily horoscope predictions for all 12 zodiac signs based on Vedic astrology.",
-  alternates: { canonical: "/horoscope/" },
+  alternates: { canonical: "/free-horoscope/" },
   openGraph: {
-    title: "Daily Horoscope | AstroEshop",
+    title: "Free Horoscope | AstroEshop",
     description: "Free daily horoscope predictions for all 12 zodiac signs based on Vedic astrology.",
   },
 };

@@ -1020,7 +1020,7 @@ export default function PanchangPage() {
                             <ArrowRight className="h-4 w-4 ml-1.5" />
                         </ConsultationButton>
                         <Button variant="outline" className="rounded-xl" asChild>
-                            <Link href="/horoscope">Daily Horoscope</Link>
+                            <Link href="/free-horoscope">Daily Horoscope</Link>
                         </Button>
                     </div>
                 </div>

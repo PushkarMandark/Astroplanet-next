@@ -1234,8 +1234,8 @@ function ShareStrip({ name, lifePath, title }: ShareStripProps) {
     const shareText = `${name}'s Life Path is ${lifePath} — ${title}. Discover your numerology on AstroEshop.`;
     const shareUrl =
         mounted && typeof window !== "undefined"
-            ? `${window.location.origin}/numerology`
-            : "/numerology";
+            ? `${window.location.origin}/free-numerology-calculator`
+            : "/free-numerology-calculator";
     const fullShare = `${shareText} ${shareUrl}`;
 
     const handleCopyLink = async () => {

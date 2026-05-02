@@ -31,7 +31,7 @@
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://www.astroeshop.com/horoscope/</loc>
+    <loc>https://www.astroeshop.com/free-horoscope/</loc>
     <lastmod>2026-05-02</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.7</priority>
@@ -43,19 +43,19 @@
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://www.astroeshop.com/numerology/</loc>
+    <loc>https://www.astroeshop.com/free-numerology-calculator/</loc>
     <lastmod>2026-05-02</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://www.astroeshop.com/kundli/</loc>
+    <loc>https://www.astroeshop.com/free-kundli-calculator/</loc>
     <lastmod>2026-05-02</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://www.astroeshop.com/compatibility/</loc>
+    <loc>https://www.astroeshop.com/free-match-making-calculator/</loc>
     <lastmod>2026-05-02</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>

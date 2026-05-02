@@ -800,8 +800,8 @@ function ShareBar({ sign, overall, period }: ShareBarProps) {
     const shareText = `${sign.name} (${sign.hindi}) — ${periodLabel}'s Reading: ${overall.slice(0, 140)}${overall.length > 140 ? "..." : ""}`;
     const shareUrl =
         mounted && typeof window !== "undefined"
-            ? `${window.location.origin}/horoscope?sign=${sign.sign}`
-            : `/horoscope?sign=${sign.sign}`;
+            ? `${window.location.origin}/free-horoscope?sign=${sign.sign}`
+            : `/free-horoscope?sign=${sign.sign}`;
 
     const fullShare = `${shareText} ${shareUrl}`;
 
@@ -970,7 +970,7 @@ function HoroscopeContent() {
         // router.replace() causes a full reload on Apache because the query-param
         // change is resolved against a new HTML file — use native history API instead.
         if (typeof window !== "undefined") {
-            const url = `/horoscope/?sign=${sign.sign}`;
+            const url = `/free-horoscope/?sign=${sign.sign}`;
             window.history.replaceState(window.history.state, "", url);
         }
 

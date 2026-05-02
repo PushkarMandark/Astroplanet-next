@@ -1,12 +1,12 @@
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Kundli Matching",
-  description: "Free Kundli matching with 36-point Ashtakoot Guna Milan for marriage compatibility.",
-  alternates: { canonical: "/compatibility/" },
+  title: "Free Match Making Calculator",
+  description: "Free Kundli match making calculator with 36-point Ashtakoot Guna Milan for marriage compatibility.",
+  alternates: { canonical: "/free-match-making-calculator/" },
   openGraph: {
-    title: "Kundli Matching | AstroEshop",
-    description: "Free Kundli matching with 36-point Ashtakoot Guna Milan for marriage compatibility.",
+    title: "Free Match Making Calculator | AstroEshop",
+    description: "Free Kundli match making calculator with 36-point Ashtakoot Guna Milan for marriage compatibility.",
   },
 };
 

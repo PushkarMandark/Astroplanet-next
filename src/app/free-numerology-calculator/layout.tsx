@@ -1,11 +1,11 @@
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Numerology Calculator",
+  title: "Free Numerology Calculator",
   description: "Free numerology calculator — discover your Life Path, Destiny, Soul Urge, and Personality numbers.",
-  alternates: { canonical: "/numerology/" },
+  alternates: { canonical: "/free-numerology-calculator/" },
   openGraph: {
-    title: "Numerology Calculator | AstroEshop",
+    title: "Free Numerology Calculator | AstroEshop",
     description: "Free numerology calculator — discover your Life Path, Destiny, Soul Urge, and Personality numbers.",
   },
 };

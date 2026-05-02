@@ -28,7 +28,9 @@
       "PowerShell(Wait-Process -Id 16712 -Timeout 540 -ErrorAction SilentlyContinue)",
       "Bash(NEXT_DEBUG_BUILD=1 npx next build --webpack)",
       "PowerShell(Wait-Process -Id 1988 -Timeout 540 -ErrorAction SilentlyContinue)",
-      "Bash([ -f \"src/app/$d/layout.tsx\" ])"
+      "Bash([ -f \"src/app/$d/layout.tsx\" ])",
+      "Bash(git mv *)",
+      "Bash(grep -rEn --include=\"*.tsx\" --include=\"*.ts\" --include=\"*.mjs\" --include=\"*.json\" --include=\"*.md\" \"\\(\\\\\"|'|\\\\`|=\\)/\\(?:kundli|horoscope|numerology|compatibility\\)\\(/|\\\\?|\\\\\"|'|\\\\`|$\\)\" src/ scripts/ public/)"
     ]
   }
 }
