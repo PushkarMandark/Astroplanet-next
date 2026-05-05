@@ -30,7 +30,21 @@
       "PowerShell(Wait-Process -Id 1988 -Timeout 540 -ErrorAction SilentlyContinue)",
       "Bash([ -f \"src/app/$d/layout.tsx\" ])",
       "Bash(git mv *)",
-      "Bash(grep -rEn --include=\"*.tsx\" --include=\"*.ts\" --include=\"*.mjs\" --include=\"*.json\" --include=\"*.md\" \"\\(\\\\\"|'|\\\\`|=\\)/\\(?:kundli|horoscope|numerology|compatibility\\)\\(/|\\\\?|\\\\\"|'|\\\\`|$\\)\" src/ scripts/ public/)"
+      "Bash(grep -rEn --include=\"*.tsx\" --include=\"*.ts\" --include=\"*.mjs\" --include=\"*.json\" --include=\"*.md\" \"\\(\\\\\"|'|\\\\`|=\\)/\\(?:kundli|horoscope|numerology|compatibility\\)\\(/|\\\\?|\\\\\"|'|\\\\`|$\\)\" src/ scripts/ public/)",
+      "WebFetch(domain:graphify.net)",
+      "Bash(pip --version)",
+      "Bash(pip show *)",
+      "WebFetch(domain:pypi.org)",
+      "Bash(where winget *)",
+      "Bash(where py *)",
+      "Bash(where python3 *)",
+      "Bash(winget --version)",
+      "Bash(winget install *)",
+      "PowerShell($scripts = \"$env:APPDATA\\\\Python\\\\Python313\\\\Scripts\"; & \"$scripts\\\\graphify.exe\" --help 2>&1 | Select-Object -First 25)",
+      "Bash(grep -E '\\\\.\\(png|jpg|jpeg|webp|svg|gif\\)$' graphify-out/.graphify_uncached.txt)",
+      "Bash(awk '/^## God Nodes/,/^## /{ if\\(/^## / && !/God Nodes/\\) exit; print }' graphify-out/GRAPH_REPORT.md)",
+      "Bash(awk '/^## Surprising Connections/,/^## /{ if\\(/^## / && !/Surprising/\\) exit; print }' graphify-out/GRAPH_REPORT.md)",
+      "Bash(awk '/^## Suggested Questions/,/^## /{ if\\(/^## / && !/Suggested/\\) exit; print }' graphify-out/GRAPH_REPORT.md)"
     ]
   }
 }
