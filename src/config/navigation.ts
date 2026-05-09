@@ -37,7 +37,7 @@ export const navigationConfig = {
                     badge: "NEW",
                 },
                 {
-                    label: "Compatibility",
+                    label: "Match Making",
                     href: "/free-match-making-calculator",
                     description: "36-point Guna Milan matching",
                     icon: "heart",
@@ -75,7 +75,7 @@ export const navigationConfig = {
             { label: "Panchang", href: "/panchang" },
             { label: "Numerology", href: "/free-numerology-calculator" },
             { label: "Kundli Generator", href: "/free-kundli-calculator" },
-            { label: "Compatibility", href: "/free-match-making-calculator" },
+            { label: "Match Making", href: "/free-match-making-calculator" },
             { label: "Gemstone Finder", href: "/gemstone-recommender" },
         ],
     },

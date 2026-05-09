@@ -1398,7 +1398,7 @@ export default function KundliPage() {
               Vedic Astrology Dashboard
             </div>
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold font-heading mb-4 leading-tight">
-              Free Kundli Generator
+              Free Janam Kundli Online
             </h1>
             <p className="text-white/70 text-base md:text-lg max-w-lg mx-auto">
               Your complete Janam Kundli with ascendant insights, planetary

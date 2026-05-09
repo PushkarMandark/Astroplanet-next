@@ -243,7 +243,7 @@ function HeroSection({ hasResult }: HeroSectionProps) {
                         अंक ज्योतिष / Vedic Numerology
                     </div>
                     <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold font-heading mb-4 leading-tight">
-                        Numerology Calculator
+                        Free numerology calculator
                     </h1>
                     <p className="text-white/70 text-base md:text-lg max-w-lg mx-auto">
                         {hasResult

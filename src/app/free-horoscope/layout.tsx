@@ -1,12 +1,21 @@
 import { Metadata } from "next";
 
+const title =
+  "Free Horoscope : Daily, Weekly, Monthly & Yearly Predictions";
+const description =
+  "Check your free horoscope for love, career, health & finance. Get accurate daily, weekly, and yearly zodiac predictions from India's famous astrologers.";
+
 export const metadata: Metadata = {
-  title: "Free Horoscope",
-  description: "Free daily horoscope predictions for all 12 zodiac signs based on Vedic astrology.",
+  title: { absolute: title },
+  description,
   alternates: { canonical: "/free-horoscope/" },
   openGraph: {
-    title: "Free Horoscope | AstroEshop",
-    description: "Free daily horoscope predictions for all 12 zodiac signs based on Vedic astrology.",
+    title,
+    description,
+  },
+  twitter: {
+    title,
+    description,
   },
 };
 

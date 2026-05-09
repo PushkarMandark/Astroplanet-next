@@ -1,12 +1,21 @@
 import { Metadata } from "next";
 
+const title =
+  "Free numerology calculator | Life Path, Destiny, Soul Urge, and Personality numbers.";
+const description =
+  "Use our Name Numerology Calculator and Numerology Calculator to get an accurate numerology reading and calculate your Destiny, Soul Urge, and Dream Numbers.";
+
 export const metadata: Metadata = {
-  title: "Free Numerology Calculator",
-  description: "Free numerology calculator — discover your Life Path, Destiny, Soul Urge, and Personality numbers.",
+  title: { absolute: title },
+  description,
   alternates: { canonical: "/free-numerology-calculator/" },
   openGraph: {
-    title: "Free Numerology Calculator | AstroEshop",
-    description: "Free numerology calculator — discover your Life Path, Destiny, Soul Urge, and Personality numbers.",
+    title,
+    description,
+  },
+  twitter: {
+    title,
+    description,
   },
 };
 

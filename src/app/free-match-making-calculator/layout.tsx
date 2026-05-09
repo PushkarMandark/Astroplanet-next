@@ -1,12 +1,20 @@
 import { Metadata } from "next";
 
+const title = "Get Your Kundli Match making Report for Marriage | Matching";
+const description =
+  "Get accurate Kundli matching for marriage with Guna Milan, Manglik Dosha analysis, compatibility score and expert astrological guidance.";
+
 export const metadata: Metadata = {
-  title: "Free Match Making Calculator",
-  description: "Free Kundli match making calculator with 36-point Ashtakoot Guna Milan for marriage compatibility.",
+  title: { absolute: title },
+  description,
   alternates: { canonical: "/free-match-making-calculator/" },
   openGraph: {
-    title: "Free Match Making Calculator | AstroEshop",
-    description: "Free Kundli match making calculator with 36-point Ashtakoot Guna Milan for marriage compatibility.",
+    title,
+    description,
+  },
+  twitter: {
+    title,
+    description,
   },
 };
 
