@@ -33,6 +33,7 @@ import { cn } from "@/lib/utils";
 import { calculatePanchang } from "@/lib/panchang";
 import Link from "next/link";
 import { ConsultationButton } from "@/components/molecules/consultation-button";
+import { FaqSection } from "@/components/molecules";
 import {
     VARAS,
     CHOGHADIYAS,
@@ -1004,6 +1005,52 @@ export default function PanchangPage() {
                     </div>
                 </div>
             </section>
+
+            <FaqSection
+                description="The Panchang is the traditional Hindu calendar that maps each day's cosmic energies through five limbs (panchanga). Use this guide to understand tithi, nakshatra, yoga, karana and vara, identify auspicious muhurat like Brahma Muhurta and Abhijit, and avoid inauspicious periods such as Rahu Kaal when planning daily activities."
+                faqs={[
+                    {
+                        question: "What is Panchang and why is it important?",
+                        answer: "Panchang is the traditional Hindu almanac that records five key elements of each day: tithi (lunar day), vara (weekday), nakshatra (lunar mansion), yoga and karana. Together these reveal the spiritual quality of the day. Indian families have used Panchang for centuries to choose muhurat for weddings, travel, business launches, religious rituals and other important activities.",
+                    },
+                    {
+                        question: "What are the five limbs (panchanga) of the Hindu calendar?",
+                        answer: "The five limbs are tithi (one of 30 lunar days based on moon-sun angle), vara (the weekday ruled by a planet), nakshatra (one of 27 lunar constellations the moon transits), yoga (a sun-moon longitude combination indicating energy quality), and karana (half of a tithi). Each limb adds a layer of meaning that helps determine whether a moment is favourable for a given activity.",
+                    },
+                    {
+                        question: "What is Rahu Kaal and why should it be avoided?",
+                        answer: "Rahu Kaal is a daily 90-minute window ruled by the shadow planet Rahu, considered inauspicious for starting new ventures, signing contracts, travel or important purchases. Its timing changes each day based on sunrise and the weekday. Many people simply pause major decisions during Rahu Kaal and use it instead for routine work, prayer or chanting.",
+                    },
+                    {
+                        question: "What is Brahma Muhurta and why wake up during it?",
+                        answer: "Brahma Muhurta is the 96-minute window ending about 48 minutes before sunrise, traditionally regarded as the most spiritually charged time of the day. The mind is naturally calm, the air is sattvic, and the atmosphere supports meditation, study, yoga and mantra practice. Sages have long recommended waking in Brahma Muhurta for clarity, health and spiritual progress.",
+                    },
+                    {
+                        question: "What is Abhijit Muhurta?",
+                        answer: "Abhijit Muhurta is a roughly 48-minute window centred on local solar noon, considered universally auspicious for almost any task except journeys towards the south. It is often called the victory muhurta and is a popular fallback when no other clear muhurat is available. Use it for important meetings, signing documents, or starting work that needs strong, steady energy.",
+                    },
+                    {
+                        question: "What is Choghadiya and how is it used?",
+                        answer: "Choghadiya divides daytime and nighttime into eight roughly 90-minute windows, each labelled Amrit, Shubh, Labh, Char, Rog, Kaal or Udveg. Shubh, Labh and Amrit are favourable for most activities, while Rog, Kaal and Udveg are best avoided for new starts. Choghadiya is widely used in Gujarat, Maharashtra and Rajasthan for quick muhurta lookups during the day.",
+                    },
+                    {
+                        question: "Why does Panchang vary by city or location?",
+                        answer: "Panchang timings depend on local sunrise, sunset and moon position, which differ across longitudes and latitudes. A tithi or Rahu Kaal that begins at one time in Delhi will start a few minutes earlier or later in Mumbai, Bengaluru or Kolkata. For accurate muhurat, always generate the Panchang for the city where the activity will actually take place.",
+                    },
+                    {
+                        question: "How do I use Panchang to choose a muhurat for weddings or travel?",
+                        answer: "For weddings, look for a favourable tithi (avoid Amavasya, Chaturdashi), benefic nakshatra such as Rohini, Mrigashira or Uttara Phalguni, an auspicious yoga, and a clear window outside Rahu Kaal and Yamaganda. For travel, also consider directional shool for that weekday. Combining multiple favourable factors generally gives better results than relying on any single element.",
+                    },
+                    {
+                        question: "What is the difference between Drik (modern) and traditional Panchang?",
+                        answer: "Drik Panchang uses precise modern astronomical calculations of actual planetary positions, so its tithi and nakshatra timings closely match what you can observe in the sky. Traditional Vakya Panchang relies on classical formulas that can drift slightly over centuries. Most contemporary Panchang sites, including this tool, follow the Drik system for better accuracy with current sky positions.",
+                    },
+                    {
+                        question: "What are Amanta and Purnimanta calendars?",
+                        answer: "Amanta and Purnimanta are two ways of marking the start of a Hindu lunar month. The Amanta system, common in South India, Maharashtra and Gujarat, ends each month on the new moon (Amavasya). The Purnimanta system, followed across most of North India, ends each month on the full moon (Purnima). The festivals are the same, but their month names can differ by one across regions.",
+                    },
+                ]}
+            />
 
             {/* Bottom CTA */}
             <section className="py-12 border-t border-gray-100 bg-gray-50/40">

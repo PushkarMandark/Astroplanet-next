@@ -38,6 +38,7 @@ import {
 
 import { MainLayout } from "@/components/templates/main-layout";
 import { ConsultationButton } from "@/components/molecules/consultation-button";
+import { FaqSection } from "@/components/molecules";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
@@ -1125,6 +1126,53 @@ function HoroscopeContent() {
                     </div>
                 </div>
             </section>
+
+            {/* FAQ */}
+            <FaqSection
+                description="Get answers to the most common questions about reading your free horoscope, understanding daily, weekly, monthly and yearly predictions, the difference between Vedic and Western astrology, sun sign vs moon sign (rashi), lucky numbers, colours, mantras, gemstones and zodiac compatibility."
+                faqs={[
+                    {
+                        question: "What is the difference between daily, weekly, monthly and yearly horoscopes?",
+                        answer: "A daily horoscope focuses on short-term planetary transits and is best for day-to-day decisions like meetings, travel or money matters. The weekly reading shows themes building over seven days. The monthly horoscope tracks slower planetary shifts that influence work, relationships and health. The yearly horoscope is a broader outlook covering major life areas, ideal for long-term planning and goal setting.",
+                    },
+                    {
+                        question: "What is the difference between Vedic and Western horoscopes?",
+                        answer: "Vedic astrology, also called Jyotish, uses the sidereal zodiac which is based on the actual position of the stars and accounts for the precession of equinoxes. Western astrology uses the tropical zodiac fixed to the seasons. Because of this, your Vedic sun sign is often one sign earlier than your Western one. Vedic readings rely heavily on the moon sign and nakshatra, while Western readings emphasise the sun sign.",
+                    },
+                    {
+                        question: "Should I read my sun sign or my moon sign (rashi)?",
+                        answer: "In Vedic astrology, your moon sign or rashi is considered the most important because it reflects your mind, emotions and inner nature. Most traditional Indian horoscopes are written for the moon sign. Your sun sign reflects your outer personality and ego. For the most accurate reading, check both, but give priority to your rashi. If you do not know your rashi, use our free Kundli tool to find it.",
+                    },
+                    {
+                        question: "How accurate are free horoscope predictions?",
+                        answer: "A free horoscope offers general guidance based on your zodiac sign and current planetary movements. It is a useful daily companion that helps you stay aware of energies around you. However, since it covers everyone born under the same sign, it cannot match the precision of a personalised birth chart reading that uses your exact date, time and place of birth. Treat it as direction, not a final verdict.",
+                    },
+                    {
+                        question: "Can a horoscope predict my future precisely?",
+                        answer: "Astrology highlights tendencies, timing and energies that are likely to appear in your life. It is not a fixed script. Your free will, choices, karma and effort always shape the actual outcome. A horoscope can warn you about challenges, suggest favourable periods or recommend remedies, but it should be used as a planning tool. Use the insights to make better decisions, not to wait for events to happen on their own.",
+                    },
+                    {
+                        question: "What do lucky number, lucky colour and lucky time really mean?",
+                        answer: "Your lucky number, colour and time are based on the planetary ruler of your zodiac sign and the current cosmic energies. Wearing your lucky colour, scheduling important calls or meetings during your lucky time, and using your lucky number for choices like seats or PIN codes can subtly align you with supportive vibrations. Think of them as small nudges that boost confidence and timing rather than guaranteed shortcuts to success.",
+                    },
+                    {
+                        question: "How do I find my zodiac sign if I do not remember the dates?",
+                        answer: "If you are not sure which sign you belong to, use the date of birth detector available on this page. Just enter your birthday and we will instantly show your sun sign along with its Hindi name. For the Vedic moon sign or rashi, you also need your exact birth time and place. You can generate that using our free Kundli tool, which calculates your nakshatra, rashi and birth chart in seconds.",
+                    },
+                    {
+                        question: "What are the mantras and gemstones shown in my reading?",
+                        answer: "Each zodiac sign is connected to a planetary lord, and that planet has traditional Vedic remedies. The Sanskrit mantra given in your horoscope helps balance and strengthen that planet through sound vibration when chanted regularly, ideally eleven or one hundred and eight times. The recommended gemstone, when worn on the correct finger and metal, is believed to channel the planet's positive energy. Always consult an astrologer before wearing strong stones like ruby, blue sapphire or yellow sapphire.",
+                    },
+                    {
+                        question: "How does zodiac compatibility work?",
+                        answer: "Zodiac compatibility looks at how the elements, ruling planets and qualities of two signs interact. Fire signs energise air signs, water signs nourish earth signs, and similar elements often understand each other naturally. The compatible sign shown in your reading is the one most harmonious with your sun sign on a general level. For marriage or serious relationships, a proper Vedic match-making (guna milan) using both birth charts gives a much deeper picture.",
+                    },
+                    {
+                        question: "How often should I read my horoscope?",
+                        answer: "Reading your daily horoscope once in the morning is enough to set the tone for the day. Check the weekly horoscope on Mondays for planning, the monthly reading at the start of each month, and the yearly horoscope around your birthday or the new year for bigger decisions. Avoid checking many times a day or jumping between sites. Consistency with one trusted source gives clearer patterns and a calmer mind.",
+                    },
+                ]}
+            />
 
             {/* Bottom CTA */}
             <section className="py-12 border-t border-gray-100 bg-gray-50/40">

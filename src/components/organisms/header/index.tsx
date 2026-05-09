@@ -7,10 +7,12 @@ import {
     ShoppingCart,
     User,
     Search,
-    ChevronDown,
     Star,
     Calendar,
     Hash,
+    CircleDot,
+    Heart,
+    Gem,
     Phone,
     Mail,
 } from "lucide-react";
@@ -29,6 +31,14 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+    NavigationMenu,
+    NavigationMenuContent,
+    NavigationMenuItem,
+    NavigationMenuLink,
+    NavigationMenuList,
+    NavigationMenuTrigger,
+} from "@/components/ui/navigation-menu";
 import { useCartStore, useAuthStore, useUIStore } from "@/stores";
 import { siteConfig } from "@/config/site";
 import { navigationConfig } from "@/config/navigation";
@@ -47,6 +57,9 @@ export function Header() {
         star: <Star className="h-5 w-5" />,
         calendar: <Calendar className="h-5 w-5" />,
         hash: <Hash className="h-5 w-5" />,
+        "circle-dot": <CircleDot className="h-5 w-5" />,
+        heart: <Heart className="h-5 w-5" />,
+        gem: <Gem className="h-5 w-5" />,
     };
 
     return (
@@ -147,53 +160,63 @@ export function Header() {
                             </Link>
 
                             {/* Desktop Navigation */}
-                            <nav className="hidden md:flex items-center gap-1">
-                                {navigationConfig.main.map((item) =>
-                                    item.children ? (
-                                        <DropdownMenu key={item.label}>
-                                            <DropdownMenuTrigger asChild>
-                                                <Button variant="ghost" className="gap-1 font-medium hover:text-primary hover:bg-primary/10">
+                            <NavigationMenu viewport={false} className="hidden md:flex">
+                                <NavigationMenuList>
+                                    {navigationConfig.main.map((item) =>
+                                        item.children ? (
+                                            <NavigationMenuItem key={item.label}>
+                                                <NavigationMenuTrigger className="gap-1 font-medium bg-transparent hover:bg-primary/10 hover:text-primary data-[state=open]:bg-primary/10 data-[state=open]:text-primary">
                                                     {item.label}
-                                                    <ChevronDown className="h-4 w-4" />
-                                                </Button>
-                                            </DropdownMenuTrigger>
-                                            <DropdownMenuContent align="center" className="w-72 p-2">
-                                                {item.children.map((child) => (
-                                                    <DropdownMenuItem key={child.href} asChild>
-                                                        <Link
-                                                            href={child.href}
-                                                            className="flex items-start gap-3 p-3 rounded-lg hover:bg-primary/5 cursor-pointer"
-                                                        >
-                                                            <span className="w-10 h-10 rounded-lg bg-gradient-to-br from-primary/10 to-secondary/10 flex items-center justify-center text-primary flex-shrink-0">
-                                                                {child.icon && freeToolsIcons[child.icon]}
-                                                            </span>
-                                                            <div>
-                                                                <div className="font-semibold flex items-center gap-2">
-                                                                    {decodeHtmlEntities(child.label)}
-                                                                    {child.badge && (
-                                                                        <Badge className="bg-green-500 text-white border-0 text-xs">
-                                                                            {child.badge}
-                                                                        </Badge>
-                                                                    )}
-                                                                </div>
-                                                                {child.description && (
-                                                                    <p className="text-xs text-muted-foreground mt-0.5">
-                                                                        {child.description}
-                                                                    </p>
-                                                                )}
-                                                            </div>
-                                                        </Link>
-                                                    </DropdownMenuItem>
-                                                ))}
-                                            </DropdownMenuContent>
-                                        </DropdownMenu>
-                                    ) : (
-                                        <Button key={item.href} variant="ghost" asChild className="font-medium hover:text-primary hover:bg-primary/10">
-                                            <Link href={item.href}>{decodeHtmlEntities(item.label)}</Link>
-                                        </Button>
-                                    )
-                                )}
-                            </nav>
+                                                </NavigationMenuTrigger>
+                                                <NavigationMenuContent>
+                                                    <ul className="w-72 p-2">
+                                                        {item.children.map((child) => (
+                                                            <li key={child.href}>
+                                                                <NavigationMenuLink asChild>
+                                                                    <Link
+                                                                        href={child.href}
+                                                                        className="flex! flex-row! items-start! gap-3 p-3 rounded-lg hover:bg-primary/5 cursor-pointer"
+                                                                    >
+                                                                        <span className="w-10 h-10 rounded-lg bg-gradient-to-br from-primary/10 to-secondary/10 flex items-center justify-center text-primary flex-shrink-0">
+                                                                            {child.icon && freeToolsIcons[child.icon]}
+                                                                        </span>
+                                                                        <div>
+                                                                            <div className="font-semibold flex items-center gap-2">
+                                                                                {decodeHtmlEntities(child.label)}
+                                                                                {child.badge && (
+                                                                                    <Badge className="bg-green-500 text-white border-0 text-xs">
+                                                                                        {child.badge}
+                                                                                    </Badge>
+                                                                                )}
+                                                                            </div>
+                                                                            {child.description && (
+                                                                                <p className="text-xs text-muted-foreground mt-0.5">
+                                                                                    {child.description}
+                                                                                </p>
+                                                                            )}
+                                                                        </div>
+                                                                    </Link>
+                                                                </NavigationMenuLink>
+                                                            </li>
+                                                        ))}
+                                                    </ul>
+                                                </NavigationMenuContent>
+                                            </NavigationMenuItem>
+                                        ) : (
+                                            <NavigationMenuItem key={item.href}>
+                                                <NavigationMenuLink asChild>
+                                                    <Link
+                                                        href={item.href}
+                                                        className="inline-flex h-9 items-center justify-center rounded-md px-4 py-2 text-sm font-medium hover:bg-primary/10 hover:text-primary transition-colors"
+                                                    >
+                                                        {decodeHtmlEntities(item.label)}
+                                                    </Link>
+                                                </NavigationMenuLink>
+                                            </NavigationMenuItem>
+                                        )
+                                    )}
+                                </NavigationMenuList>
+                            </NavigationMenu>
 
                             {/* Actions */}
                             <div className="flex items-center gap-2">

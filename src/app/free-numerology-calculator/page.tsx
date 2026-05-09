@@ -27,6 +27,7 @@ import {
 
 import { MainLayout } from "@/components/templates/main-layout";
 import { ConsultationButton } from "@/components/molecules/consultation-button";
+import { FaqSection } from "@/components/molecules";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -1670,6 +1671,52 @@ export default function NumerologyPage() {
                     </div>
                 </section>
             )}
+
+            <FaqSection
+                description="Numerology is the ancient science of numbers that reveals personality, life path and destiny patterns hidden in your name and birth date. Below are common questions about Life Path, Destiny, Soul Urge, Personality numbers, Vedic Anka Jyotish, Mool Ank, Bhagya Ank and how this free numerology calculator works for Indian users."
+                faqs={[
+                    {
+                        question: "What is numerology and how does it work?",
+                        answer: "Numerology is the study of how numbers influence personality, relationships and life events. Each letter and birth date digit corresponds to a number from 1 to 9, with each number ruled by a planet. By reducing your name and date of birth to single digits, numerology reveals your strengths, challenges and life direction. In India, this practice is rooted in Vedic Anka Jyotish, which connects numbers to the navagraha planetary system used in Hindu astrology.",
+                    },
+                    {
+                        question: "How is the Life Path number calculated?",
+                        answer: "Your Life Path number is calculated by adding the day, month and year of your birth, then reducing the total to a single digit between 1 and 9. For example, a person born on 15 August 1990 would add 1+5+8+1+9+9+0 = 33, then 3+3 = 6, giving a Life Path 6. The exception is Master Numbers 11, 22 and 33, which are not reduced. The Life Path describes your core life journey and the lessons you came to learn.",
+                    },
+                    {
+                        question: "What is the difference between Life Path, Destiny, Soul Urge and Personality numbers?",
+                        answer: "Each number reveals a different layer of you. The Life Path comes from your birth date and shows your overall journey. The Destiny number, also called Expression, is derived from your full name and reveals your potential and life purpose. The Soul Urge, calculated from the vowels in your name, reflects your inner desires and motivations. The Personality number, from the consonants, shows how others perceive you. Together they form a complete numerology blueprint.",
+                    },
+                    {
+                        question: "What are Mool Ank and Bhagya Ank in Vedic Anka Jyotish?",
+                        answer: "Mool Ank, or root number, is derived only from the date of birth, reduced to a single digit. It represents your basic nature, instincts and ruling planet from the moment you were born. Bhagya Ank, or destiny number, is calculated from the entire date including month and year, and represents the karma and destiny shaped by your full birth time. Both are core concepts in Anka Jyotish, the Vedic numerology system widely used across India.",
+                    },
+                    {
+                        question: "What are Master Numbers 11, 22 and 33?",
+                        answer: "Master Numbers are 11, 22 and 33, considered highly spiritual and powerful in numerology. They are not reduced to single digits. Number 11 is the intuitive visionary, 22 is the master builder who turns dreams into reality, and 33 is the master teacher driven by compassion. People with Master Numbers often feel intense pressure to live up to their potential. They carry both greater gifts and bigger responsibilities than single-digit numbers.",
+                    },
+                    {
+                        question: "What is the Personal Year cycle and why does it change every year?",
+                        answer: "The Personal Year is calculated by adding your birth day, birth month and the current calendar year, reduced to a single digit. It changes annually because the year value changes, placing you in a new phase of a 9-year spiritual cycle. Year 1 brings new beginnings, year 5 brings change and freedom, year 9 brings completion. Knowing your Personal Year helps you plan major decisions, business launches, marriage and travel in alignment with the natural energy of that year.",
+                    },
+                    {
+                        question: "Can changing my name change my life through numerology?",
+                        answer: "Yes, name correction is a popular remedy in Indian numerology. Since the Destiny, Soul Urge and Personality numbers are derived from your name, adjusting the spelling can shift these vibrations and bring them into harmony with your Mool Ank and Bhagya Ank. Many people add or remove a letter to balance challenging numbers. However, name changes work best when paired with mindset, action and consistent use of the new spelling across documents and daily life.",
+                    },
+                    {
+                        question: "What are karmic lessons and missing digits?",
+                        answer: "Karmic lessons are revealed by the digits missing from your full date of birth. If your birth date does not contain a particular digit between 1 and 9, that number represents a quality you came to develop in this lifetime. For instance, a missing 5 may indicate lessons around freedom and change, while a missing 7 may point to deeper spiritual study. Identifying these gaps helps you focus on the traits and habits that need conscious cultivation.",
+                    },
+                    {
+                        question: "How are lucky numbers, colours and gemstones derived?",
+                        answer: "Each Life Path or Mool Ank is ruled by a planet, and lucky days, colours and gemstones come from that planetary association. For example, number 1 is ruled by the Sun, with red and gold colours and ruby as the primary gemstone. Number 6 is ruled by Venus, favouring white and pink with diamond. These choices are believed to amplify positive planetary energy and are commonly used in Indian remedies, jewellery and clothing on important days.",
+                    },
+                    {
+                        question: "How accurate is this free numerology calculator and what are its limitations?",
+                        answer: "This calculator follows the standard Pythagorean and Vedic Anka Jyotish methods, so the numbers it generates are mathematically accurate based on the name and birth date you enter. The interpretations are general guidance drawn from traditional numerology meanings and should not be treated as absolute predictions. For a deeper analysis covering name corrections, business numerology, compatibility with your spouse and personalized remedies, a consultation with a qualified astrologer is recommended.",
+                    },
+                ]}
+            />
 
             <section className="py-12 border-t border-gray-100 bg-gray-50/40">
                 <div className="container mx-auto px-4 text-center">

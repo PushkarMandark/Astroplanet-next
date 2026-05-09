@@ -27,6 +27,7 @@ import {
 } from "lucide-react";
 import { LocationSearch } from "@/components/molecules/location-search";
 import { ConsultationButton } from "@/components/molecules/consultation-button";
+import { FaqSection } from "@/components/molecules";
 import {
   getKundli,
   matchKundli,
@@ -691,6 +692,63 @@ export default function CompatibilityPage() {
           </div>
         </section>
       )}
+
+      {/* FAQ Section */}
+      <FaqSection
+        description="Get clarity on Vedic Kundli matching, Ashtakoot Guna Milan, Mangal Dosha, and Nadi Dosha. These FAQs explain how horoscope matching scores work, what makes a good marriage compatibility result, and when to consult an expert pandit for a deeper free Kundli match for marriage."
+        faqs={[
+          {
+            question: "What is Guna Milan in Kundli matching?",
+            answer:
+              "Guna Milan is the traditional Vedic system of checking marriage compatibility between a boy and girl using their birth charts. It is also called Ashtakoot, meaning eight categories. Each Kundli is analysed across eight kootas, and points are awarded out of a total of 36. The higher the matching score, the more harmonious the partnership is believed to be on mental, physical, and karmic levels.",
+          },
+          {
+            question: "What is a good score in Kundli matching out of 36?",
+            answer:
+              "In Vedic astrology, a score of 18 out of 36 is considered the minimum acceptable level for marriage. A score between 18 and 24 is treated as average to good, 25 to 32 is excellent, and 32 plus is rare and considered ideal. Anything below 18 is generally not recommended without expert review. Remember, the final verdict also depends on Mangal dosha, Nadi dosha, and overall planetary placement, not just the total guna count.",
+          },
+          {
+            question: "What do the eight kootas in Ashtakoot measure?",
+            answer:
+              "The eight kootas each cover a specific area. Varna checks spiritual compatibility, Vashya measures mutual control and influence, Tara looks at health and well-being, Yoni shows physical and sexual compatibility, Graha Maitri measures mental and intellectual harmony, Gana indicates temperament, Bhakoot reflects family welfare and finances, and Nadi shows genetic and progeny compatibility. Nadi carries the highest weight at 8 points, which is why it strongly influences the final matching result.",
+          },
+          {
+            question: "What is Mangal Dosha and how does it affect marriage?",
+            answer:
+              "Mangal Dosha, also known as Manglik dosha, occurs when Mars sits in the 1st, 2nd, 4th, 7th, 8th, or 12th house of the birth chart. It is believed to bring tension, delays, or conflict in marriage. The traditional remedy is to match a Manglik person with another Manglik partner, as the doshas cancel out. Mild Mangal dosha can also be balanced through specific pujas, gemstones, and remedies suggested by an experienced astrologer.",
+          },
+          {
+            question: "Why is Nadi Dosha given so much importance?",
+            answer:
+              "Nadi carries 8 points, the highest weight in Ashtakoot, because it represents genetic, biological, and health compatibility between partners. When both boy and girl share the same Nadi, called Nadi Dosha, classical texts warn of issues with progeny, health, and long-term wellbeing of children. However, Nadi Dosha can sometimes be cancelled if both Kundlis share the same nakshatra or rashi. A pandit should always confirm Nadi Dosha before drawing conclusions.",
+          },
+          {
+            question: "Why are exact birth time and place needed for Kundli matching?",
+            answer:
+              "Vedic astrology calculates the moon sign, nakshatra, and lagna based on the precise moment and location of birth. Even a 10 minute difference can change the nakshatra, which directly affects 6 out of 8 kootas, including Nadi. The place of birth determines the latitude and longitude used for planetary positions. For an accurate free Kundli match for marriage, always enter exact time of birth from the hospital record and the correct city.",
+          },
+          {
+            question: "How accurate is online Kundli matching versus a pandit?",
+            answer:
+              "An online tool like this gives you a fast, mathematically accurate Ashtakoot score and dosha check based on classical Vedic rules. It is excellent for an initial compatibility filter and self-understanding. However, an experienced astrologer also studies dasha periods, planetary strengths, divisional charts like D9 Navamsa, and life context. For low scores, doshas, or important final decisions, a personal consultation with a Vedic pandit is strongly recommended.",
+          },
+          {
+            question: "Can a low Kundli matching score be fixed or improved?",
+            answer:
+              "A low guna score cannot be changed mathematically, but its negative effects can often be reduced. Astrologers may suggest specific remedies such as gemstone therapy, mantra chanting, planetary pujas, donations, or Manglik dosha nivaran rituals. In some cases, dosha cancellation rules apply automatically based on planetary positions. Never panic over a single low score, as a complete chart reading by an expert may reveal strong yogas that balance and support a successful marriage.",
+          },
+          {
+            question: "Is Kundli matching only for arranged marriages?",
+            answer:
+              "Not at all. While horoscope matching is a strong tradition in arranged marriages across India, more couples in love marriages now use it for self-awareness and to understand each other deeply. It helps both partners see strengths, friction points, and karmic patterns in the relationship. Whether your match is arranged by family or chosen by love, a Kundli match offers an extra layer of clarity before committing to lifelong partnership.",
+          },
+          {
+            question: "Is Vedic Kundli matching still relevant today?",
+            answer:
+              "Yes, Kundli matching remains highly relevant in modern Indian society. While lifestyles have changed, the core challenges in marriage, such as compatibility of values, temperament, family, finances, and health, are still real. Ashtakoot Guna Milan offers a structured, time-tested framework to assess these areas. Treat it as one valuable input alongside emotional connection, communication, and shared goals. Remember, no chart guarantees outcomes, but it can guide you with awareness.",
+          },
+        ]}
+      />
 
       {/* Bottom CTA */}
       <section className="py-12 border-t border-gray-100 bg-gray-50/40">

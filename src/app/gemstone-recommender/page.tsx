@@ -12,6 +12,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { format } from "date-fns";
 import { LocationSearch } from "@/components/molecules/location-search";
 import { ConsultationButton } from "@/components/molecules/consultation-button";
+import { FaqSection } from "@/components/molecules";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { getKundli, Observer, rashiNames } from "@ishubhamx/panchangam-js";
@@ -569,6 +570,53 @@ export default function GemstoneRecommenderPage() {
           </div>
         </section>
       )}
+
+      {/* FAQ Section */}
+      <FaqSection
+        description="Vedic gemstones, also known as Ratnas, channel planetary energies from your birth chart to amplify benefic influences and soothe afflictions. Below are answers to the most common questions about lucky gemstone recommendations, the Navaratna system, Pukhraj, Neelam, certification, weight, and how to wear them safely."
+        faqs={[
+          {
+            question: "How do Vedic gemstones actually work?",
+            answer: "Each gemstone is believed to act like an antenna for a specific planet. Ruby resonates with the Sun, Pearl with the Moon, Pukhraj with Jupiter, and so on. When the matching planet is benefic but weak in your Kundli, wearing its stone is said to absorb cosmic rays of that planet through the skin and strengthen its influence in areas like career, marriage, health, or wealth.",
+          },
+          {
+            question: "What is Navaratna and which 9 gemstones make it up?",
+            answer: "Navaratna means nine gems, one for each of the nine Vedic planets. The traditional set is Ruby for Sun, Pearl for Moon, Red Coral for Mars, Emerald for Mercury, Yellow Sapphire (Pukhraj) for Jupiter, Diamond for Venus, Blue Sapphire (Neelam) for Saturn, Hessonite (Gomed) for Rahu, and Cat's Eye (Lehsunia) for Ketu. A Navaratna pendant combines all nine in a fixed pattern.",
+          },
+          {
+            question: "Why should gemstone choice be based on the birth chart and not just zodiac sign?",
+            answer: "Sun-sign suggestions are too generic. The right gemstone depends on your Lagna (ascendant), the strength of planets in your chart, the houses they rule, and the current Mahadasha. Two people born under the same sign can need very different stones. Our recommender uses your full birth date, time, and place to compute the Kundli, which is far more accurate than zodiac-only advice.",
+          },
+          {
+            question: "Can a wrong gemstone harm you?",
+            answer: "Yes, especially Blue Sapphire (Neelam). If Saturn is malefic for your ascendant, Neelam can intensify struggles instead of helping. Even Pukhraj or Moonga can backfire when the ruling planet sits in a hostile house. This is why we recommend a 3-day trial wear for sensitive stones and always suggest confirming with a qualified astrologer before permanent use.",
+          },
+          {
+            question: "What is the minimum carat weight for a gemstone to work?",
+            answer: "A common Vedic guideline is one ratti (around 0.91 carats) for every 12 kilograms of body weight, with most adults wearing between 3 and 7 carats. Ruby, Pukhraj, and Neelam usually start showing effects from 3 carats. Pearl and Moonga can be effective at 5 to 7 carats. Quality matters more than size, an untreated 3-carat stone outperforms a treated 7-carat one.",
+          },
+          {
+            question: "Which finger and metal should I use for my gemstone?",
+            answer: "Pukhraj goes on the index finger in gold. Ruby and Moonga sit on the ring finger, Ruby in gold and Moonga in copper or gold. Pearl and Emerald are worn on the little finger in silver or gold. Neelam, Diamond, and Gomed go on the middle finger. Cat's Eye sits on the little finger in silver. Always wear the gem so it touches the skin to allow energy flow.",
+          },
+          {
+            question: "How do I energize or activate a gemstone before wearing?",
+            answer: "On the planet's day and during a clean Hora or Choghadiya, soak the ring in raw cow milk, Ganga jal, or a mix of milk, honey, curd, ghee, and sugar (Panchamrit) for a few hours. Then chant the planet's beej mantra 108 times, light a diya, and wear the ring with the planet's mantra in mind. This Pran Pratishtha process is believed to awaken the stone's vibration.",
+          },
+          {
+            question: "What are uparatnas and when should I use a substitute stone?",
+            answer: "Uparatnas are softer, more affordable substitutes for the nine main gems. Yellow Topaz or Citrine substitutes Pukhraj, Garnet or Red Spinel for Ruby, Green Tourmaline or Peridot for Emerald, Amethyst for Neelam, and White Sapphire or Zircon for Diamond. They work at lower intensity but are useful when budget is tight or when you want to test compatibility before investing in a precious stone.",
+          },
+          {
+            question: "Why is gemstone certification important?",
+            answer: "A genuine natural gemstone with no heat or chemical treatment is essential for astrological results. Always insist on a lab certificate from GIA, IGI, GRS, Gubelin, or an equivalent gemmological lab. The report should mention origin, treatment status, weight in carats, and clarity. Treated, glass-filled, or synthetic stones are cheap but carry no astrological value and can mislead the wearer.",
+          },
+          {
+            question: "When should I remove or replace my gemstone?",
+            answer: "If a stone develops a visible crack, internal cloudiness, or simply slips off on its own, treat it as a sign that the gem has absorbed energy and needs replacement. Many wearers re-energize their gem every six months. Remove the stone when its planet's Mahadasha or Antardasha ends and the next planet becomes more relevant. A short astrology check before replacing is always wise.",
+          },
+        ]}
+      />
 
       {/* Bottom CTA */}
       <section className={cn("py-12 md:py-16", result ? "bg-background" : "bg-white")}>

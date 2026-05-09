@@ -1,0 +1,119 @@
+"use client";
+
+import { ChevronDown, HelpCircle } from "lucide-react";
+import {
+    Accordion,
+    AccordionContent,
+    AccordionItem,
+    AccordionTrigger,
+} from "@/components/ui/accordion";
+
+export interface FaqItem {
+    question: string;
+    answer: string;
+}
+
+export interface FaqSectionProps {
+    eyebrow?: string;
+    title?: string;
+    description: string;
+    faqs: FaqItem[];
+    /**
+     * When true, emits an FAQPage JSON-LD script for SEO. Default: true.
+     */
+    schema?: boolean;
+}
+
+export function FaqSection({
+    eyebrow = "FAQs",
+    title = "Frequently Asked Questions",
+    description,
+    faqs,
+    schema = true,
+}: FaqSectionProps) {
+    const faqSchema = {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        mainEntity: faqs.map((f) => ({
+            "@type": "Question",
+            name: f.question,
+            acceptedAnswer: {
+                "@type": "Answer",
+                text: f.answer,
+            },
+        })),
+    };
+
+    return (
+        <section className="relative py-14 md:py-20 bg-linear-to-b from-white via-background to-white overflow-hidden">
+            <div className="absolute inset-0 pointer-events-none">
+                <div className="absolute -top-20 -right-20 w-72 h-72 bg-accent/10 rounded-full blur-3xl" />
+                <div className="absolute -bottom-20 -left-20 w-72 h-72 bg-primary/5 rounded-full blur-3xl" />
+            </div>
+
+            <div className="relative container mx-auto px-4">
+                <div className="max-w-3xl mx-auto">
+                    <div className="text-center mb-10 md:mb-12">
+                        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/5 border border-primary/10 mb-4">
+                            <HelpCircle className="h-3.5 w-3.5 text-primary" />
+                            <span className="text-xs font-bold uppercase tracking-widest text-primary">
+                                {eyebrow}
+                            </span>
+                        </div>
+                        <h2 className="text-3xl md:text-4xl font-bold font-heading text-gray-900 mb-4">
+                            {title}
+                        </h2>
+                        <p className="text-sm md:text-base text-gray-600 leading-relaxed max-w-2xl mx-auto">
+                            {description}
+                        </p>
+                    </div>
+
+                    <Accordion
+                        type="single"
+                        collapsible
+                        className="w-full space-y-3"
+                    >
+                        {faqs.map((faq, idx) => (
+                            <AccordionItem
+                                key={idx}
+                                value={`faq-${idx}`}
+                                className="group/faq rounded-2xl border border-gray-100 bg-white px-5 md:px-6 shadow-sm transition-all duration-300 hover:border-primary/30 hover:shadow-lg hover:-translate-y-0.5 data-[state=open]:border-primary/40 data-[state=open]:shadow-lg data-[state=open]:bg-linear-to-br data-[state=open]:from-white data-[state=open]:to-accent/5 data-[state=open]:-translate-y-0.5"
+                            >
+                                <AccordionTrigger className="cursor-pointer text-left font-semibold text-gray-900 hover:no-underline py-5 gap-4 [&>svg]:hidden">
+                                    <span className="flex items-center gap-3 md:gap-4 flex-1 min-w-0">
+                                        <span className="inline-flex h-7 w-7 md:h-8 md:w-8 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary text-xs md:text-sm font-bold font-heading transition-colors duration-300 group-hover/faq:bg-primary/15 group-data-[state=open]/faq:bg-primary group-data-[state=open]/faq:text-white group-data-[state=open]/faq:shadow-md group-data-[state=open]/faq:shadow-primary/30">
+                                            {idx + 1}
+                                        </span>
+                                        <span className="leading-snug text-sm md:text-base flex-1">
+                                            {faq.question}
+                                        </span>
+                                    </span>
+                                    <span
+                                        aria-hidden
+                                        className="shrink-0 inline-flex h-8 w-8 items-center justify-center rounded-full bg-primary/5 text-primary transition-all duration-300 group-hover/faq:bg-primary/10 group-data-[state=open]/faq:bg-primary group-data-[state=open]/faq:text-white group-data-[state=open]/faq:rotate-180"
+                                    >
+                                        <ChevronDown className="h-4 w-4" />
+                                    </span>
+                                </AccordionTrigger>
+                                <AccordionContent className="text-sm md:text-[15px] text-gray-600 leading-relaxed pl-10 md:pl-12 pr-2 pb-5">
+                                    <div className="border-l-2 border-primary/15 pl-4">
+                                        {faq.answer}
+                                    </div>
+                                </AccordionContent>
+                            </AccordionItem>
+                        ))}
+                    </Accordion>
+                </div>
+            </div>
+
+            {schema && (
+                <script
+                    type="application/ld+json"
+                    dangerouslySetInnerHTML={{
+                        __html: JSON.stringify(faqSchema),
+                    }}
+                />
+            )}
+        </section>
+    );
+}

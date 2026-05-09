@@ -13,6 +13,7 @@ import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { ConsultationButton } from "@/components/molecules/consultation-button";
+import { FaqSection } from "@/components/molecules";
 import {
   Star,
   Sparkles,
@@ -2257,6 +2258,63 @@ export default function KundliPage() {
           </div>
         </section>
       )}
+
+      {/* ── FAQ Section ─────────────────────────────────── */}
+      <FaqSection
+        description="Got questions about your free kundli online? Below we answer the most common queries about the janam kundli, how our kundli calculator works, what your vedic astrology birth chart reveals, and when a free kundli analysis is enough versus consulting a professional astrologer."
+        faqs={[
+          {
+            question: "What is a Janam Kundli and why is it important?",
+            answer:
+              "A Janam Kundli, also called a janam patrika or vedic astrology birth chart, is a snapshot of the sky at the exact moment you were born. It maps the position of the Sun, Moon, planets, and ascendant (lagna) across 12 houses. In Vedic tradition, the kundli is used to understand personality, career direction, relationships, health tendencies, and timing of life events through dashas.",
+          },
+          {
+            question: "How is the free kundli calculated on this page?",
+            answer:
+              "Our free kundli calculator uses your name, date of birth, exact time of birth, and place of birth to compute the planetary longitudes using the sidereal zodiac with the Lahiri ayanamsa, which is the standard in Indian astrology. From those positions we derive your lagna, rashi, nakshatra, planetary house placements, basic doshas, and your current Vimshottari Dasha period.",
+          },
+          {
+            question: "Is a free online kundli accurate compared to a paid astrologer?",
+            answer:
+              "The mathematical kundli generated here is accurate as long as your birth time and place are correct. The planetary positions, nakshatra, and dasha will match what a professional astrologer calculates. The difference lies in interpretation. A trained astrologer can read combinations, divisional charts, and timing nuances that no automated tool can fully replicate, which is why deeper readings still benefit from a human expert.",
+          },
+          {
+            question: "Why do I need exact time and place of birth?",
+            answer:
+              "The ascendant changes roughly every two hours, and house placements shift with it. Even a 15 minute difference in birth time can change your lagna and the entire house structure of your kundli. Place of birth sets the latitude and longitude used to calculate the local horizon, so a horoscope by date of birth alone, without time and place, cannot give you a reliable Vedic chart.",
+          },
+          {
+            question: "What does my janam kundli actually reveal?",
+            answer:
+              "Your kundli shows the rashi (sign) and nakshatra of each planet, the house each planet sits in, your ascendant, and aspects between planets. From these we read tendencies in personality, mind, career, marriage, finances, health, and family. The Vimshottari Dasha system layered on top tells you which planet is currently influencing your life, which helps explain present circumstances and upcoming themes.",
+          },
+          {
+            question: "What is Manglik dosha and does my kundli show it?",
+            answer:
+              "Manglik dosha, sometimes called Mangal dosha, is formed when Mars sits in specific houses from the lagna, Moon, or Venus. It is traditionally considered when matching kundlis for marriage. Our free kundli analysis flags whether Mars placement indicates a Manglik combination, but the strength of the dosha and its cancellations need careful evaluation by an astrologer before drawing any conclusion.",
+          },
+          {
+            question: "What is Vimshottari Dasha and how do I read it?",
+            answer:
+              "Vimshottari Dasha is a 120 year planetary cycle unique to Vedic astrology. Each planet rules a fixed number of years, and the order is decided by the nakshatra of your Moon at birth. The current mahadasha tells you which planet is shaping the broad themes of this period of your life, and antardashas inside it bring the finer events. Our calculator shows your active mahadasha automatically.",
+          },
+          {
+            question: "What is the difference between a Vedic kundli and a Western horoscope?",
+            answer:
+              "Western astrology uses the tropical zodiac, which is tied to the seasons, while Vedic astrology uses the sidereal zodiac, which is tied to the actual fixed stars. Because of this, your sun sign in a Western chart is often different from your rashi in a janam kundli. Vedic astrology also adds nakshatras, dashas, and divisional charts, which give it a much more time based predictive structure.",
+          },
+          {
+            question: "Can I save or print my free kundli from this page?",
+            answer:
+              "Yes. Once your janam kundli is generated, you can use your browser's print option to save it as a PDF or print a hard copy. Many users keep a printed kundli handy when consulting an astrologer or for matchmaking. Make sure your birth details are entered correctly before saving, since any correction will require regenerating the chart.",
+          },
+          {
+            question: "When should I consult a real astrologer instead of relying only on this tool?",
+            answer:
+              "A free kundli online is great for self study, basic understanding, and casual queries. For important life decisions like marriage matching, career changes, business launches, health concerns, or remedies for difficult dasha periods, it is wise to consult a qualified Vedic astrologer. They can study your divisional charts, transits, and family context together, which a generic kundli calculator cannot do on its own.",
+          },
+        ]}
+      />
 
       {/* ── Bottom CTA ─────────────────────────────────── */}
       <section className="py-12 border-t border-gray-100 bg-gray-50/40">
