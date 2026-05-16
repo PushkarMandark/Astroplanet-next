@@ -12,7 +12,11 @@ interface BlogPostPageProps {
 }
 
 export async function generateStaticParams() {
-    return await getAllPostSlugs(200, 50);
+    // Omit `total` so getAllPostSlugs auto-sizes to X-WP-Total — generating a
+    // static page for every published post. Capping this is what made Google
+    // index a fraction of posts: sitemap.xml listed all 332 URLs, but only the
+    // first 200 had a built HTML page; the rest returned 404 and were dropped.
+    return await getAllPostSlugs();
 }
 
 export async function generateMetadata({ params }: BlogPostPageProps) {

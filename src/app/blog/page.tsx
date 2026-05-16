@@ -11,8 +11,12 @@ export const metadata = {
 };
 
 export default async function BlogPage() {
+    // Omit the `maxTotal` arg so getAllPosts auto-sizes to the live WP total —
+    // the listing previously capped at 100 of 332+ posts, hiding the rest from
+    // both users and any internal-link crawler. BlogGridClient already
+    // client-side-paginates at 9/page so a longer list just adds page numbers.
     const [posts, categories] = await Promise.all([
-        getAllPosts(100),
+        getAllPosts(),
         getPostCategories(),
     ]);
 
