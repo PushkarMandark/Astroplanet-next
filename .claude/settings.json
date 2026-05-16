@@ -45,7 +45,10 @@
       "Bash(awk '/^## God Nodes/,/^## /{ if\\(/^## / && !/God Nodes/\\) exit; print }' graphify-out/GRAPH_REPORT.md)",
       "Bash(awk '/^## Surprising Connections/,/^## /{ if\\(/^## / && !/Surprising/\\) exit; print }' graphify-out/GRAPH_REPORT.md)",
       "Bash(awk '/^## Suggested Questions/,/^## /{ if\\(/^## / && !/Suggested/\\) exit; print }' graphify-out/GRAPH_REPORT.md)",
-      "Bash(grep -v -E \"\\(JSX|^\\\\s*<|>$|description=|<p|>\\\\s*[A-Z]\\)\")"
+      "Bash(grep -v -E \"\\(JSX|^\\\\s*<|>$|description=|<p|>\\\\s*[A-Z]\\)\")",
+      "Bash(echo \"exit=$?\")",
+      "PowerShell(npm run lint 2>&1)",
+      "PowerShell(npx tsc --noEmit 2>&1)"
     ]
   }
 }

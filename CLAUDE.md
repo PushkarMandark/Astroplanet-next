@@ -52,6 +52,52 @@ No test suite is configured. TypeScript strict mode is enabled. Package manager:
 
 **`src/lib/data/zodiac.ts`** — `zodiacSigns[]` (all 12 signs with Devanagari name, symbol, element, date range).
 
+## Astrology / Kundli Modules (`src/lib/astrology/` + `src/components/kundli/`)
+
+Used by `/free-kundli-calculator` (the multi-style, multi-varga chart UI).
+
+**`src/lib/astrology/chart-types.ts`** — shared types and lookups:
+- `ChartData { houseRashi, housePlanets, ascendantRashi, moonRashi?, sunRashi? }` — the neutral shape every chart-style renderer consumes
+- `ChartStyle = "north" | "south" | "east" | "west"`, `AscendantReference = "lagna" | "chandra" | "surya"`, `VargaKey` (D1, D2, D3, D4, D7, D9, D10, D12, D16, D20, D24, D27, D30, D40, D45, D60)
+- `VARGA_OPTIONS`, `CHART_STYLE_OPTIONS`, `ASCENDANT_OPTIONS` — UI option lists
+- `RASHI_NAMES_EN/HI/ABBR_EN`, `rashiLabel(rashi, lang)`, `PLANET_ABBR_COLOR`
+- `clampRashi(r)` — normalises rashi to [1,12]; the canonical implementation — do not duplicate locally
+
+**`src/lib/astrology/vargas.ts`** — converts library `Kundli`/`VargaChart` → `ChartData`:
+- `d1ToChartData(kundli)` — the D1 rashi chart from `kundli.houses`
+- `vargaToChartData(varga)` — any D2..D60 chart from the library's `VargaChart`
+- `getAllVargaCharts(kundli): Record<VargaKey, ChartData>` — all 16 supported vargas at once; missing vargas get safe empty placeholders
+- Both conversion functions populate `moonRashi`/`sunRashi` from the **chart's own planets** so Chandra/Surya Lagna toggling rotates to the correct rashi per-varga (the D9 Moon often differs from the D1 Moon)
+- `PLANET_NAME_TO_ABBR` covers capitalised, lowercased, and pre-abbreviated planet names; `toAbbr()` returns `""` on non-string input and is filtered out at call sites
+
+**`src/lib/astrology/ascendant.ts`** — whole-sign rotation:
+- `rotateToAscendant(data, newAscendantRashi)` — re-buckets planets under a new ascendant; preserves total planet count; carries `moonRashi`/`sunRashi` through (they are invariant under rotation)
+- `applyAscendantReference(data, reference, fallbackMoonRashi?, fallbackSunRashi?)` — resolves Lagna/Chandra/Surya view; **reads `data.moonRashi`/`sunRashi` first**, falling back only if the chart didn't supply them; returns `null` if the target rashi can't be placed
+
+**`src/lib/astrology/birth-attributes.ts`** — classical janma attributes from Moon rashi + birth nakshatra:
+- `getBirthAttributes({ moonRashi, nakshatraName })` returns `BirthAttributes` with 10 fields: Rashi Paya, Nakshatra Paya, Tattva, Yunja, Varna, Vashya, Tara, Yoni, Gana, Nadi
+- Tara always returns `"Janma"` for the native's own kundli (the birth nakshatra is by definition the 1st Tara); transit-aware Tara is not implemented
+- Individual lookups (`getYoni`, `getGana`, `getNadi`, `getVarna`, `getVashya`, `getTattva`, `getYunja`, `getRashiPaya`, `getNakshatraPaya`) are O(1) array indexed and exported for direct use
+- `NAKSHATRA_NAMES` is 0-indexed sentinel + entries 1..27; `nakshatraIndex(name)` is case-insensitive
+
+**`src/components/kundli/charts/`** — four authentic SVG chart-style renderers, all consuming `KundliChartProps`:
+- `NorthIndianChart` — curved lotus-petal style with quadratic Bezier curves on the 8 side→corner segments; main diagonals stay straight (preserving the swastika cross); house 1 fixed at top petal
+- `SouthIndianChart` — fixed-zodiac 4×4 perimeter grid (Pisces top-left, Aries clockwise); lagna marked with "L" badge in the cell holding the ascendant rashi
+- `EastIndianChart` — square frame with 4 corner cells + 4 side triangles + 4 inner cells tiled in a non-overlapping 2×2 pattern; house 1 at top-left corner
+- `WestIndianChart` — diagonal-split 3×3 frame with 12 regions around an empty center
+
+**`src/components/kundli/chart-controls.tsx`** — three stateless selector UIs: `ChartStyleSwitcher`, `VargaSelector`, `AscendantSwitcher`. Controlled — parent owns the state. Use ARIA `role="radiogroup"`/`role="radio"`.
+
+**`src/components/kundli/details/other-details-panel.tsx`** — `OtherDetailsPanel({ attributes })` renders the 10 classical janma attributes as a striped table with lucide icons.
+
+**Integration pattern** (see `src/app/free-kundli-calculator/page.tsx` Chart tab around line 1731):
+1. `getKundli(date, observer, {})` → library returns a `Kundli`
+2. `getAllVargaCharts(kundli)` → `Record<VargaKey, ChartData>` memoised on `kundli`
+3. State: `chartStyle`, `vargaKey`, `ascendantRef`
+4. `activeChartData = applyAscendantReference(vargaCharts[vargaKey], ascendantRef, base.moonRashi, base.sunRashi)` memoised on those keys
+5. Render `<NorthIndianChart data={activeChartData} labelLang={chartLabelLang} />` (or South/East/West)
+6. Render `<OtherDetailsPanel attributes={birthAttributes} />` separately
+
 ## Custom Hooks (`src/lib/hooks/`)
 
 **`use-mounted.ts`** — `useMounted()` uses `useSyncExternalStore` to detect client-side hydration without triggering `react-hooks/set-state-in-effect`. Use this for hydration guards **instead of** the `useState(false) + useEffect(() => setMounted(true), [])` pattern (which is now an ESLint error). Used by: Header, CartSidebar, AccountLayout, Dashboard, Wishlist.

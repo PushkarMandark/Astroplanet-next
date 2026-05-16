@@ -183,6 +183,7 @@ export default function GemstoneRecommenderPage() {
   } | null>(null);
   const [error, setError] = useState("");
   const [dobDate, setDobDate] = useState<Date | undefined>(undefined);
+  const [dobOpen, setDobOpen] = useState(false);
   const [place, setPlace] = useState("Gurugram");
   const [lat, setLat] = useState(28.4595);
   const [lon, setLon] = useState(77.0266);
@@ -289,7 +290,7 @@ export default function GemstoneRecommenderPage() {
                     <CalendarDays className="h-3.5 w-3.5 text-primary" />
                     Date of Birth
                   </Label>
-                  <Popover>
+                  <Popover open={dobOpen} onOpenChange={setDobOpen}>
                     <PopoverTrigger asChild>
                       <Button
                         variant="outline"
@@ -313,6 +314,7 @@ export default function GemstoneRecommenderPage() {
                             const m = String(date.getMonth() + 1).padStart(2, "0");
                             const d = String(date.getDate()).padStart(2, "0");
                             setBirthDate(`${y}-${m}-${d}`);
+                            setDobOpen(false);
                           }
                         }}
                         defaultMonth={dobDate || new Date(2000, 0)}

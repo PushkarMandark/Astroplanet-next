@@ -106,6 +106,7 @@ function getRecommendation(total: number): {
 
 export default function CompatibilityPage() {
   const [boyDobDate, setBoyDobDate] = useState<Date | undefined>(undefined);
+  const [boyDobOpen, setBoyDobOpen] = useState(false);
   const [boyDob, setBoyDob] = useState("");
   const [boyTob, setBoyTob] = useState("");
   const [boyPlace, setBoyPlace] = useState("Gurugram");
@@ -113,6 +114,7 @@ export default function CompatibilityPage() {
   const [boyLon, setBoyLon] = useState(77.0266);
 
   const [girlDobDate, setGirlDobDate] = useState<Date | undefined>(undefined);
+  const [girlDobOpen, setGirlDobOpen] = useState(false);
   const [girlDob, setGirlDob] = useState("");
   const [girlTob, setGirlTob] = useState("");
   const [girlPlace, setGirlPlace] = useState("Gurugram");
@@ -231,7 +233,7 @@ export default function CompatibilityPage() {
                       <CalendarDays className="h-3.5 w-3.5 text-primary" />
                       Date of Birth
                     </Label>
-                    <Popover>
+                    <Popover open={boyDobOpen} onOpenChange={setBoyDobOpen}>
                       <PopoverTrigger asChild>
                         <Button
                           variant="outline"
@@ -255,6 +257,7 @@ export default function CompatibilityPage() {
                               const m = String(date.getMonth() + 1).padStart(2, "0");
                               const d = String(date.getDate()).padStart(2, "0");
                               setBoyDob(`${y}-${m}-${d}`);
+                              setBoyDobOpen(false);
                             }
                           }}
                           defaultMonth={boyDobDate || new Date(2000, 0)}
@@ -316,7 +319,7 @@ export default function CompatibilityPage() {
                       <CalendarDays className="h-3.5 w-3.5 text-primary" />
                       Date of Birth
                     </Label>
-                    <Popover>
+                    <Popover open={girlDobOpen} onOpenChange={setGirlDobOpen}>
                       <PopoverTrigger asChild>
                         <Button
                           variant="outline"
@@ -340,6 +343,7 @@ export default function CompatibilityPage() {
                               const m = String(date.getMonth() + 1).padStart(2, "0");
                               const d = String(date.getDate()).padStart(2, "0");
                               setGirlDob(`${y}-${m}-${d}`);
+                              setGirlDobOpen(false);
                             }
                           }}
                           defaultMonth={girlDobDate || new Date(2000, 0)}

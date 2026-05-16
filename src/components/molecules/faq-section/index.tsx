@@ -1,6 +1,7 @@
 "use client";
 
-import { ChevronDown, HelpCircle } from "lucide-react";
+import Link from "next/link";
+import { ArrowRight, ChevronDown, HelpCircle } from "lucide-react";
 import {
     Accordion,
     AccordionContent,
@@ -11,6 +12,8 @@ import {
 export interface FaqItem {
     question: string;
     answer: string;
+    readMoreHref?: string;
+    readMoreLabel?: string;
 }
 
 export interface FaqSectionProps {
@@ -98,6 +101,17 @@ export function FaqSection({
                                 <AccordionContent className="text-sm md:text-[15px] text-gray-600 leading-relaxed pl-10 md:pl-12 pr-2 pb-5">
                                     <div className="border-l-2 border-primary/15 pl-4">
                                         {faq.answer}
+                                        {faq.readMoreHref && (
+                                            <div className="mt-3">
+                                                <Link
+                                                    href={faq.readMoreHref}
+                                                    className="inline-flex items-center gap-1.5 text-sm font-semibold text-primary hover:text-primary/80 transition-colors group/readmore"
+                                                >
+                                                    {faq.readMoreLabel ?? "Read more"}
+                                                    <ArrowRight className="h-3.5 w-3.5 transition-transform duration-200 group-hover/readmore:translate-x-0.5" />
+                                                </Link>
+                                            </div>
+                                        )}
                                     </div>
                                 </AccordionContent>
                             </AccordionItem>

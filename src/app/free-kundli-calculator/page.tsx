@@ -3,7 +3,6 @@
 import { useState, useMemo } from "react";
 import { MainLayout } from "@/components/templates/main-layout";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -13,7 +12,7 @@ import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { ConsultationButton } from "@/components/molecules/consultation-button";
-import { FaqSection } from "@/components/molecules";
+import { FaqSection, TimePicker12h, format12h } from "@/components/molecules";
 import {
   Star,
   Sparkles,
@@ -46,6 +45,27 @@ import {
   rashiNames,
   nakshatraNames,
 } from "@ishubhamx/panchangam-js";
+import {
+  NorthIndianChart,
+  SouthIndianChart,
+  EastIndianChart,
+  WestIndianChart,
+} from "@/components/kundli/charts";
+import {
+  ChartStyleSwitcher,
+  VargaSelector,
+  AscendantSwitcher,
+} from "@/components/kundli/chart-controls";
+import { OtherDetailsPanel } from "@/components/kundli/details";
+import { getAllVargaCharts } from "@/lib/astrology/vargas";
+import { applyAscendantReference } from "@/lib/astrology/ascendant";
+import { getBirthAttributes } from "@/lib/astrology/birth-attributes";
+import type {
+  ChartStyle,
+  VargaKey,
+  AscendantReference,
+} from "@/lib/astrology/chart-types";
+import { VARGA_OPTIONS } from "@/lib/astrology/chart-types";
 import {
   RASHIS,
   PLANETS,
@@ -156,40 +176,6 @@ function formatDate(dateStr: string) {
 }
 
 /* ── North Indian chart layout ─────────────────────────── */
-
-type CellType = "house" | "center";
-
-interface CellDef {
-  type: CellType;
-  house?: number;
-}
-
-const CHART_GRID: CellDef[][] = [
-  [
-    { type: "house", house: 12 },
-    { type: "house", house: 1 },
-    { type: "house", house: 2 },
-    { type: "house", house: 3 },
-  ],
-  [
-    { type: "house", house: 11 },
-    { type: "center" },
-    { type: "center" },
-    { type: "house", house: 4 },
-  ],
-  [
-    { type: "house", house: 10 },
-    { type: "center" },
-    { type: "center" },
-    { type: "house", house: 5 },
-  ],
-  [
-    { type: "house", house: 9 },
-    { type: "house", house: 8 },
-    { type: "house", house: 7 },
-    { type: "house", house: 6 },
-  ],
-];
 
 /* ── Types for kundli result ───────────────────────────── */
 
@@ -1197,6 +1183,7 @@ function NakshatraDetailSection({ nakshatraName }: NakshatraDetailSectionProps) 
 
 export default function KundliPage() {
   const [dobDate, setDobDate] = useState<Date | undefined>(undefined);
+  const [dobOpen, setDobOpen] = useState(false);
   const [dob, setDob] = useState("");
   const [tob, setTob] = useState("");
   const [place, setPlace] = useState("Gurugram");
@@ -1206,6 +1193,9 @@ export default function KundliPage() {
   const [chartLabelLang, setChartLabelLang] = useState<"english" | "hindi">(
     "english"
   );
+  const [chartStyle, setChartStyle] = useState<ChartStyle>("north");
+  const [vargaKey, setVargaKey] = useState<VargaKey>("D1");
+  const [ascendantRef, setAscendantRef] = useState<AscendantReference>("lagna");
 
   // Location coordinates
   const [lat, setLat] = useState(28.4595);
@@ -1260,6 +1250,48 @@ export default function KundliPage() {
       });
     }
     return map;
+  }, [kundli]);
+
+  /* All 16 divisional (varga) charts D1..D60 keyed by VargaKey. */
+  const vargaCharts = useMemo(() => {
+    if (!kundli) return null;
+    // The library type doesn't fully match — cast to its loose Kundli shape.
+    return getAllVargaCharts(
+      kundli as unknown as Parameters<typeof getAllVargaCharts>[0]
+    );
+  }, [kundli]);
+
+  /* The chart actually being rendered: selected varga rotated by ascendant reference. */
+  const activeChartData = useMemo(() => {
+    if (!vargaCharts) return null;
+    const base = vargaCharts[vargaKey];
+    // base.moonRashi / sunRashi come from THIS varga (so D9 Chandra Lagna
+    // uses the D9 Moon, not the D1 Moon). The fallbacks are a safety net
+    // in case the library didn't supply a planet entry.
+    return applyAscendantReference(
+      base,
+      ascendantRef,
+      base.moonRashi,
+      base.sunRashi
+    );
+  }, [vargaCharts, vargaKey, ascendantRef]);
+
+  /* Resolve the currently selected varga option once for the chart header. */
+  const currentVarga = useMemo(
+    () => VARGA_OPTIONS.find((v) => v.key === vargaKey),
+    [vargaKey]
+  );
+
+  /* Classical janma attributes (Rashi Paya, Tattva, Yoni, Gana, Nadi, ...). */
+  const birthAttributes = useMemo(() => {
+    if (!kundli) return null;
+    const moonRashi =
+      (kundli.planets?.Moon?.rashi as number | undefined) ??
+      kundli.ascendant.rashi;
+    return getBirthAttributes({
+      moonRashi,
+      nakshatraName: kundli.dasha.birthNakshatra,
+    });
   }, [kundli]);
 
   /* Conjunctions (2+ planets in same rashi) and dignified placements */
@@ -1431,7 +1463,7 @@ export default function KundliPage() {
                     <CalendarDays className="h-3.5 w-3.5 text-primary" />
                     Date of Birth
                   </Label>
-                  <Popover>
+                  <Popover open={dobOpen} onOpenChange={setDobOpen}>
                     <PopoverTrigger asChild>
                       <Button
                         variant="outline"
@@ -1457,6 +1489,7 @@ export default function KundliPage() {
                             const m = String(date.getMonth() + 1).padStart(2, "0");
                             const d = String(date.getDate()).padStart(2, "0");
                             setDob(`${y}-${m}-${d}`);
+                            setDobOpen(false);
                           }
                         }}
                         defaultMonth={dobDate || new Date(2000, 0)}
@@ -1482,12 +1515,11 @@ export default function KundliPage() {
                     <Clock className="h-3.5 w-3.5 text-primary" />
                     Time of Birth
                   </Label>
-                  <Input
+                  <TimePicker12h
                     id="tob"
-                    type="time"
                     value={tob}
-                    onChange={(e) => setTob(e.target.value)}
-                    className="rounded-xl"
+                    onChange={setTob}
+                    placeholder="Select time of birth"
                   />
                 </div>
 
@@ -1550,7 +1582,7 @@ export default function KundliPage() {
                   Your Birth Chart
                 </h2>
                 <p className="text-sm text-gray-500">
-                  Native &middot; {formatDate(dob)} &middot; {tob} &middot;{" "}
+                  Native &middot; {formatDate(dob)} &middot; {format12h(tob) || tob} &middot;{" "}
                   {place}
                 </p>
               </div>
@@ -1673,162 +1705,131 @@ export default function KundliPage() {
 
                 {/* ── Chart Tab ────────────────────────── */}
                 <TabsContent value="chart" className="mt-6 space-y-5">
-                  {/* Chart toggle */}
-                  <div className="flex items-center justify-center gap-2">
-                    <span className="text-xs text-gray-500 mr-1">Labels:</span>
-                    <Button
-                      variant={chartLabelLang === "english" ? "default" : "outline"}
-                      size="sm"
-                      onClick={() => setChartLabelLang("english")}
-                      className={cn(
-                        "rounded-lg text-xs h-8",
-                        chartLabelLang === "english" &&
-                          "bg-primary hover:bg-primary/90"
-                      )}
-                    >
-                      North Indian
-                    </Button>
-                    <Button
-                      variant={chartLabelLang === "hindi" ? "default" : "outline"}
-                      size="sm"
-                      onClick={() => setChartLabelLang("hindi")}
-                      className={cn(
-                        "rounded-lg text-xs h-8",
-                        chartLabelLang === "hindi" &&
-                          "bg-primary hover:bg-primary/90"
-                      )}
-                    >
-                      हिंदी Labels
-                    </Button>
-                  </div>
-
-                  {/* Birth Chart Grid */}
-                  <div className="bg-white rounded-2xl border border-gray-100 shadow-lg p-6 md:p-8">
-                    <div className="flex items-center gap-2 mb-6">
-                      <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
-                        <Globe className="h-4 w-4 text-primary" />
-                      </div>
-                      <h3 className="text-lg font-bold font-heading text-gray-900">
-                        Birth Chart (Kundli)
-                      </h3>
-                    </div>
-
-                    <div className="max-w-lg mx-auto">
-                      <div className="grid grid-cols-4 border-2 border-primary/30 rounded-xl overflow-hidden">
-                        {CHART_GRID.flat().map((cell, idx) => {
-                          if (cell.type === "center") {
-                            const centerIdx = [5, 6, 9, 10].indexOf(idx);
-                            if (centerIdx === 0) {
-                              return (
-                                <div
-                                  key={idx}
-                                  className="col-span-1 aspect-square flex items-end justify-end p-2 bg-primary/[0.03]"
-                                >
-                                  <span className="text-[10px] text-primary/40 font-heading font-bold">
-                                    जन्म
-                                  </span>
-                                </div>
-                              );
-                            }
-                            if (centerIdx === 1) {
-                              return (
-                                <div
-                                  key={idx}
-                                  className="col-span-1 aspect-square flex items-end justify-start p-2 bg-primary/[0.03]"
-                                >
-                                  <span className="text-[10px] text-primary/40 font-heading font-bold">
-                                    कुंडली
-                                  </span>
-                                </div>
-                              );
-                            }
-                            if (centerIdx === 2) {
-                              return (
-                                <div
-                                  key={idx}
-                                  className="col-span-1 aspect-square flex items-start justify-end p-2 bg-primary/[0.03]"
-                                >
-                                  <Moon className="h-4 w-4 text-primary/20" />
-                                </div>
-                              );
-                            }
-                            return (
-                              <div
-                                key={idx}
-                                className="col-span-1 aspect-square flex items-start justify-start p-2 bg-primary/[0.03]"
-                              >
-                                <Sun className="h-4 w-4 text-primary/20" />
-                              </div>
-                            );
-                          }
-
-                          const houseNum = cell.house!;
-                          const rashi = houseRashi[houseNum];
-                          const planets = housePlanets[houseNum] ?? [];
-                          const rashiLabel =
-                            rashi !== undefined
-                              ? chartLabelLang === "hindi"
-                                ? RASHIS[rashi]?.hindi ??
-                                  rashiNames[rashi] ??
-                                  String(rashi)
-                                : rashiNames[rashi] ?? String(rashi)
-                              : "";
-
-                          return (
-                            <div
-                              key={idx}
-                              className={cn(
-                                "aspect-square border border-primary/15 p-1.5 sm:p-2 flex flex-col justify-between transition-colors hover:bg-primary/[0.03]",
-                                houseNum === 1 && "bg-accent/[0.06]"
-                              )}
-                            >
-                              <div className="flex items-start justify-between">
-                                <span className="text-[10px] sm:text-xs font-bold text-primary/70">
-                                  {houseNum}
-                                </span>
-                                {rashiLabel && (
-                                  <span
-                                    className={cn(
-                                      "text-[9px] sm:text-[10px] text-gray-400",
-                                      chartLabelLang === "hindi" && "text-accent/90"
-                                    )}
-                                  >
-                                    {rashiLabel}
-                                  </span>
-                                )}
-                              </div>
-                              <div className="flex flex-wrap gap-0.5">
-                                {planets.map((p) => (
-                                  <span
-                                    key={p}
-                                    className={cn(
-                                      "text-[9px] sm:text-[10px] font-bold px-1 py-0.5 rounded",
-                                      PLANET_ABBR_COLOR[p] ??
-                                        "text-gray-500 bg-gray-50"
-                                    )}
-                                  >
-                                    {p}
-                                  </span>
-                                ))}
-                              </div>
-                            </div>
-                          );
-                        })}
-                      </div>
-
-                      {/* Chart legend */}
-                      <div className="mt-4 flex flex-wrap items-center justify-center gap-x-3 gap-y-1">
-                        {PLANET_KEYS.map((key) => (
-                          <span key={key} className="text-[10px] text-gray-500">
-                            <span className="font-bold text-gray-700">
-                              {PLANET_ABBR[key]}
-                            </span>{" "}
-                            {key}
+                  {/* Chart controls: style / varga / ascendant / labels */}
+                  <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 md:p-5">
+                    <div className="flex flex-wrap items-end justify-between gap-4">
+                      <div className="flex flex-wrap items-end gap-4">
+                        <div className="flex flex-col gap-1">
+                          <span className="text-[11px] font-medium uppercase tracking-wide text-gray-500">
+                            Style
                           </span>
-                        ))}
+                          <ChartStyleSwitcher
+                            value={chartStyle}
+                            onChange={setChartStyle}
+                          />
+                        </div>
+                        <VargaSelector
+                          value={vargaKey}
+                          onChange={setVargaKey}
+                        />
+                        <AscendantSwitcher
+                          value={ascendantRef}
+                          onChange={setAscendantRef}
+                        />
+                      </div>
+
+                      <div className="flex flex-col gap-1">
+                        <span className="text-[11px] font-medium uppercase tracking-wide text-gray-500">
+                          Labels
+                        </span>
+                        <div className="inline-flex items-center gap-1 rounded-xl border border-amber-100 bg-amber-50/40 p-1">
+                          <Button
+                            variant={chartLabelLang === "english" ? "default" : "ghost"}
+                            size="sm"
+                            onClick={() => setChartLabelLang("english")}
+                            className={cn(
+                              "h-8 rounded-lg px-3 text-xs",
+                              chartLabelLang === "english"
+                                ? "bg-primary text-primary-foreground"
+                                : "text-gray-700 hover:bg-amber-100/70"
+                            )}
+                          >
+                            English
+                          </Button>
+                          <Button
+                            variant={chartLabelLang === "hindi" ? "default" : "ghost"}
+                            size="sm"
+                            onClick={() => setChartLabelLang("hindi")}
+                            className={cn(
+                              "h-8 rounded-lg px-3 text-xs",
+                              chartLabelLang === "hindi"
+                                ? "bg-primary text-primary-foreground"
+                                : "text-gray-700 hover:bg-amber-100/70"
+                            )}
+                          >
+                            हिंदी
+                          </Button>
+                        </div>
                       </div>
                     </div>
                   </div>
+
+                  {/* Chart card */}
+                  <div className="bg-white rounded-2xl border border-gray-100 shadow-lg p-6 md:p-8">
+                    <div className="flex flex-wrap items-center justify-between gap-2 mb-6">
+                      <div className="flex items-center gap-2">
+                        <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
+                          <Globe className="h-4 w-4 text-primary" />
+                        </div>
+                        <h3 className="text-lg font-bold font-heading text-gray-900">
+                          {vargaKey} — {currentVarga?.name ?? "Rashi"}
+                        </h3>
+                      </div>
+                      <span className="text-[11px] text-gray-500">
+                        {currentVarga?.description}
+                      </span>
+                    </div>
+
+                    {activeChartData ? (
+                      <>
+                        {chartStyle === "north" && (
+                          <NorthIndianChart
+                            data={activeChartData}
+                            labelLang={chartLabelLang}
+                          />
+                        )}
+                        {chartStyle === "south" && (
+                          <SouthIndianChart
+                            data={activeChartData}
+                            labelLang={chartLabelLang}
+                          />
+                        )}
+                        {chartStyle === "east" && (
+                          <EastIndianChart
+                            data={activeChartData}
+                            labelLang={chartLabelLang}
+                          />
+                        )}
+                        {chartStyle === "west" && (
+                          <WestIndianChart
+                            data={activeChartData}
+                            labelLang={chartLabelLang}
+                          />
+                        )}
+                      </>
+                    ) : (
+                      <div className="py-12 text-center text-sm text-gray-500">
+                        Chart not available.
+                      </div>
+                    )}
+
+                    {/* Chart legend */}
+                    <div className="mt-4 flex flex-wrap items-center justify-center gap-x-3 gap-y-1">
+                      {PLANET_KEYS.map((key) => (
+                        <span key={key} className="text-[10px] text-gray-500">
+                          <span className="font-bold text-gray-700">
+                            {PLANET_ABBR[key]}
+                          </span>{" "}
+                          {key}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Other classical janma attributes */}
+                  {birthAttributes && (
+                    <OtherDetailsPanel attributes={birthAttributes} />
+                  )}
 
                   <ChartInsightsCard
                     conjunctions={chartAnalysis.conjunctions}
@@ -2267,6 +2268,8 @@ export default function KundliPage() {
             question: "What is a Janam Kundli and why is it important?",
             answer:
               "A Janam Kundli, also called a janam patrika or vedic astrology birth chart, is a snapshot of the sky at the exact moment you were born. It maps the position of the Sun, Moon, planets, and ascendant (lagna) across 12 houses. In Vedic tradition, the kundli is used to understand personality, career direction, relationships, health tendencies, and timing of life events through dashas.",
+            readMoreHref:
+              "/blog/what-is-a-janam-kundli-and-why-is-it-important-in-vedic-astrology-complete-guide/",
           },
           {
             question: "How is the free kundli calculated on this page?",
