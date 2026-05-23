@@ -1,7 +1,8 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
-import { ArrowRight, ChevronDown, HelpCircle } from "lucide-react";
+import { ArrowRight, ChevronDown, HelpCircle, Plus, Minus } from "lucide-react";
 import {
     Accordion,
     AccordionContent,
@@ -25,6 +26,11 @@ export interface FaqSectionProps {
      * When true, emits an FAQPage JSON-LD script for SEO. Default: true.
      */
     schema?: boolean;
+    /**
+     * Number of FAQs visible initially. Remaining FAQs are revealed via a
+     * "Show more" toggle. Defaults to showing all FAQs.
+     */
+    initialVisible?: number;
 }
 
 export function FaqSection({
@@ -33,7 +39,15 @@ export function FaqSection({
     description,
     faqs,
     schema = true,
+    initialVisible,
 }: FaqSectionProps) {
+    const hasCollapse =
+        typeof initialVisible === "number" && initialVisible < faqs.length;
+    const [expanded, setExpanded] = useState(false);
+    const visibleFaqs = hasCollapse && !expanded
+        ? faqs.slice(0, initialVisible)
+        : faqs;
+    const hiddenCount = hasCollapse ? faqs.length - initialVisible! : 0;
     const faqSchema = {
         "@context": "https://schema.org",
         "@type": "FAQPage",
@@ -76,7 +90,7 @@ export function FaqSection({
                         collapsible
                         className="w-full space-y-3"
                     >
-                        {faqs.map((faq, idx) => (
+                        {visibleFaqs.map((faq, idx) => (
                             <AccordionItem
                                 key={idx}
                                 value={`faq-${idx}`}
@@ -117,6 +131,29 @@ export function FaqSection({
                             </AccordionItem>
                         ))}
                     </Accordion>
+
+                    {hasCollapse && (
+                        <div className="mt-6 flex justify-center">
+                            <button
+                                type="button"
+                                onClick={() => setExpanded((v) => !v)}
+                                aria-expanded={expanded}
+                                className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-white px-5 py-2.5 text-sm font-semibold text-primary shadow-sm transition-all duration-200 hover:bg-primary hover:text-white hover:shadow-md hover:-translate-y-0.5 cursor-pointer"
+                            >
+                                {expanded ? (
+                                    <>
+                                        <Minus className="h-4 w-4" />
+                                        Show fewer questions
+                                    </>
+                                ) : (
+                                    <>
+                                        <Plus className="h-4 w-4" />
+                                        View {hiddenCount} more {hiddenCount === 1 ? "question" : "questions"}
+                                    </>
+                                )}
+                            </button>
+                        </div>
+                    )}
                 </div>
             </div>
 

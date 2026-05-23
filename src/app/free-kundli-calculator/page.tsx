@@ -37,6 +37,7 @@ import {
   XCircle,
   AlertTriangle,
   TrendingUp,
+  Hash,
 } from "lucide-react";
 import { LocationSearch } from "@/components/molecules/location-search";
 import {
@@ -56,10 +57,15 @@ import {
   VargaSelector,
   AscendantSwitcher,
 } from "@/components/kundli/chart-controls";
-import { OtherDetailsPanel } from "@/components/kundli/details";
+import {
+  OtherDetailsPanel,
+  LuckyAttributesCard,
+  CompatibilityTeaser,
+} from "@/components/kundli/details";
 import { getAllVargaCharts } from "@/lib/astrology/vargas";
 import { applyAscendantReference } from "@/lib/astrology/ascendant";
 import { getBirthAttributes } from "@/lib/astrology/birth-attributes";
+import { getLuckyAttributes } from "@/lib/astrology/lucky-attributes";
 import type {
   ChartStyle,
   VargaKey,
@@ -1416,6 +1422,10 @@ export default function KundliPage() {
     ? RASHIS[kundli.planets.Sun?.rashi ?? 0]
     : undefined;
 
+  const luckyAttributes = kundli
+    ? getLuckyAttributes(kundli.planets.Moon?.rashi ?? 0)
+    : null;
+
   return (
     <MainLayout>
       {/* ── Hero Section ──────────────────────────────── */}
@@ -1438,6 +1448,94 @@ export default function KundliPage() {
               significations, nakshatra details, dosha analysis and
               personalized remedies — all in one place.
             </p>
+
+            <div className="mt-7 flex flex-wrap items-center justify-center gap-3 text-xs md:text-sm">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/10 backdrop-blur-sm">
+                <CheckCircle2 className="h-3.5 w-3.5 text-accent" />
+                100% Free Forever
+              </span>
+              <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/10 backdrop-blur-sm">
+                <CheckCircle2 className="h-3.5 w-3.5 text-accent" />
+                Lahiri Ayanamsa
+              </span>
+              <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/10 backdrop-blur-sm">
+                <CheckCircle2 className="h-3.5 w-3.5 text-accent" />
+                16 Divisional Charts
+              </span>
+              <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/10 backdrop-blur-sm">
+                <CheckCircle2 className="h-3.5 w-3.5 text-accent" />
+                English &amp; हिंदी
+              </span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── Benefits Strip (between hero and form) ────── */}
+      <section className="bg-gradient-to-b from-white via-background to-white py-10 md:py-12 border-b border-gray-100">
+        <div className="container mx-auto px-4">
+          <div className="max-w-5xl mx-auto">
+            <div className="text-center mb-8">
+              <p className="text-xs font-bold uppercase tracking-widest text-secondary mb-2">
+                Why Generate Your Kundli Here
+              </p>
+              <h2 className="text-2xl md:text-3xl font-bold font-heading text-gray-900">
+                Everything a Vedic astrologer checks, in one click
+              </h2>
+            </div>
+
+            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              {[
+                {
+                  icon: Globe,
+                  title: "Precise Birth Chart",
+                  desc: "Lagna, Chandra & Surya kundli computed with sidereal Lahiri ayanamsa — the standard used by Indian astrologers.",
+                  accent: "text-primary",
+                  bg: "bg-primary/10",
+                },
+                {
+                  icon: Sparkles,
+                  title: "Planets, Houses & Nakshatra",
+                  desc: "Position of all 9 grahas, 12 bhavas, and your janma nakshatra with classical attributes.",
+                  accent: "text-secondary",
+                  bg: "bg-secondary/10",
+                },
+                {
+                  icon: Shield,
+                  title: "Dosha Check",
+                  desc: "Manglik dosha, Sade Sati and Kaal Sarp dosha flagged automatically from your chart.",
+                  accent: "text-rose-600",
+                  bg: "bg-rose-50",
+                },
+                {
+                  icon: Gem,
+                  title: "Remedies & Lucky Signs",
+                  desc: "Gemstones, mantras, lucky numbers, colors and direction — personalised to your rashi.",
+                  accent: "text-amber-600",
+                  bg: "bg-amber-50",
+                },
+              ].map((b) => (
+                <div
+                  key={b.title}
+                  className="group rounded-2xl border border-gray-100 bg-white p-4 md:p-5 transition-all duration-300 hover:border-primary/20 hover:shadow-md hover:-translate-y-0.5"
+                >
+                  <div
+                    className={cn(
+                      "w-10 h-10 rounded-xl flex items-center justify-center mb-3 transition-transform duration-300 group-hover:scale-110",
+                      b.bg,
+                    )}
+                  >
+                    <b.icon className={cn("h-5 w-5", b.accent)} />
+                  </div>
+                  <h3 className="text-sm md:text-base font-bold font-heading text-gray-900 mb-1.5">
+                    {b.title}
+                  </h3>
+                  <p className="text-xs md:text-sm text-gray-600 leading-relaxed">
+                    {b.desc}
+                  </p>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </section>
@@ -1701,6 +1799,16 @@ export default function KundliPage() {
                       />
                     )}
                   </div>
+
+                  {luckyAttributes && (
+                    <LuckyAttributesCard attributes={luckyAttributes} />
+                  )}
+
+                  {kundli.planets.Moon?.rashi ? (
+                    <CompatibilityTeaser
+                      userMoonRashi={kundli.planets.Moon.rashi}
+                    />
+                  ) : null}
                 </TabsContent>
 
                 {/* ── Chart Tab ────────────────────────── */}
@@ -2260,8 +2368,168 @@ export default function KundliPage() {
         </section>
       )}
 
+      {/* ── SEO Long-Form Content + Related Tools ──────── */}
+      <section className="bg-gradient-to-b from-background via-white to-background py-14 md:py-18 border-t border-gray-100">
+        <div className="container mx-auto px-4">
+          <div className="max-w-5xl mx-auto">
+            <div className="text-center mb-10">
+              <p className="text-xs font-bold uppercase tracking-widest text-secondary mb-2">
+                Understanding Your Janam Kundli
+              </p>
+              <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold font-heading text-gray-900 mb-3">
+                What does your free kundli actually reveal?
+              </h2>
+              <p className="text-sm md:text-base text-gray-600 leading-relaxed max-w-2xl mx-auto">
+                A Janam Kundli is the cosmic blueprint of your life. Below is a quick guide to what each part of your free online kundli means and how to use it.
+              </p>
+            </div>
+
+            <div className="grid md:grid-cols-2 gap-4 md:gap-5 mb-10">
+              {[
+                {
+                  icon: Sparkles,
+                  title: "Lagna (Ascendant)",
+                  body: "The rashi rising on the eastern horizon at your exact moment of birth. Lagna shapes your personality, body type, attitude and how the world sees you. The lagna also decides which rashi sits in which bhava (house).",
+                },
+                {
+                  icon: Moon,
+                  title: "Chandra Rashi (Moon Sign)",
+                  body: "The rashi where the Moon is placed in your kundli. Chandra rashi rules your mind, emotions, motherhood, and is the anchor of all Vedic predictions — including dasha calculations and kundli milan.",
+                },
+                {
+                  icon: Sun,
+                  title: "Surya Rashi (Sun Sign)",
+                  body: "Your sidereal Vedic sun sign. This is different from your Western sun sign. Surya rashi governs ego, authority, father, career direction, and your core sense of self.",
+                },
+                {
+                  icon: Star,
+                  title: "Janma Nakshatra",
+                  body: "One of the 27 lunar mansions. Your birth nakshatra is the starting point of your Vimshottari Dasha and reveals deep personality traits, life karma and your ruling planetary energy.",
+                },
+                {
+                  icon: TrendingUp,
+                  title: "Vimshottari Dasha",
+                  body: "A 120-year planetary timeline unique to Vedic astrology. The current mahadasha tells you which planet is shaping this phase of your life, and antardashas describe finer events year by year.",
+                },
+                {
+                  icon: Shield,
+                  title: "Doshas (Manglik, Sade Sati, Kaal Sarp)",
+                  body: "Specific planetary placements that traditional astrology considers challenging. Our calculator automatically flags Manglik dosha, Sade Sati phase and Kaal Sarp dosha so you know what to check with an astrologer.",
+                },
+              ].map((c) => (
+                <div
+                  key={c.title}
+                  className="rounded-2xl border border-gray-100 bg-white p-5 md:p-6 shadow-sm hover:shadow-md hover:border-primary/20 transition-all duration-200"
+                >
+                  <div className="flex items-start gap-3 mb-2">
+                    <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+                      <c.icon className="h-4 w-4 text-primary" />
+                    </div>
+                    <h3 className="text-base md:text-lg font-bold font-heading text-gray-900 leading-snug pt-1">
+                      {c.title}
+                    </h3>
+                  </div>
+                  <p className="text-sm text-gray-600 leading-relaxed pl-12">
+                    {c.body}
+                  </p>
+                </div>
+              ))}
+            </div>
+
+            <div className="rounded-3xl bg-gradient-to-br from-primary/5 via-accent/10 to-secondary/5 border border-primary/10 p-6 md:p-8 mb-10">
+              <div className="grid md:grid-cols-[1fr_auto] items-center gap-5">
+                <div>
+                  <p className="text-[11px] font-bold uppercase tracking-widest text-primary mb-1.5">
+                    Free, Accurate, Astrologer-Grade
+                  </p>
+                  <h3 className="text-xl md:text-2xl font-bold font-heading text-gray-900 mb-2">
+                    Why thousands trust our free Vedic kundli calculator
+                  </h3>
+                  <p className="text-sm md:text-base text-gray-600 leading-relaxed">
+                    We use the same astronomical engine and Lahiri ayanamsa that professional Indian astrologers rely on — no watered-down generic content, no email signup, no hidden charges. The mathematical accuracy of your janam patrika here matches a paid software reading; what you get on top is a clean, mobile-friendly dashboard with chart styles, divisional charts (D1 to D60), planetary periods and remedies in plain language.
+                  </p>
+                </div>
+                <div className="flex md:flex-col gap-3 md:gap-4 justify-center">
+                  <div className="text-center">
+                    <p className="text-2xl md:text-3xl font-bold font-heading text-primary">16+</p>
+                    <p className="text-[10px] uppercase tracking-wider text-gray-500 font-semibold">Divisional Charts</p>
+                  </div>
+                  <div className="text-center">
+                    <p className="text-2xl md:text-3xl font-bold font-heading text-secondary">27</p>
+                    <p className="text-[10px] uppercase tracking-wider text-gray-500 font-semibold">Nakshatras</p>
+                  </div>
+                  <div className="text-center">
+                    <p className="text-2xl md:text-3xl font-bold font-heading text-accent">9</p>
+                    <p className="text-[10px] uppercase tracking-wider text-gray-500 font-semibold">Grahas</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Related Tools strip */}
+            <div className="text-center mb-6">
+              <p className="text-xs font-bold uppercase tracking-widest text-secondary mb-2">
+                Explore More
+              </p>
+              <h3 className="text-xl md:text-2xl font-bold font-heading text-gray-900">
+                Other free Vedic astrology tools
+              </h3>
+            </div>
+            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
+              {[
+                {
+                  href: "/free-match-making-calculator/",
+                  icon: Heart,
+                  title: "Kundli Milan",
+                  desc: "Match marriage compatibility with 36-point Guna Milan.",
+                },
+                {
+                  href: "/free-numerology-calculator/",
+                  icon: Hash,
+                  title: "Numerology",
+                  desc: "Discover your life path, lucky number and destiny.",
+                },
+                {
+                  href: "/free-horoscope/",
+                  icon: Sparkles,
+                  title: "Daily Horoscope",
+                  desc: "Today's reading personalised to your rashi.",
+                },
+                {
+                  href: "/gemstone-recommender/",
+                  icon: Gem,
+                  title: "Gemstone Advice",
+                  desc: "Right stone for you based on your kundli.",
+                },
+              ].map((t) => (
+                <Link
+                  key={t.href}
+                  href={t.href}
+                  className="group rounded-2xl border border-gray-100 bg-white p-4 transition-all duration-200 hover:border-primary/30 hover:shadow-md hover:-translate-y-0.5"
+                >
+                  <div className="w-9 h-9 rounded-lg bg-accent/15 flex items-center justify-center mb-2.5 group-hover:scale-110 transition-transform">
+                    <t.icon className="h-4 w-4 text-primary" />
+                  </div>
+                  <h4 className="text-sm font-bold font-heading text-gray-900 mb-1">
+                    {t.title}
+                  </h4>
+                  <p className="text-xs text-gray-500 leading-snug mb-2">
+                    {t.desc}
+                  </p>
+                  <span className="inline-flex items-center gap-1 text-xs font-semibold text-primary group-hover:gap-1.5 transition-all">
+                    Try now
+                    <ArrowRight className="h-3 w-3" />
+                  </span>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* ── FAQ Section ─────────────────────────────────── */}
       <FaqSection
+        initialVisible={4}
         description="Got questions about your free kundli online? Below we answer the most common queries about the janam kundli, how our kundli calculator works, what your vedic astrology birth chart reveals, and when a free kundli analysis is enough versus consulting a professional astrologer."
         faqs={[
           {
@@ -2275,11 +2543,14 @@ export default function KundliPage() {
             question: "How is the free kundli calculated on this page?",
             answer:
               "Our free kundli calculator uses your name, date of birth, exact time of birth, and place of birth to compute the planetary longitudes using the sidereal zodiac with the Lahiri ayanamsa, which is the standard in Indian astrology. From those positions we derive your lagna, rashi, nakshatra, planetary house placements, basic doshas, and your current Vimshottari Dasha period.",
+            readMoreHref: "/blog/how-is-the-free-kundli-calculated/",
           },
           {
             question: "Is a free online kundli accurate compared to a paid astrologer?",
             answer:
               "The mathematical kundli generated here is accurate as long as your birth time and place are correct. The planetary positions, nakshatra, and dasha will match what a professional astrologer calculates. The difference lies in interpretation. A trained astrologer can read combinations, divisional charts, and timing nuances that no automated tool can fully replicate, which is why deeper readings still benefit from a human expert.",
+            readMoreHref:
+              "/blog/is-a-free-online-kundli-accurate-compared-to-a-paid-astrologer/",
           },
           {
             question: "Why do I need exact time and place of birth?",
