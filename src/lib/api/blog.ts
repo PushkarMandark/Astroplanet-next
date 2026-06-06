@@ -63,15 +63,29 @@ export async function getPost(id: number): Promise<BlogPost | null> {
     return response.success ? response.data || null : null;
 }
 
-// Get post by slug
+// Get post by slug.
+//
+// Critically distinguishes two failure modes that callers must treat differently:
+//  - success + empty result → the post genuinely doesn't exist → return null
+//    (the page then renders notFound(), correct for a deleted/unpublished post).
+//  - !success (5xx / timeout / network, after wpRequest's internal retries) → the
+//    backend is down for a slug we KNOW is published (it came from
+//    generateStaticParams). Returning null here would make the page ship a 404 for
+//    a LIVE post — the bug that silently broke 100+ blog links in the last build.
+//    Throw instead so `next build` fails loudly and the backend gets fixed before
+//    anything is deployed.
 export async function getPostBySlug(slug: string): Promise<BlogPost | null> {
     const response = await wpRequest<BlogPost[]>(
         `/wp/v2/posts?slug=${slug}&_embed=true`
     );
-    if (response.success && response.data && response.data.length > 0) {
-        return response.data[0];
+    if (response.success) {
+        return response.data && response.data.length > 0 ? response.data[0] : null;
     }
-    return null;
+    throw new Error(
+        `getPostBySlug("${slug}") failed at build time: ${response.error ?? "unknown error"} ` +
+        `(httpCode=${response.httpCode ?? "n/a"}). Refusing to ship a 404 for a live post — ` +
+        `the WordPress backend (${WP_URL}) must be reachable during the build. Aborting build.`
+    );
 }
 
 // Get blog categories
@@ -82,9 +96,24 @@ export async function getPostCategories(): Promise<BlogCategory[]> {
     return response.success ? response.data || [] : [];
 }
 
-// Get recent posts
+// Get recent posts.
+//
+// Every /blog/[slug] page renders the same "recent posts" list, so under static
+// export this fetch otherwise runs once PER post — 300+ identical heavy _embed
+// queries that pile needless load onto the fragile shared DB (and helped tip it
+// into the 5xx storm that broke the build). Memoise per build-worker process so
+// it runs at most once per worker per limit. Only a successful (non-empty) result
+// is cached, so a transient failure can still be retried by a later page.
+const recentPostsCache = new Map<number, Promise<BlogPost[]>>();
 export async function getRecentPosts(limit = 5): Promise<BlogPost[]> {
-    return getPosts({ per_page: limit });
+    const cached = recentPostsCache.get(limit);
+    if (cached) return cached;
+    const promise = getPosts({ per_page: limit }).then((posts) => {
+        if (posts.length === 0) recentPostsCache.delete(limit); // don't cache failures
+        return posts;
+    });
+    recentPostsCache.set(limit, promise);
+    return promise;
 }
 
 // Fields the blog list page actually consumes — drops the heavy `content.rendered`
@@ -114,27 +143,43 @@ export async function getAllPosts(maxTotal?: number, pageSize = 10): Promise<Blo
     }
 
     const totalBatches = Math.ceil(effectiveTotal / pageSize);
-    const allResults: BlogPost[][] = [];
+    const byPage = new Map<number, BlogPost[]>();
 
     for (let start = 1; start <= totalBatches; start += MAX_CONCURRENT_BATCHES) {
-        const wave: Promise<BlogPost[]>[] = [];
         const end = Math.min(start + MAX_CONCURRENT_BATCHES - 1, totalBatches);
-        for (let page = start; page <= end; page++) {
-            wave.push(getPosts({ per_page: pageSize, page, fields: BLOG_LIST_FIELDS }));
-        }
-        const waveResults = await Promise.all(wave);
-        allResults.push(...waveResults);
+        const pages: number[] = [];
+        for (let page = start; page <= end; page++) pages.push(page);
+        const waveResults = await Promise.all(
+            pages.map((page) => getPosts({ per_page: pageSize, page, fields: BLOG_LIST_FIELDS }))
+        );
+        pages.forEach((page, i) => byPage.set(page, waveResults[i]));
     }
 
-    allResults.forEach((batch, idx) => {
-        if (batch.length === 0) {
+    // wpRequest already retries 5xx/timeout internally, but the first pages (the
+    // newest posts) are the most visible and the most likely to be hit during a
+    // backend hiccup. Re-fetch any still-empty batch once more, sequentially,
+    // before giving up — a dropped batch here silently hides real posts from the
+    // public listing (the last build shipped 321/341 for exactly this reason).
+    const emptyPages = [...byPage.entries()]
+        .filter(([, posts]) => posts.length === 0)
+        .map(([page]) => page);
+    for (const page of emptyPages) {
+        const retried = await getPosts({ per_page: pageSize, page, fields: BLOG_LIST_FIELDS });
+        byPage.set(page, retried);
+        if (retried.length === 0) {
             console.warn(
-                `[getAllPosts] batch page=${idx + 1} returned 0 posts ` +
-                `(likely timed out or 5xx). Built blog index will be missing posts.`
+                `[getAllPosts] batch page=${page} STILL empty after retry (backend 5xx/timeout). ` +
+                `Listing is missing up to ${pageSize} posts — rebuild when the backend is healthy.`
             );
+        } else {
+            console.log(`[getAllPosts] batch page=${page} recovered ${retried.length} posts on retry`);
         }
-    });
-    const posts = allResults.flat().slice(0, effectiveTotal);
+    }
+
+    const posts = [...byPage.keys()]
+        .sort((a, b) => a - b)
+        .flatMap((page) => byPage.get(page) ?? [])
+        .slice(0, effectiveTotal);
     console.log(
         `[getAllPosts] fetched ${posts.length} posts across ${totalBatches} batches ` +
         `(per_page=${pageSize}, concurrency=${MAX_CONCURRENT_BATCHES})`
