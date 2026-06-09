@@ -171,7 +171,7 @@ export default function ContactPage() {
                                                 >
                                                     {siteConfig.contact.phone}
                                                 </a>
-                                                <p className="text-xs text-muted-foreground mt-1">Mon - Sat: 10:00 AM - 7:00 PM</p>
+                                                <p className="text-xs text-muted-foreground mt-1">Sun - Sat: 7:00 AM - 4:00 PM</p>
                                             </div>
                                         </div>
                                     </CardContent>
@@ -221,13 +221,9 @@ export default function ContactPage() {
                                     </CardHeader>
                                     <CardContent className="pt-0">
                                         <div className="space-y-2 text-sm">
-                                            <div className="flex justify-between py-2 border-b">
-                                                <span>Monday - Saturday</span>
-                                                <span className="font-medium">10:00 AM - 7:00 PM</span>
-                                            </div>
                                             <div className="flex justify-between py-2">
-                                                <span>Sunday</span>
-                                                <span className="font-medium text-muted-foreground">Closed</span>
+                                                <span>Sunday - Saturday</span>
+                                                <span className="font-medium">7:00 AM - 4:00 PM</span>
                                             </div>
                                         </div>
                                     </CardContent>

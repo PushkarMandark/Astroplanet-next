@@ -61,7 +61,7 @@ export function ToolsSection({
     description = "Explore your cosmic insights with our powerful astrology tools - completely free",
 }: ToolsSectionProps) {
     return (
-        <section className="py-20 bg-linear-to-b from-white to-muted/50">
+        <section className="py-20 border-t border-gray-100 bg-linear-to-b from-muted/50 to-white">
             <div className="container mx-auto px-4">
                 <div className="text-center mb-12">
                     <Badge className="mb-4 bg-accent/20 text-accent-foreground border-accent/30 px-4 py-1">

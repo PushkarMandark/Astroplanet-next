@@ -1471,75 +1471,6 @@ export default function KundliPage() {
         </div>
       </section>
 
-      {/* ── Benefits Strip (between hero and form) ────── */}
-      <section className="bg-gradient-to-b from-white via-background to-white py-10 md:py-12 border-b border-gray-100">
-        <div className="container mx-auto px-4">
-          <div className="max-w-5xl mx-auto">
-            <div className="text-center mb-8">
-              <p className="text-xs font-bold uppercase tracking-widest text-secondary mb-2">
-                Why Generate Your Kundli Here
-              </p>
-              <h2 className="text-2xl md:text-3xl font-bold font-heading text-gray-900">
-                Everything a Vedic astrologer checks, in one click
-              </h2>
-            </div>
-
-            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              {[
-                {
-                  icon: Globe,
-                  title: "Precise Birth Chart",
-                  desc: "Lagna, Chandra & Surya kundli computed with sidereal Lahiri ayanamsa — the standard used by Indian astrologers.",
-                  accent: "text-primary",
-                  bg: "bg-primary/10",
-                },
-                {
-                  icon: Sparkles,
-                  title: "Planets, Houses & Nakshatra",
-                  desc: "Position of all 9 grahas, 12 bhavas, and your janma nakshatra with classical attributes.",
-                  accent: "text-secondary",
-                  bg: "bg-secondary/10",
-                },
-                {
-                  icon: Shield,
-                  title: "Dosha Check",
-                  desc: "Manglik dosha, Sade Sati and Kaal Sarp dosha flagged automatically from your chart.",
-                  accent: "text-rose-600",
-                  bg: "bg-rose-50",
-                },
-                {
-                  icon: Gem,
-                  title: "Remedies & Lucky Signs",
-                  desc: "Gemstones, mantras, lucky numbers, colors and direction — personalised to your rashi.",
-                  accent: "text-amber-600",
-                  bg: "bg-amber-50",
-                },
-              ].map((b) => (
-                <div
-                  key={b.title}
-                  className="group rounded-2xl border border-gray-100 bg-white p-4 md:p-5 transition-all duration-300 hover:border-primary/20 hover:shadow-md hover:-translate-y-0.5"
-                >
-                  <div
-                    className={cn(
-                      "w-10 h-10 rounded-xl flex items-center justify-center mb-3 transition-transform duration-300 group-hover:scale-110",
-                      b.bg,
-                    )}
-                  >
-                    <b.icon className={cn("h-5 w-5", b.accent)} />
-                  </div>
-                  <h3 className="text-sm md:text-base font-bold font-heading text-gray-900 mb-1.5">
-                    {b.title}
-                  </h3>
-                  <p className="text-xs md:text-sm text-gray-600 leading-relaxed">
-                    {b.desc}
-                  </p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-
       {/* ── Form Section ──────────────────────────────── */}
       <section className="py-12 md:py-16">
         <div className="container mx-auto px-4">
@@ -1665,6 +1596,77 @@ export default function KundliPage() {
           </div>
         </div>
       </section>
+
+      {/* ── Why Generate Here (shown until a kundli is generated) ── */}
+      {!generated && (
+        <section className="bg-linear-to-b from-white via-background to-white py-10 md:py-12 border-t border-gray-100">
+          <div className="container mx-auto px-4">
+            <div className="max-w-5xl mx-auto">
+              <div className="text-center mb-8">
+                <p className="text-xs font-bold uppercase tracking-widest text-secondary mb-2">
+                  Why Generate Your Kundli Here
+                </p>
+                <h2 className="text-2xl md:text-3xl font-bold font-heading text-gray-900">
+                  Everything a Vedic astrologer checks, in one click
+                </h2>
+              </div>
+
+              <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                {[
+                  {
+                    icon: Globe,
+                    title: "Precise Birth Chart",
+                    desc: "Lagna, Chandra & Surya kundli computed with sidereal Lahiri ayanamsa — the standard used by Indian astrologers.",
+                    accent: "text-primary",
+                    bg: "bg-primary/10",
+                  },
+                  {
+                    icon: Sparkles,
+                    title: "Planets, Houses & Nakshatra",
+                    desc: "Position of all 9 grahas, 12 bhavas, and your janma nakshatra with classical attributes.",
+                    accent: "text-secondary",
+                    bg: "bg-secondary/10",
+                  },
+                  {
+                    icon: Shield,
+                    title: "Dosha Check",
+                    desc: "Manglik dosha, Sade Sati and Kaal Sarp dosha flagged automatically from your chart.",
+                    accent: "text-rose-600",
+                    bg: "bg-rose-50",
+                  },
+                  {
+                    icon: Gem,
+                    title: "Remedies & Lucky Signs",
+                    desc: "Gemstones, mantras, lucky numbers, colors and direction — personalised to your rashi.",
+                    accent: "text-amber-600",
+                    bg: "bg-amber-50",
+                  },
+                ].map((b) => (
+                  <div
+                    key={b.title}
+                    className="group rounded-2xl border border-gray-100 bg-white p-4 md:p-5 transition-all duration-300 hover:border-primary/20 hover:shadow-md hover:-translate-y-0.5"
+                  >
+                    <div
+                      className={cn(
+                        "w-10 h-10 rounded-xl flex items-center justify-center mb-3 transition-transform duration-300 group-hover:scale-110",
+                        b.bg,
+                      )}
+                    >
+                      <b.icon className={cn("h-5 w-5", b.accent)} />
+                    </div>
+                    <h3 className="text-sm md:text-base font-bold font-heading text-gray-900 mb-1.5">
+                      {b.title}
+                    </h3>
+                    <p className="text-xs md:text-sm text-gray-600 leading-relaxed">
+                      {b.desc}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* ── Results Section ────────────────────────────── */}
       {generated && kundli && (

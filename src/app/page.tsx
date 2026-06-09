@@ -11,7 +11,6 @@ import { TestimonialsSection } from "@/components/organisms/testimonials-section
 import { FeaturesSection } from "@/components/organisms/features-section";
 import { CTASection } from "@/components/organisms/cta-section";
 import { ExpertSection } from "@/components/organisms/expert-section";
-import { MediaSection } from "@/components/organisms/media-section";
 import { YouTubeSection } from "@/components/organisms/youtube-section";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -87,9 +86,6 @@ export default async function HomePage() {
         services={servicesConfig}
         description="Guiding your path with wisdom, insight, and authentic Vedic expertise."
       />
-
-      {/* As Featured In Section */}
-      <MediaSection />
 
       {/* Free Tools Section */}
       <ToolsSection />

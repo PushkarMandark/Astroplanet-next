@@ -13,5 +13,4 @@ export { TestimonialsSection, type Testimonial } from "./testimonials-section";
 export { FeaturesSection, type Feature } from "./features-section";
 export { CTASection } from "./cta-section";
 export { ExpertSection } from "./expert-section";
-export { MediaSection } from "./media-section";
 export { YouTubeSection } from "./youtube-section";
