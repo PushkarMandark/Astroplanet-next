@@ -8,13 +8,14 @@ interface ExpertSectionProps {
     subtitle?: string;
     description?: string;
     expertName?: string;
+    expertDescription?: string;
     expertInitials?: string;
     yearsExperience?: string;
     happyClients?: string;
     rating?: string;
     features?: Array<{
         title: string;
-        description: string;
+        description?: string;
     }>;
     onBookConsultation?: () => void;
     onWhatsApp?: () => void;
@@ -41,6 +42,7 @@ export function ExpertSection({
     subtitle = "Expert Guidance",
     description = "Whether you're seeking guidance on love, career, health, or life decisions, our expert astrologers provide accurate readings based on your unique birth chart.",
     expertName = "Meet Our Expert",
+    expertDescription = "Our team of certified Vedic astrologers brings decades of experience in traditional Indian astrology, offering personalized guidance and accurate predictions.",
     expertInitials = "AP",
     yearsExperience = "15+",
     happyClients = "10K+",
@@ -62,7 +64,7 @@ export function ExpertSection({
                                 {expertName}
                             </h3>
                             <p className="text-center text-white/80 mb-6">
-                                Our team of certified Vedic astrologers brings decades of experience in traditional Indian astrology, offering personalized guidance and accurate predictions.
+                                {expertDescription}
                             </p>
                             <div className="grid grid-cols-3 gap-4 text-center">
                                 <div>
@@ -98,7 +100,9 @@ export function ExpertSection({
                                     <CheckCircle className="h-6 w-6 text-green-500 flex-shrink-0 mt-0.5" />
                                     <div>
                                         <h4 className="font-semibold">{feature.title}</h4>
-                                        <p className="text-sm text-muted-foreground">{feature.description}</p>
+                                        {feature.description && (
+                                            <p className="text-sm text-muted-foreground">{feature.description}</p>
+                                        )}
                                     </div>
                                 </div>
                             ))}

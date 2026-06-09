@@ -75,15 +75,18 @@ export default async function HomePage() {
       />
       {/* Hero Section */}
       <HeroSection
-        subtitle="✨ Your Cosmic Journey Starts Here"
-        title="Discover Your Destiny"
-        description="Unlock the secrets of the universe with authentic astrology products, personalized readings, and expert guidance from certified Vedic astrologers."
+        subtitle="✨ Your Fate is Written in the Stars. Make Us Read This"
+        title="Your Future Holds Answers, Find Them Today"
+        description="Your life's most important questions deserve better than any random guesswork. Whether you want success in your career, harmony in your relationships, financial stability or spiritual growth, the wisdom of Vedic Astrology can help to illuminate your path ahead."
         primaryCta={{ label: "Explore Shop", href: "/shop" }}
         secondaryCta={{ label: "Free Horoscope", href: "/free-horoscope" }}
       />
 
       {/* Our Services Section */}
-      <ServicesSection services={servicesConfig} />
+      <ServicesSection
+        services={servicesConfig}
+        description="Guiding your path with wisdom, insight, and authentic Vedic expertise."
+      />
 
       {/* As Featured In Section */}
       <MediaSection />
@@ -92,7 +95,17 @@ export default async function HomePage() {
       <ToolsSection />
 
       {/* Expert Astrologer Section */}
-      <ExpertSection />
+      <ExpertSection
+        expertName="Connect with the Professional Astrologers"
+        expertDescription="Get in touch with the expert astrologers for Janam Kundli Analysis, Career Guidance, Marriage Compatibility, Gemstone Recommendations, and customized astrological solutions."
+        title="Your Birth Chart Has The Answers"
+        description="Get personalized astrology insights, effective remedies, and expert guidance to overcome challenges and open new doors in life."
+        features={[
+          { title: "Accurate Kundli Reading" },
+          { title: "Reliable Astrology Service" },
+          { title: "Helps in All Journey of Life" },
+        ]}
+      />
 
       {/* Featured Products Section */}
       <section className="py-20">
