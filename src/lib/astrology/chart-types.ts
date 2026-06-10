@@ -139,6 +139,27 @@ export const RASHI_ABBR_EN = [
   "Pis",
 ] as const;
 
+/**
+ * Vedic rashi names (Sanskrit transliteration) — the familiar names for an
+ * Indian audience (Mesh, Vrishabh, …). Used for in-cell chart labels in
+ * English mode so users can identify the rashi without decoding numbers.
+ */
+export const RASHI_NAMES_VEDIC_EN = [
+  "",
+  "Mesh",
+  "Vrishabh",
+  "Mithun",
+  "Kark",
+  "Simha",
+  "Kanya",
+  "Tula",
+  "Vrishchik",
+  "Dhanu",
+  "Makar",
+  "Kumbh",
+  "Meen",
+] as const;
+
 export function rashiLabel(rashi: number, lang: LabelLang): string {
   if (rashi < 1 || rashi > 12) return "";
   return lang === "hindi" ? RASHI_NAMES_HI[rashi] : RASHI_NAMES_EN[rashi];
@@ -156,3 +177,31 @@ export const PLANET_ABBR_COLOR: Record<string, string> = {
   Ra: "text-purple-600",
   Ke: "text-gray-500",
 };
+
+/** Hindi Devanagari short labels for planets (keyed by English 2-letter abbr). */
+export const PLANET_ABBR_HI: Record<string, string> = {
+  Su: "सू",
+  Mo: "चं",
+  Ma: "मं",
+  Me: "बु",
+  Ju: "गु",
+  Ve: "शु",
+  Sa: "श",
+  Ra: "रा",
+  Ke: "के",
+  // Outer planets (the library can emit these in modern charts)
+  Ur: "यूरे",
+  Ne: "नेप",
+  Pl: "प्लू",
+};
+
+/** Returns the planet label for the given language (`abbr` stays English in the color map). */
+export function planetLabel(abbr: string, lang: LabelLang): string {
+  return lang === "hindi" ? (PLANET_ABBR_HI[abbr] ?? abbr) : abbr;
+}
+
+/** Rashi label for use inside chart cells. English: Vedic name (Mesh/Vrishabh…); Hindi: Devanagari name (मेष/वृषभ…). */
+export function rashiCellLabel(rashi: number, lang: LabelLang): string {
+  if (rashi < 1 || rashi > 12) return "";
+  return lang === "hindi" ? RASHI_NAMES_HI[rashi] : RASHI_NAMES_VEDIC_EN[rashi];
+}

@@ -34,6 +34,9 @@ import { calculatePanchang } from "@/lib/panchang";
 import Link from "next/link";
 import { ConsultationButton } from "@/components/molecules/consultation-button";
 import { FaqSection } from "@/components/molecules";
+import { LanguageSwitcher } from "@/components/molecules";
+import { useT, useLang } from "@/lib/i18n";
+import { panchang as panchangDict } from "@/lib/i18n/translations/panchang";
 import {
     VARAS,
     CHOGHADIYAS,
@@ -101,9 +104,8 @@ function computeVibe(
     if (auspCount >= 2) {
         return {
             status: "auspicious",
-            label: "Auspicious Day",
-            summary:
-                "Planetary influences today support new beginnings, spiritual practice, and important undertakings.",
+            label: "auspicious",
+            summary: "auspicious",
             pillClass: "bg-green-100 text-green-800 border-green-200",
             dotClass: "bg-green-500",
         };
@@ -111,9 +113,8 @@ function computeVibe(
     if (inauspCount >= 2) {
         return {
             status: "inauspicious",
-            label: "Inauspicious Day",
-            summary:
-                "Cosmic energies are challenging today. Prefer routine work, prayer, and avoid major new starts.",
+            label: "inauspicious",
+            summary: "inauspicious",
             pillClass: "bg-red-100 text-red-800 border-red-200",
             dotClass: "bg-red-500",
         };
@@ -122,9 +123,8 @@ function computeVibe(
     void flags;
     return {
         status: "mixed",
-        label: "Mixed Day",
-        summary:
-            "A balanced day with both favorable and cautionary energies. Time activities mindfully using Choghadiya.",
+        label: "mixed",
+        summary: "mixed",
         pillClass: "bg-amber-100 text-amber-800 border-amber-200",
         dotClass: "bg-amber-500",
     };
@@ -183,20 +183,21 @@ function BulletList({ title, items, tone }: BulletListProps) {
 
 interface TithiDetailsProps {
     info: TithiInfo;
+    t: (key: keyof typeof panchangDict["en"]) => string;
 }
 
-function TithiDetails({ info }: TithiDetailsProps) {
+function TithiDetails({ info, t }: TithiDetailsProps) {
     return (
         <div className="space-y-4">
             <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                <DetailCell label="Deity" value={info.deity} />
-                <DetailCell label="Nature" value={info.nature} />
-                <DetailCell label="Tithi No." value={String(info.number)} />
+                <DetailCell label={t("cellDeity")} value={info.deity} />
+                <DetailCell label={t("cellNature")} value={info.nature} />
+                <DetailCell label={t("cellTithiNo")} value={String(info.number)} />
             </div>
             <p className="text-sm text-gray-600 leading-relaxed">{info.description}</p>
             <div className="grid md:grid-cols-2 gap-4">
-                <BulletList title="Favorable" items={info.favorable} tone="green" />
-                <BulletList title="Avoid" items={info.avoid} tone="red" />
+                <BulletList title={t("bulletFavorable")} items={info.favorable} tone="green" />
+                <BulletList title={t("bulletAvoid")} items={info.avoid} tone="red" />
             </div>
         </div>
     );
@@ -204,20 +205,21 @@ function TithiDetails({ info }: TithiDetailsProps) {
 
 interface NakshatraDetailsProps {
     info: NakshatraActivity;
+    t: (key: keyof typeof panchangDict["en"]) => string;
 }
 
-function NakshatraDetails({ info }: NakshatraDetailsProps) {
+function NakshatraDetails({ info, t }: NakshatraDetailsProps) {
     return (
         <div className="space-y-4">
             <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                <DetailCell label="Deity" value={info.deity} />
-                <DetailCell label="Ruler" value={info.ruler} />
-                <DetailCell label="Nature" value={info.nature} />
+                <DetailCell label={t("cellDeity")} value={info.deity} />
+                <DetailCell label={t("cellRuler")} value={info.ruler} />
+                <DetailCell label={t("cellNature")} value={info.nature} />
             </div>
             <p className="text-sm text-gray-600 leading-relaxed">{info.description}</p>
             <div className="grid md:grid-cols-2 gap-4">
-                <BulletList title="Favorable" items={info.favorable} tone="green" />
-                <BulletList title="Avoid" items={info.avoid} tone="red" />
+                <BulletList title={t("bulletFavorable")} items={info.favorable} tone="green" />
+                <BulletList title={t("bulletAvoid")} items={info.avoid} tone="red" />
             </div>
         </div>
     );
@@ -225,14 +227,15 @@ function NakshatraDetails({ info }: NakshatraDetailsProps) {
 
 interface YogaDetailsProps {
     info: YogaInfo;
+    t: (key: keyof typeof panchangDict["en"]) => string;
 }
 
-function YogaDetails({ info }: YogaDetailsProps) {
+function YogaDetails({ info, t }: YogaDetailsProps) {
     return (
         <div className="space-y-3">
             <div className="flex items-center gap-2">
                 <InfoPill
-                    label={info.auspicious ? "Auspicious" : "Inauspicious"}
+                    label={info.auspicious ? t("pillAuspicious") : t("pillInauspicious")}
                     tone={info.auspicious ? "green" : "red"}
                 />
                 <InfoPill label={info.nature} tone="slate" />
@@ -244,15 +247,16 @@ function YogaDetails({ info }: YogaDetailsProps) {
 
 interface KaranaDetailsProps {
     info: KaranaInfo;
+    t: (key: keyof typeof panchangDict["en"]) => string;
 }
 
-function KaranaDetails({ info }: KaranaDetailsProps) {
+function KaranaDetails({ info, t }: KaranaDetailsProps) {
     return (
         <div className="space-y-3">
             <div className="flex items-center gap-2">
                 <InfoPill label={info.type} tone="slate" />
                 <InfoPill
-                    label={info.auspicious ? "Auspicious" : "Inauspicious"}
+                    label={info.auspicious ? t("pillAuspicious") : t("pillInauspicious")}
                     tone={info.auspicious ? "green" : "red"}
                 />
             </div>
@@ -263,16 +267,17 @@ function KaranaDetails({ info }: KaranaDetailsProps) {
 
 interface VaraDetailsProps {
     info: VaraInfo;
+    t: (key: keyof typeof panchangDict["en"]) => string;
 }
 
-function VaraDetails({ info }: VaraDetailsProps) {
+function VaraDetails({ info, t }: VaraDetailsProps) {
     return (
         <div className="space-y-4">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                <DetailCell label="Ruler" value={info.ruler} />
-                <DetailCell label="Deity" value={info.deity} />
+                <DetailCell label={t("cellRuler")} value={info.ruler} />
+                <DetailCell label={t("cellDeity")} value={info.deity} />
                 <div className="rounded-lg bg-gray-50 px-3 py-2">
-                    <p className="text-[11px] text-gray-400 mb-1">Lucky Color</p>
+                    <p className="text-[11px] text-gray-400 mb-1">{t("cellLuckyColor")}</p>
                     <div className="flex items-center gap-2">
                         <span
                             className="inline-block w-4 h-4 rounded-full border border-gray-200"
@@ -281,22 +286,22 @@ function VaraDetails({ info }: VaraDetailsProps) {
                         <span className="text-sm font-bold text-gray-900">{info.color}</span>
                     </div>
                 </div>
-                <DetailCell label="Day" value={`${info.english} (${info.hindi})`} />
+                <DetailCell label={t("cellDay")} value={`${info.english} (${info.hindi})`} />
             </div>
             <p className="text-sm text-gray-600 leading-relaxed">{info.description}</p>
             <div className="rounded-xl bg-primary/5 border border-primary/10 p-4">
                 <p className="text-[11px] font-bold uppercase tracking-wider text-primary mb-2">
-                    Mantra
+                    {t("cellMantra")}
                 </p>
                 <p className="font-heading text-lg text-primary leading-snug mb-1">{info.mantra}</p>
                 <p className="text-sm italic text-gray-600 mb-1">{info.mantraTransliteration}</p>
                 <p className="text-xs text-gray-500">{info.mantraMeaning}</p>
             </div>
             <div className="grid md:grid-cols-2 gap-4">
-                <BulletList title="Favorable Activities" items={info.favorable} tone="green" />
+                <BulletList title={t("cellFavorableActivities")} items={info.favorable} tone="green" />
                 <div>
                     <p className="text-[11px] font-bold uppercase tracking-wider text-gray-500 mb-2">
-                        Traditional Fasts
+                        {t("cellTraditionalFasts")}
                     </p>
                     <ul className="space-y-1.5">
                         {info.fasts.map((f) => (
@@ -328,15 +333,17 @@ function DetailCell({ label, value }: DetailCellProps) {
 
 interface ActivityTileProps {
     guide: ActivityGuide;
+    favorableLabel: string;
+    avoidLabel: string;
 }
 
-function ActivityTile({ guide }: ActivityTileProps) {
+function ActivityTile({ guide, favorableLabel, avoidLabel }: ActivityTileProps) {
     const Icon = guide.favorable ? CheckCircle2 : XCircle;
     const containerClass = guide.favorable
         ? "bg-green-50/60 border-green-100"
         : "bg-red-50/60 border-red-100";
     const iconClass = guide.favorable ? "text-green-600" : "text-red-600";
-    const statusText = guide.favorable ? "Favorable" : "Avoid";
+    const statusText = guide.favorable ? favorableLabel : avoidLabel;
     const statusClass = guide.favorable ? "text-green-700" : "text-red-700";
     return (
         <div className={cn("rounded-2xl border p-4", containerClass)}>
@@ -358,9 +365,11 @@ function ActivityTile({ guide }: ActivityTileProps) {
 
 interface ChoghadiyaRowProps {
     period: ChoghadiyaPeriod;
+    shubhLabel: string;
+    ashubhLabel: string;
 }
 
-function ChoghadiyaRow({ period }: ChoghadiyaRowProps) {
+function ChoghadiyaRow({ period, shubhLabel, ashubhLabel }: ChoghadiyaRowProps) {
     const info = CHOGHADIYAS[period.name];
     const rowClass = period.auspicious
         ? "bg-green-50/50 hover:bg-green-50"
@@ -392,7 +401,7 @@ function ChoghadiyaRow({ period }: ChoghadiyaRowProps) {
                         : "bg-red-100 text-red-700"
                 )}
             >
-                {period.auspicious ? "Shubh" : "Ashubh"}
+                {period.auspicious ? shubhLabel : ashubhLabel}
             </span>
         </div>
     );
@@ -400,9 +409,13 @@ function ChoghadiyaRow({ period }: ChoghadiyaRowProps) {
 
 interface MantraOfDayProps {
     vara: VaraInfo;
+    mantraOfDayLabel: string;
+    copyLabel: string;
+    copiedLabel: string;
+    chantTip: string;
 }
 
-function MantraOfDay({ vara }: MantraOfDayProps) {
+function MantraOfDay({ vara, mantraOfDayLabel, copyLabel, copiedLabel, chantTip }: MantraOfDayProps) {
     const [copied, setCopied] = useState(false);
 
     const handleCopy = async () => {
@@ -430,7 +443,7 @@ function MantraOfDay({ vara }: MantraOfDayProps) {
                         </div>
                         <div>
                             <p className="text-[11px] uppercase tracking-widest text-accent font-bold">
-                                Mantra of the Day
+                                {mantraOfDayLabel}
                             </p>
                             <p className="text-xs text-white/60">
                                 {vara.ruler} &middot; {vara.deity}
@@ -447,12 +460,12 @@ function MantraOfDay({ vara }: MantraOfDayProps) {
                         {copied ? (
                             <>
                                 <Check className="h-3.5 w-3.5 mr-1" />
-                                Copied
+                                {copiedLabel}
                             </>
                         ) : (
                             <>
                                 <Copy className="h-3.5 w-3.5 mr-1" />
-                                Copy
+                                {copyLabel}
                             </>
                         )}
                     </Button>
@@ -467,7 +480,7 @@ function MantraOfDay({ vara }: MantraOfDayProps) {
                     {vara.mantraMeaning}
                 </p>
                 <p className="text-xs text-accent/90 font-medium">
-                    Chant 108 times before sunrise for best results
+                    {chantTip}
                 </p>
             </div>
         </div>
@@ -479,16 +492,19 @@ export default function PanchangPage() {
     const [expandedElement, setExpandedElement] = useState<ExpandedElement>(null);
     const [choghadiyaTab, setChoghadiyaTab] = useState<ChoghadiyaTab>("day");
 
-    const panchang = useMemo(() => calculatePanchang(selectedDate), [selectedDate]);
+    const t = useT(panchangDict);
+    const lang = useLang();
 
-    const tithiInfo = useMemo(() => getTithiInfo(panchang.tithi), [panchang.tithi]);
+    const panchangData = useMemo(() => calculatePanchang(selectedDate), [selectedDate]);
+
+    const tithiInfo = useMemo(() => getTithiInfo(panchangData.tithi), [panchangData.tithi]);
     const nakshatraInfo = useMemo(
-        () => getNakshatraActivity(panchang.nakshatra),
-        [panchang.nakshatra]
+        () => getNakshatraActivity(panchangData.nakshatra),
+        [panchangData.nakshatra]
     );
-    const yogaInfo = useMemo(() => getYogaInfo(panchang.yoga), [panchang.yoga]);
-    const karanaInfo = useMemo(() => getKaranaInfo(panchang.karana), [panchang.karana]);
-    const varaInfo: VaraInfo | undefined = VARAS[panchang.vara];
+    const yogaInfo = useMemo(() => getYogaInfo(panchangData.yoga), [panchangData.yoga]);
+    const karanaInfo = useMemo(() => getKaranaInfo(panchangData.karana), [panchangData.karana]);
+    const varaInfo: VaraInfo | undefined = VARAS[panchangData.vara];
 
     const vibe = useMemo(
         () => computeVibe(tithiInfo, nakshatraInfo, yogaInfo),
@@ -496,18 +512,18 @@ export default function PanchangPage() {
     );
 
     const activityGuides = useMemo(
-        () => getActivitySuggestions(panchang.tithi, panchang.nakshatra, panchang.yoga),
-        [panchang.tithi, panchang.nakshatra, panchang.yoga]
+        () => getActivitySuggestions(panchangData.tithi, panchangData.nakshatra, panchangData.yoga),
+        [panchangData.tithi, panchangData.nakshatra, panchangData.yoga]
     );
 
     const dayChoghadiya = useMemo(
-        () => buildDayChoghadiya(panchang.vara, panchang.sunrise, panchang.sunset),
-        [panchang.vara, panchang.sunrise, panchang.sunset]
+        () => buildDayChoghadiya(panchangData.vara, panchangData.sunrise, panchangData.sunset),
+        [panchangData.vara, panchangData.sunrise, panchangData.sunset]
     );
 
     const nightChoghadiya = useMemo(
-        () => buildNightChoghadiya(panchang.vara, panchang.sunset, panchang.sunrise),
-        [panchang.vara, panchang.sunset, panchang.sunrise]
+        () => buildNightChoghadiya(panchangData.vara, panchangData.sunset, panchangData.sunrise),
+        [panchangData.vara, panchangData.sunset, panchangData.sunrise]
     );
 
     const goToDay = (offset: number) => {
@@ -529,7 +545,7 @@ export default function PanchangPage() {
         day: "numeric",
     });
 
-    const hindiDay = hindiDays[panchang.vara] || "";
+    const hindiDay = hindiDays[panchangData.vara] || "";
 
     const toggleElement = (key: Exclude<ExpandedElement, null>) => {
         setExpandedElement((prev) => (prev === key ? null : key));
@@ -543,6 +559,20 @@ export default function PanchangPage() {
                 : "amber"
         : "amber";
 
+    // Resolve translated vibe strings
+    const vibeLabel =
+        vibe.status === "auspicious"
+            ? t("vibeAuspicious")
+            : vibe.status === "inauspicious"
+                ? t("vibeInauspicious")
+                : t("vibeMixed");
+    const vibeSummary =
+        vibe.status === "auspicious"
+            ? t("vibeAuspiciousSummary")
+            : vibe.status === "inauspicious"
+                ? t("vibeInauspiciousSummary")
+                : t("vibeMixedSummary");
+
     return (
         <MainLayout>
             {/* Hero */}
@@ -552,16 +582,19 @@ export default function PanchangPage() {
                     <div className="absolute -bottom-10 -left-10 w-56 h-56 bg-secondary/10 rounded-full blur-3xl" />
                 </div>
                 <div className="container mx-auto px-4 relative z-10 py-12 md:py-16">
+                    <div className="flex justify-end mb-4">
+                        <LanguageSwitcher />
+                    </div>
                     <div className="max-w-2xl mx-auto text-center">
                         <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 backdrop-blur-sm text-sm mb-4">
                             <Calendar className="h-3.5 w-3.5 text-accent" />
-                            Hindu Calendar
+                            {t("heroBadge")}
                         </div>
                         <h1 className="text-4xl md:text-5xl font-bold font-heading mb-3">
-                            Daily Panchang
+                            {t("heroTitle")}
                         </h1>
                         <p className="text-white/70 text-base max-w-lg mx-auto">
-                            Tithi, Nakshatra, Yoga, Karana &amp; auspicious timings for {panchang.masa} month
+                            {t("heroSubtitle")} {panchangData.masa} {t("heroSubtitleSuffix")}
                         </p>
                     </div>
                 </div>
@@ -583,7 +616,7 @@ export default function PanchangPage() {
                         <div className="text-center">
                             <p className="text-sm font-bold text-gray-900">{formattedDate}</p>
                             <p className="text-[11px] text-secondary">
-                                {hindiDay} &middot; {panchang.paksha} Paksha &middot; {panchang.masa} ({panchang.ritu})
+                                {hindiDay} &middot; {panchangData.paksha} Paksha &middot; {panchangData.masa} ({panchangData.ritu})
                             </p>
                         </div>
 
@@ -604,7 +637,7 @@ export default function PanchangPage() {
                                 className="rounded-full text-xs h-7 px-3 border-primary/20 text-primary"
                                 onClick={goToToday}
                             >
-                                Go to Today
+                                {t("goToToday")}
                             </Button>
                         </div>
                     )}
@@ -615,15 +648,15 @@ export default function PanchangPage() {
                 <div className="container mx-auto px-4 max-w-5xl">
 
                     {/* Festivals Banner */}
-                    {panchang.festivals.length > 0 && (
+                    {panchangData.festivals.length > 0 && (
                         <div className="mb-8 rounded-2xl bg-accent/10 border border-accent/20 p-5">
                             <div className="flex items-start gap-3">
                                 <div className="w-10 h-10 rounded-xl bg-accent/20 flex items-center justify-center shrink-0">
                                     <PartyPopper className="h-5 w-5 text-accent" />
                                 </div>
                                 <div>
-                                    <p className="text-xs font-bold uppercase tracking-wider text-accent mb-1">Festival Today</p>
-                                    {panchang.festivals.map((f) => (
+                                    <p className="text-xs font-bold uppercase tracking-wider text-accent mb-1">{t("festivalToday")}</p>
+                                    {panchangData.festivals.map((f) => (
                                         <div key={f.name}>
                                             <p className="font-bold text-gray-900">{f.name}</p>
                                             {f.description && (
@@ -631,7 +664,7 @@ export default function PanchangPage() {
                                             )}
                                             {f.isFastingDay && (
                                                 <span className="inline-flex items-center gap-1 mt-1 text-[11px] font-medium text-primary bg-primary/5 px-2 py-0.5 rounded-full">
-                                                    Fasting Day
+                                                    {t("fastingDay")}
                                                 </span>
                                             )}
                                         </div>
@@ -644,15 +677,15 @@ export default function PanchangPage() {
                     {/* Sun & Moon Timings */}
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8">
                         {[
-                            { icon: Sunrise, label: "Sunrise", value: panchang.sunrise, color: "text-amber-500", bg: "bg-amber-50" },
-                            { icon: Sunset, label: "Sunset", value: panchang.sunset, color: "text-orange-500", bg: "bg-orange-50" },
-                            { icon: MoonStar, label: "Moonrise", value: panchang.moonrise, color: "text-blue-500", bg: "bg-blue-50" },
-                            { icon: AlertTriangle, label: "Rahu Kaal", value: panchang.rahuKaal, color: "text-red-600", bg: "bg-red-50" },
-                        ].map(({ icon: Icon, label, value, color, bg }) => (
-                            <div key={label} className={cn("rounded-2xl p-4 text-center", bg)}>
+                            { icon: Sunrise, labelKey: "labelSunrise" as const, value: panchangData.sunrise, color: "text-amber-500", bg: "bg-amber-50" },
+                            { icon: Sunset, labelKey: "labelSunset" as const, value: panchangData.sunset, color: "text-orange-500", bg: "bg-orange-50" },
+                            { icon: MoonStar, labelKey: "labelMoonrise" as const, value: panchangData.moonrise, color: "text-blue-500", bg: "bg-blue-50" },
+                            { icon: AlertTriangle, labelKey: "labelRahuKaal" as const, value: panchangData.rahuKaal, color: "text-red-600", bg: "bg-red-50" },
+                        ].map(({ icon: Icon, labelKey, value, color, bg }) => (
+                            <div key={labelKey} className={cn("rounded-2xl p-4 text-center", bg)}>
                                 <Icon className={cn("h-6 w-6 mx-auto mb-2", color)} />
-                                <p className="text-[11px] text-gray-500 mb-0.5">{label}</p>
-                                <p className={cn("text-lg md:text-xl font-bold", label === "Rahu Kaal" ? "text-red-600" : "text-gray-900")}>
+                                <p className="text-[11px] text-gray-500 mb-0.5">{t(labelKey)}</p>
+                                <p className={cn("text-lg md:text-xl font-bold", labelKey === "labelRahuKaal" ? "text-red-600" : "text-gray-900")}>
                                     {value}
                                 </p>
                             </div>
@@ -672,31 +705,31 @@ export default function PanchangPage() {
                                             )}
                                         >
                                             <span className={cn("w-1.5 h-1.5 rounded-full", vibe.dotClass)} />
-                                            {vibe.label}
+                                            {vibeLabel}
                                         </span>
                                         <span className="text-[11px] uppercase tracking-wider text-gray-400 font-bold">
-                                            Today&apos;s Vibe
+                                            {t("todaysVibe")}
                                         </span>
                                     </div>
                                     <p className="text-sm text-gray-600 leading-relaxed mb-4">
-                                        {vibe.summary}
+                                        {vibeSummary}
                                     </p>
                                     <div className="flex flex-wrap gap-2">
                                         {tithiInfo && (
                                             <InfoPill
-                                                label={`Tithi: ${tithiInfo.nature}`}
+                                                label={`${t("pillTithiPrefix")} ${tithiInfo.nature}`}
                                                 tone={tithiInfo.auspicious ? "green" : "red"}
                                             />
                                         )}
                                         {nakshatraInfo && (
                                             <InfoPill
-                                                label={`Nakshatra: ${nakshatraInfo.nature}`}
+                                                label={`${t("pillNakshatraPrefix")} ${nakshatraInfo.nature}`}
                                                 tone={nakshatraNatureTone}
                                             />
                                         )}
                                         {yogaInfo && (
                                             <InfoPill
-                                                label={`Yoga: ${yogaInfo.auspicious ? "Favorable" : "Challenging"}`}
+                                                label={`${t("pillYogaPrefix")} ${yogaInfo.auspicious ? t("pillYogaFavorable") : t("pillYogaChallenging")}`}
                                                 tone={yogaInfo.auspicious ? "green" : "red"}
                                             />
                                         )}
@@ -705,13 +738,13 @@ export default function PanchangPage() {
                                 {varaInfo && (
                                     <div className="p-6 md:p-7 bg-gradient-to-br from-primary/5 to-accent/5">
                                         <p className="text-[11px] uppercase tracking-wider text-primary font-bold mb-3">
-                                            Weekday Profile
+                                            {t("weekdayProfile")}
                                         </p>
                                         <p className="text-lg font-heading font-bold text-gray-900 mb-0.5">
                                             {varaInfo.english} &middot; {varaInfo.hindi}
                                         </p>
                                         <p className="text-xs text-gray-500 mb-4">
-                                            Ruled by {varaInfo.ruler} &middot; Deity {varaInfo.deity}
+                                            {t("ruledBy")} {varaInfo.ruler} &middot; {t("deity")} {varaInfo.deity}
                                         </p>
                                         <div className="flex items-center gap-3 bg-white/60 rounded-xl p-3 border border-gray-100">
                                             <span
@@ -719,7 +752,7 @@ export default function PanchangPage() {
                                                 style={{ backgroundColor: varaInfo.colorHex }}
                                             />
                                             <div>
-                                                <p className="text-[11px] text-gray-400">Lucky Color</p>
+                                                <p className="text-[11px] text-gray-400">{t("luckyColor")}</p>
                                                 <p className="text-sm font-bold text-gray-900">
                                                     {varaInfo.color}
                                                 </p>
@@ -736,58 +769,63 @@ export default function PanchangPage() {
                         <div className="bg-primary/5 px-6 py-4 border-b border-gray-100">
                             <h2 className="text-lg font-bold font-heading text-gray-900 flex items-center gap-2">
                                 <Sparkles className="h-5 w-5 text-primary" />
-                                पंचांग — Five Elements
+                                {t("fiveElementsHeading")}
                             </h2>
-                            <p className="text-xs text-gray-500 mt-0.5">Tap any row for meaning &amp; guidance</p>
+                            <p className="text-xs text-gray-500 mt-0.5">{t("fiveElementsTip")}</p>
                         </div>
                         <div className="divide-y divide-gray-50">
                             {[
                                 {
                                     key: "tithi" as const,
                                     icon: Moon,
-                                    label: "तिथि",
-                                    english: "Tithi",
-                                    value: `${panchang.paksha} ${panchang.tithi}`,
-                                    sub: `Ends at ${panchang.tithiEndTime}`,
+                                    label: t("tithiLabel"),
+                                    english: t("tithiEnglish"),
+                                    value: `${panchangData.paksha} ${lang === "hi" && tithiInfo ? tithiInfo.hindi : panchangData.tithi}`,
+                                    subStart: `${t("startsAt")} ${panchangData.tithiStartTime}`,
+                                    sub: `${t("endsAt")} ${panchangData.tithiEndTime}`,
                                     hasDetails: Boolean(tithiInfo),
                                 },
                                 {
                                     key: "nakshatra" as const,
                                     icon: Star,
-                                    label: "नक्षत्र",
-                                    english: "Nakshatra",
-                                    value: `${panchang.nakshatra} (Pada ${panchang.nakshatraPada})`,
-                                    sub: `Ends at ${panchang.nakshatraEndTime}`,
+                                    label: t("nakshatraLabel"),
+                                    english: t("nakshatraEnglish"),
+                                    value: `${lang === "hi" && nakshatraInfo ? nakshatraInfo.hindi : panchangData.nakshatra} (${t("pada")} ${panchangData.nakshatraPada})`,
+                                    subStart: `${t("startsAt")} ${panchangData.nakshatraStartTime}`,
+                                    sub: `${t("endsAt")} ${panchangData.nakshatraEndTime}`,
                                     hasDetails: Boolean(nakshatraInfo),
                                 },
                                 {
                                     key: "yoga" as const,
                                     icon: Sun,
-                                    label: "योग",
-                                    english: "Yoga",
-                                    value: panchang.yoga,
-                                    sub: `Ends at ${panchang.yogaEndTime}`,
+                                    label: t("yogaLabel"),
+                                    english: t("yogaEnglish"),
+                                    value: lang === "hi" && yogaInfo ? yogaInfo.hindi : panchangData.yoga,
+                                    subStart: `${t("startsAt")} ${panchangData.yogaStartTime}`,
+                                    sub: `${t("endsAt")} ${panchangData.yogaEndTime}`,
                                     hasDetails: Boolean(yogaInfo),
                                 },
                                 {
                                     key: "karana" as const,
                                     icon: Calendar,
-                                    label: "करण",
-                                    english: "Karana",
-                                    value: panchang.karana,
-                                    sub: null,
+                                    label: t("karanaLabel"),
+                                    english: t("karanaEnglish"),
+                                    value: lang === "hi" && karanaInfo ? karanaInfo.hindi : panchangData.karana,
+                                    subStart: `${t("startsAt")} ${panchangData.karanaStartTime}`,
+                                    sub: `${t("endsAt")} ${panchangData.karanaEndTime}`,
                                     hasDetails: Boolean(karanaInfo),
                                 },
                                 {
                                     key: "vara" as const,
                                     icon: Clock,
-                                    label: "वार",
-                                    english: "Day",
-                                    value: `${panchang.vara} (${hindiDay})`,
+                                    label: t("varaLabel"),
+                                    english: t("varaEnglish"),
+                                    value: `${lang === "hi" && varaInfo ? varaInfo.hindi : panchangData.vara} (${hindiDay})`,
+                                    subStart: null,
                                     sub: null,
                                     hasDetails: Boolean(varaInfo),
                                 },
-                            ].map(({ key, icon: Icon, label, english, value, sub, hasDetails }) => {
+                            ].map(({ key, icon: Icon, label, english, value, subStart, sub, hasDetails }) => {
                                 const expanded = expandedElement === key;
                                 return (
                                     <div key={english}>
@@ -810,9 +848,18 @@ export default function PanchangPage() {
                                                 </p>
                                                 <p className="font-bold text-gray-900 text-sm">{value}</p>
                                             </div>
-                                            {sub && (
-                                                <span className="text-[11px] text-gray-400 shrink-0 hidden sm:inline">
-                                                    {sub}
+                                            {(subStart || sub) && (
+                                                <span className="hidden sm:flex flex-col items-end text-right shrink-0">
+                                                    {subStart && (
+                                                        <span className="text-[11px] text-gray-400">
+                                                            {subStart}
+                                                        </span>
+                                                    )}
+                                                    {sub && (
+                                                        <span className="text-[11px] text-gray-400">
+                                                            {sub}
+                                                        </span>
+                                                    )}
                                                 </span>
                                             )}
                                             {hasDetails && (
@@ -826,15 +873,15 @@ export default function PanchangPage() {
                                         </button>
                                         {expanded && hasDetails && (
                                             <div className="px-6 pb-6 pt-1 bg-gray-50/40">
-                                                {key === "tithi" && tithiInfo && <TithiDetails info={tithiInfo} />}
+                                                {key === "tithi" && tithiInfo && <TithiDetails info={tithiInfo} t={t} />}
                                                 {key === "nakshatra" && nakshatraInfo && (
-                                                    <NakshatraDetails info={nakshatraInfo} />
+                                                    <NakshatraDetails info={nakshatraInfo} t={t} />
                                                 )}
-                                                {key === "yoga" && yogaInfo && <YogaDetails info={yogaInfo} />}
+                                                {key === "yoga" && yogaInfo && <YogaDetails info={yogaInfo} t={t} />}
                                                 {key === "karana" && karanaInfo && (
-                                                    <KaranaDetails info={karanaInfo} />
+                                                    <KaranaDetails info={karanaInfo} t={t} />
                                                 )}
-                                                {key === "vara" && varaInfo && <VaraDetails info={varaInfo} />}
+                                                {key === "vara" && varaInfo && <VaraDetails info={varaInfo} t={t} />}
                                             </div>
                                         )}
                                     </div>
@@ -849,15 +896,20 @@ export default function PanchangPage() {
                             <div className="bg-primary/5 px-6 py-4 border-b border-gray-100">
                                 <h2 className="text-lg font-bold font-heading text-gray-900 flex items-center gap-2">
                                     <Info className="h-5 w-5 text-primary" />
-                                    Activity Recommendations
+                                    {t("activityHeading")}
                                 </h2>
                                 <p className="text-xs text-gray-500 mt-0.5">
-                                    What&apos;s favorable &amp; what to avoid today
+                                    {t("activitySubtitle")}
                                 </p>
                             </div>
                             <div className="p-4 md:p-5 grid md:grid-cols-2 gap-3">
                                 {activityGuides.map((guide) => (
-                                    <ActivityTile key={guide.category} guide={guide} />
+                                    <ActivityTile
+                                        key={guide.category}
+                                        guide={guide}
+                                        favorableLabel={t("activityFavorable")}
+                                        avoidLabel={t("activityAvoid")}
+                                    />
                                 ))}
                             </div>
                         </div>
@@ -870,16 +922,16 @@ export default function PanchangPage() {
                             <div className="bg-green-50 px-5 py-3 border-b border-green-100">
                                 <h3 className="text-sm font-bold text-green-800 flex items-center gap-2">
                                     <Sparkles className="h-4 w-4" />
-                                    Auspicious Timings
+                                    {t("auspiciousTimings")}
                                 </h3>
                             </div>
                             <div className="divide-y divide-green-50">
                                 {[
-                                    { label: "Brahma Muhurta", value: panchang.brahmaMuhurta },
-                                    { label: "Abhijit Muhurta", value: panchang.abhijitMuhurta },
-                                ].map(({ label, value }) => (
-                                    <div key={label} className="flex items-center justify-between px-5 py-3">
-                                        <span className="text-sm text-gray-700">{label}</span>
+                                    { labelKey: "labelBrahmaMuhurta" as const, value: panchangData.brahmaMuhurta },
+                                    { labelKey: "labelAbhijitMuhurta" as const, value: panchangData.abhijitMuhurta },
+                                ].map(({ labelKey, value }) => (
+                                    <div key={labelKey} className="flex items-center justify-between px-5 py-3">
+                                        <span className="text-sm text-gray-700">{t(labelKey)}</span>
                                         <span className="text-sm font-bold text-green-700">{value}</span>
                                     </div>
                                 ))}
@@ -891,17 +943,17 @@ export default function PanchangPage() {
                             <div className="bg-red-50 px-5 py-3 border-b border-red-100">
                                 <h3 className="text-sm font-bold text-red-800 flex items-center gap-2">
                                     <AlertTriangle className="h-4 w-4" />
-                                    Inauspicious Timings
+                                    {t("inauspiciousTimings")}
                                 </h3>
                             </div>
                             <div className="divide-y divide-red-50">
                                 {[
-                                    { label: "Rahu Kaal", value: panchang.rahuKaal },
-                                    { label: "Yamaganda", value: panchang.yamaganda },
-                                    { label: "Gulika Kaal", value: panchang.gulikaKaal },
-                                ].map(({ label, value }) => (
-                                    <div key={label} className="flex items-center justify-between px-5 py-3">
-                                        <span className="text-sm text-gray-700">{label}</span>
+                                    { labelKey: "labelRahuKaal" as const, value: panchangData.rahuKaal },
+                                    { labelKey: "labelYamaganda" as const, value: panchangData.yamaganda },
+                                    { labelKey: "labelGulikaKaal" as const, value: panchangData.gulikaKaal },
+                                ].map(({ labelKey, value }) => (
+                                    <div key={labelKey} className="flex items-center justify-between px-5 py-3">
+                                        <span className="text-sm text-gray-700">{t(labelKey)}</span>
                                         <span className="text-sm font-bold text-red-600">{value}</span>
                                     </div>
                                 ))}
@@ -914,10 +966,10 @@ export default function PanchangPage() {
                         <div className="bg-primary/5 px-6 py-4 border-b border-gray-100">
                             <h2 className="text-lg font-bold font-heading text-gray-900 flex items-center gap-2">
                                 <Clock className="h-5 w-5 text-primary" />
-                                Choghadiya Muhurta
+                                {t("choghadiyaHeading")}
                             </h2>
                             <p className="text-xs text-gray-500 mt-0.5">
-                                8 time windows for day &amp; night — plan important tasks in Shubh periods
+                                {t("choghadiyaSubtitle")}
                             </p>
                         </div>
                         <div className="p-4 md:p-5">
@@ -926,19 +978,24 @@ export default function PanchangPage() {
                                 onValueChange={(v) => setChoghadiyaTab(v as ChoghadiyaTab)}
                             >
                                 <TabsList className="mb-4">
-                                    <TabsTrigger value="day">Day Choghadiya</TabsTrigger>
-                                    <TabsTrigger value="night">Night Choghadiya</TabsTrigger>
+                                    <TabsTrigger value="day">{t("choghadiyaDay")}</TabsTrigger>
+                                    <TabsTrigger value="night">{t("choghadiyaNight")}</TabsTrigger>
                                 </TabsList>
                                 <TabsContent value="day">
                                     {dayChoghadiya.length > 0 ? (
                                         <div className="rounded-xl border border-gray-100 divide-y divide-gray-50 overflow-hidden">
                                             {dayChoghadiya.map((period, idx) => (
-                                                <ChoghadiyaRow key={`day-${idx}-${period.name}`} period={period} />
+                                                <ChoghadiyaRow
+                                                    key={`day-${idx}-${period.name}`}
+                                                    period={period}
+                                                    shubhLabel={t("choghadiyaShubh")}
+                                                    ashubhLabel={t("choghadiyaAshubh")}
+                                                />
                                             ))}
                                         </div>
                                     ) : (
                                         <p className="text-sm text-gray-500 text-center py-8">
-                                            Choghadiya unavailable for this date
+                                            {t("choghadiyaUnavailable")}
                                         </p>
                                     )}
                                 </TabsContent>
@@ -949,12 +1006,14 @@ export default function PanchangPage() {
                                                 <ChoghadiyaRow
                                                     key={`night-${idx}-${period.name}`}
                                                     period={period}
+                                                    shubhLabel={t("choghadiyaShubh")}
+                                                    ashubhLabel={t("choghadiyaAshubh")}
                                                 />
                                             ))}
                                         </div>
                                     ) : (
                                         <p className="text-sm text-gray-500 text-center py-8">
-                                            Choghadiya unavailable for this date
+                                            {t("choghadiyaUnavailable")}
                                         </p>
                                     )}
                                 </TabsContent>
@@ -965,7 +1024,13 @@ export default function PanchangPage() {
                     {/* Mantra of the Day */}
                     {varaInfo && (
                         <div className="mb-8">
-                            <MantraOfDay vara={varaInfo} />
+                            <MantraOfDay
+                                vara={varaInfo}
+                                mantraOfDayLabel={t("mantraOfDay")}
+                                copyLabel={t("mantraCopy")}
+                                copiedLabel={t("mantraCopied")}
+                                chantTip={t("mantraChantTip")}
+                            />
                         </div>
                     )}
 
@@ -974,30 +1039,30 @@ export default function PanchangPage() {
                         <div className="bg-primary/5 px-6 py-4 border-b border-gray-100">
                             <h3 className="text-sm font-bold text-gray-900 flex items-center gap-2">
                                 <Moon className="h-4 w-4 text-primary" />
-                                Astronomical Details
+                                {t("astronomicalHeading")}
                             </h3>
                         </div>
                         <div className="grid grid-cols-2 md:grid-cols-4 divide-x divide-gray-50">
                             {[
-                                { label: "Moon Sign", value: panchang.moonRashi },
-                                { label: "Sun Sign", value: panchang.sunRashi },
-                                { label: "Season (Ritu)", value: panchang.ritu },
-                                { label: "Hindu Month", value: panchang.masa },
-                            ].map(({ label, value }) => (
-                                <div key={label} className="px-5 py-4 text-center">
-                                    <p className="text-[11px] text-gray-400 mb-0.5">{label}</p>
+                                { labelKey: "labelMoonSign" as const, value: panchangData.moonRashi },
+                                { labelKey: "labelSunSign" as const, value: panchangData.sunRashi },
+                                { labelKey: "labelSeason" as const, value: panchangData.ritu },
+                                { labelKey: "labelHinduMonth" as const, value: panchangData.masa },
+                            ].map(({ labelKey, value }) => (
+                                <div key={labelKey} className="px-5 py-4 text-center">
+                                    <p className="text-[11px] text-gray-400 mb-0.5">{t(labelKey)}</p>
                                     <p className="text-sm font-bold text-gray-900">{value}</p>
                                 </div>
                             ))}
                         </div>
                         <div className="border-t border-gray-50 grid grid-cols-3 divide-x divide-gray-50">
                             {[
-                                { label: "Vikram Samvat", value: String(panchang.samvat.vikram) },
-                                { label: "Shaka Samvat", value: String(panchang.samvat.shaka) },
-                                { label: "Samvatsara", value: panchang.samvat.samvatsara },
-                            ].map(({ label, value }) => (
-                                <div key={label} className="px-5 py-3 text-center">
-                                    <p className="text-[11px] text-gray-400 mb-0.5">{label}</p>
+                                { labelKey: "labelVikramSamvat" as const, value: String(panchangData.samvat.vikram) },
+                                { labelKey: "labelShakaSamvat" as const, value: String(panchangData.samvat.shaka) },
+                                { labelKey: "labelSamvatsara" as const, value: panchangData.samvat.samvatsara },
+                            ].map(({ labelKey, value }) => (
+                                <div key={labelKey} className="px-5 py-3 text-center">
+                                    <p className="text-[11px] text-gray-400 mb-0.5">{t(labelKey)}</p>
                                     <p className="text-sm font-bold text-gray-900">{value}</p>
                                 </div>
                             ))}
@@ -1007,48 +1072,18 @@ export default function PanchangPage() {
             </section>
 
             <FaqSection
-                description="The Panchang is the traditional Hindu calendar that maps each day's cosmic energies through five limbs (panchanga). Use this guide to understand tithi, nakshatra, yoga, karana and vara, identify auspicious muhurat like Brahma Muhurta and Abhijit, and avoid inauspicious periods such as Rahu Kaal when planning daily activities."
+                description={t("faqDescription")}
                 faqs={[
-                    {
-                        question: "What is Panchang and why is it important?",
-                        answer: "Panchang is the traditional Hindu almanac that records five key elements of each day: tithi (lunar day), vara (weekday), nakshatra (lunar mansion), yoga and karana. Together these reveal the spiritual quality of the day. Indian families have used Panchang for centuries to choose muhurat for weddings, travel, business launches, religious rituals and other important activities.",
-                    },
-                    {
-                        question: "What are the five limbs (panchanga) of the Hindu calendar?",
-                        answer: "The five limbs are tithi (one of 30 lunar days based on moon-sun angle), vara (the weekday ruled by a planet), nakshatra (one of 27 lunar constellations the moon transits), yoga (a sun-moon longitude combination indicating energy quality), and karana (half of a tithi). Each limb adds a layer of meaning that helps determine whether a moment is favourable for a given activity.",
-                    },
-                    {
-                        question: "What is Rahu Kaal and why should it be avoided?",
-                        answer: "Rahu Kaal is a daily 90-minute window ruled by the shadow planet Rahu, considered inauspicious for starting new ventures, signing contracts, travel or important purchases. Its timing changes each day based on sunrise and the weekday. Many people simply pause major decisions during Rahu Kaal and use it instead for routine work, prayer or chanting.",
-                    },
-                    {
-                        question: "What is Brahma Muhurta and why wake up during it?",
-                        answer: "Brahma Muhurta is the 96-minute window ending about 48 minutes before sunrise, traditionally regarded as the most spiritually charged time of the day. The mind is naturally calm, the air is sattvic, and the atmosphere supports meditation, study, yoga and mantra practice. Sages have long recommended waking in Brahma Muhurta for clarity, health and spiritual progress.",
-                    },
-                    {
-                        question: "What is Abhijit Muhurta?",
-                        answer: "Abhijit Muhurta is a roughly 48-minute window centred on local solar noon, considered universally auspicious for almost any task except journeys towards the south. It is often called the victory muhurta and is a popular fallback when no other clear muhurat is available. Use it for important meetings, signing documents, or starting work that needs strong, steady energy.",
-                    },
-                    {
-                        question: "What is Choghadiya and how is it used?",
-                        answer: "Choghadiya divides daytime and nighttime into eight roughly 90-minute windows, each labelled Amrit, Shubh, Labh, Char, Rog, Kaal or Udveg. Shubh, Labh and Amrit are favourable for most activities, while Rog, Kaal and Udveg are best avoided for new starts. Choghadiya is widely used in Gujarat, Maharashtra and Rajasthan for quick muhurta lookups during the day.",
-                    },
-                    {
-                        question: "Why does Panchang vary by city or location?",
-                        answer: "Panchang timings depend on local sunrise, sunset and moon position, which differ across longitudes and latitudes. A tithi or Rahu Kaal that begins at one time in Delhi will start a few minutes earlier or later in Mumbai, Bengaluru or Kolkata. For accurate muhurat, always generate the Panchang for the city where the activity will actually take place.",
-                    },
-                    {
-                        question: "How do I use Panchang to choose a muhurat for weddings or travel?",
-                        answer: "For weddings, look for a favourable tithi (avoid Amavasya, Chaturdashi), benefic nakshatra such as Rohini, Mrigashira or Uttara Phalguni, an auspicious yoga, and a clear window outside Rahu Kaal and Yamaganda. For travel, also consider directional shool for that weekday. Combining multiple favourable factors generally gives better results than relying on any single element.",
-                    },
-                    {
-                        question: "What is the difference between Drik (modern) and traditional Panchang?",
-                        answer: "Drik Panchang uses precise modern astronomical calculations of actual planetary positions, so its tithi and nakshatra timings closely match what you can observe in the sky. Traditional Vakya Panchang relies on classical formulas that can drift slightly over centuries. Most contemporary Panchang sites, including this tool, follow the Drik system for better accuracy with current sky positions.",
-                    },
-                    {
-                        question: "What are Amanta and Purnimanta calendars?",
-                        answer: "Amanta and Purnimanta are two ways of marking the start of a Hindu lunar month. The Amanta system, common in South India, Maharashtra and Gujarat, ends each month on the new moon (Amavasya). The Purnimanta system, followed across most of North India, ends each month on the full moon (Purnima). The festivals are the same, but their month names can differ by one across regions.",
-                    },
+                    { question: t("faqQ1"), answer: t("faqA1") },
+                    { question: t("faqQ2"), answer: t("faqA2") },
+                    { question: t("faqQ3"), answer: t("faqA3") },
+                    { question: t("faqQ4"), answer: t("faqA4") },
+                    { question: t("faqQ5"), answer: t("faqA5") },
+                    { question: t("faqQ6"), answer: t("faqA6") },
+                    { question: t("faqQ7"), answer: t("faqA7") },
+                    { question: t("faqQ8"), answer: t("faqA8") },
+                    { question: t("faqQ9"), answer: t("faqA9") },
+                    { question: t("faqQ10"), answer: t("faqA10") },
                 ]}
             />
 
@@ -1056,18 +1091,18 @@ export default function PanchangPage() {
             <section className="py-12 border-t border-gray-100 bg-gray-50/40">
                 <div className="container mx-auto px-4 text-center">
                     <h3 className="text-xl md:text-2xl font-bold font-heading text-gray-900 mb-2">
-                        Need Personalized Muhurta Guidance?
+                        {t("ctaHeading")}
                     </h3>
                     <p className="text-sm text-gray-500 mb-6 max-w-md mx-auto">
-                        Our expert astrologers can find the most auspicious dates and timings for your important events.
+                        {t("ctaSubtitle")}
                     </p>
                     <div className="flex items-center justify-center gap-3">
                         <ConsultationButton service="Muhurta Guidance" className="bg-primary rounded-xl">
-                            Book Consultation
+                            {t("ctaBook")}
                             <ArrowRight className="h-4 w-4 ml-1.5" />
                         </ConsultationButton>
                         <Button variant="outline" className="rounded-xl" asChild>
-                            <Link href="/free-horoscope">Daily Horoscope</Link>
+                            <Link href="/free-horoscope">{t("ctaHoroscope")}</Link>
                         </Button>
                     </div>
                 </div>

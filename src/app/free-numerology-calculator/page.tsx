@@ -28,6 +28,7 @@ import {
 import { MainLayout } from "@/components/templates/main-layout";
 import { ConsultationButton } from "@/components/molecules/consultation-button";
 import { FaqSection } from "@/components/molecules";
+import { LanguageSwitcher } from "@/components/molecules";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -40,6 +41,8 @@ import {
 } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
 import { useMounted } from "@/lib/hooks/use-mounted";
+import { useT, useLang } from "@/lib/i18n";
+import { numerology as numerologyDict } from "@/lib/i18n/translations/numerology";
 import {
     NUMBER_PROFILES,
     getNumberProfile,
@@ -61,6 +64,8 @@ import {
 } from "@/lib/data/numerology-meanings";
 
 /* ─────────────────────────  Schema & Types  ───────────────────────── */
+
+type TFunc = (key: keyof typeof numerologyDict.en) => string;
 
 const numerologySchema = z.object({
     name: z.string().min(2, "Name is required"),
@@ -84,7 +89,7 @@ interface NumerologyResult {
 
 interface DimensionDescriptor {
     id: NumerologyDimension;
-    label: string;
+    labelKey: keyof typeof numerologyDict.en;
     icon: typeof Hash;
     tint: string;
     ring: string;
@@ -93,42 +98,42 @@ interface DimensionDescriptor {
 const DIMENSIONS: DimensionDescriptor[] = [
     {
         id: "lifePath",
-        label: "Life Path",
+        labelKey: "dimLifePath",
         icon: Star,
         tint: "bg-primary/10 text-primary",
         ring: "ring-primary/20",
     },
     {
         id: "destiny",
-        label: "Destiny",
+        labelKey: "dimDestiny",
         icon: Sparkles,
         tint: "bg-secondary/10 text-secondary",
         ring: "ring-secondary/20",
     },
     {
         id: "soulUrge",
-        label: "Soul Urge",
+        labelKey: "dimSoulUrge",
         icon: Heart,
         tint: "bg-rose-100 text-rose-600",
         ring: "ring-rose-200",
     },
     {
         id: "personality",
-        label: "Personality",
+        labelKey: "dimPersonality",
         icon: User,
         tint: "bg-indigo-100 text-indigo-600",
         ring: "ring-indigo-200",
     },
     {
         id: "birthday",
-        label: "Birthday",
+        labelKey: "dimBirthday",
         icon: Calendar,
         tint: "bg-emerald-100 text-emerald-600",
         ring: "ring-emerald-200",
     },
     {
         id: "personalYear",
-        label: "Personal Year",
+        labelKey: "dimPersonalYear",
         icon: Clock,
         tint: "bg-accent/20 text-accent",
         ring: "ring-accent/30",
@@ -228,9 +233,10 @@ function initials(name: string): string {
 
 interface HeroSectionProps {
     hasResult: boolean;
+    t: TFunc;
 }
 
-function HeroSection({ hasResult }: HeroSectionProps) {
+function HeroSection({ hasResult, t }: HeroSectionProps) {
     return (
         <section className="relative bg-primary text-white overflow-hidden">
             <div className="absolute inset-0">
@@ -238,18 +244,21 @@ function HeroSection({ hasResult }: HeroSectionProps) {
                 <div className="absolute -bottom-10 -left-10 w-56 h-56 bg-secondary/10 rounded-full blur-3xl" />
             </div>
             <div className="container mx-auto px-4 relative z-10 py-14 md:py-20">
+                <div className="flex justify-end mb-4">
+                    <LanguageSwitcher />
+                </div>
                 <div className="max-w-2xl mx-auto text-center">
                     <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 backdrop-blur-sm text-sm mb-5">
                         <Hash className="h-3.5 w-3.5 text-accent" />
-                        अंक ज्योतिष / Vedic Numerology
+                        {t("heroBadge")}
                     </div>
                     <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold font-heading mb-4 leading-tight">
-                        Free numerology calculator
+                        {t("heroTitle")}
                     </h1>
                     <p className="text-white/70 text-base md:text-lg max-w-lg mx-auto">
                         {hasResult
-                            ? "Explore the hidden meanings of your Life Path, Destiny and more — decoded from your name and birth date."
-                            : "Discover your life path and destiny through the ancient science of numbers."}
+                            ? t("heroSubtitleResult")
+                            : t("heroSubtitleDefault")}
                     </p>
                 </div>
             </div>
@@ -264,6 +273,7 @@ interface InputFormProps {
     handleSubmit: ReturnType<typeof useForm<NumerologyFormData>>["handleSubmit"];
     errors: ReturnType<typeof useForm<NumerologyFormData>>["formState"]["errors"];
     onSubmit: (data: NumerologyFormData) => void;
+    t: TFunc;
 }
 
 function InputForm({
@@ -273,6 +283,7 @@ function InputForm({
     handleSubmit,
     errors,
     onSubmit,
+    t,
 }: InputFormProps) {
     return (
         <Card className="max-w-xl mx-auto rounded-3xl border-gray-100 shadow-sm">
@@ -280,10 +291,10 @@ function InputForm({
                 <div className="flex items-center justify-between mb-5">
                     <div>
                         <p className="text-[11px] uppercase tracking-widest text-secondary font-bold mb-1">
-                            Step 1
+                            {t("formStepLabel")}
                         </p>
                         <h2 className="text-xl md:text-2xl font-bold font-heading text-gray-900">
-                            Enter your details
+                            {t("formHeading")}
                         </h2>
                     </div>
                     {hasResult && (
@@ -295,17 +306,17 @@ function InputForm({
                             className="rounded-xl text-gray-500 hover:text-primary"
                         >
                             <RotateCcw className="h-3.5 w-3.5 mr-1.5" />
-                            Reset
+                            {t("btnReset")}
                         </Button>
                     )}
                 </div>
 
                 <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                     <div className="space-y-2">
-                        <Label htmlFor="name">Full Name</Label>
+                        <Label htmlFor="name">{t("labelName")}</Label>
                         <Input
                             id="name"
-                            placeholder="Enter your full name as on birth certificate"
+                            placeholder={t("placeholderName")}
                             className="h-11 rounded-xl"
                             {...register("name")}
                         />
@@ -317,7 +328,7 @@ function InputForm({
                     </div>
 
                     <div className="space-y-2">
-                        <Label htmlFor="birthDate">Birth Date</Label>
+                        <Label htmlFor="birthDate">{t("labelBirthDate")}</Label>
                         <Input
                             id="birthDate"
                             type="date"
@@ -336,7 +347,7 @@ function InputForm({
                         className="w-full h-11 rounded-xl bg-primary hover:bg-primary/90"
                     >
                         <Hash className="h-4 w-4 mr-2" />
-                        Calculate Numbers
+                        {t("btnCalculate")}
                     </Button>
                 </form>
             </CardContent>
@@ -347,9 +358,11 @@ function InputForm({
 interface LifePathHeroCardProps {
     number: number;
     profile: NumberProfile | null;
+    t: TFunc;
+    lang: string;
 }
 
-function LifePathHeroCard({ number, profile }: LifePathHeroCardProps) {
+function LifePathHeroCard({ number, profile, t, lang }: LifePathHeroCardProps) {
     return (
         <div className="relative rounded-3xl overflow-hidden bg-gradient-to-br from-primary via-primary to-[#5a0606] text-white p-8 md:p-12">
             <div className="absolute top-0 right-0 w-56 h-56 bg-accent/20 rounded-full blur-3xl" />
@@ -357,7 +370,7 @@ function LifePathHeroCard({ number, profile }: LifePathHeroCardProps) {
 
             <div className="relative z-10 text-center">
                 <p className="text-[11px] uppercase tracking-widest text-accent font-bold mb-3">
-                    Your Life Path Number
+                    {t("lifePathLabel")}
                 </p>
                 <div className="w-28 h-28 mx-auto rounded-full bg-white/10 backdrop-blur-sm border border-white/20 flex items-center justify-center mb-5">
                     <span className="text-5xl md:text-6xl font-bold font-heading text-accent">
@@ -365,9 +378,11 @@ function LifePathHeroCard({ number, profile }: LifePathHeroCardProps) {
                     </span>
                 </div>
                 <h2 className="text-3xl md:text-4xl font-bold font-heading mb-1">
-                    {profile?.title ?? `Number ${number}`}
+                    {lang === "hi"
+                        ? (profile?.hindi ?? `${t("lifePathFallback")} ${number}`)
+                        : (profile?.title ?? `${t("lifePathFallback")} ${number}`)}
                 </h2>
-                {profile?.hindi && (
+                {profile?.hindi && lang !== "hi" && (
                     <p className="text-lg text-accent/90 font-heading mb-5">
                         {profile.hindi}
                     </p>
@@ -376,13 +391,13 @@ function LifePathHeroCard({ number, profile }: LifePathHeroCardProps) {
                 {profile && (
                     <div className="flex flex-wrap items-center justify-center gap-2 mb-6">
                         <span className="px-3 py-1 rounded-full bg-white/10 border border-white/15 text-xs">
-                            Planet · {profile.planet}
+                            {t("badgePlanet")} · {profile.planet}
                         </span>
                         <span className="px-3 py-1 rounded-full bg-white/10 border border-white/15 text-xs">
-                            Element · {profile.element}
+                            {t("badgeElement")} · {profile.element}
                         </span>
                         <span className="px-3 py-1 rounded-full bg-white/10 border border-white/15 text-xs">
-                            Gemstone · {profile.gemstone}
+                            {t("badgeGemstone")} · {lang === "hi" ? profile.gemstoneHindi : profile.gemstone}
                         </span>
                     </div>
                 )}
@@ -403,9 +418,10 @@ interface NumberTileProps {
     summary: string;
     isActive: boolean;
     onSelect: (id: NumerologyDimension) => void;
+    t: TFunc;
 }
 
-function NumberTile({ dim, value, summary, isActive, onSelect }: NumberTileProps) {
+function NumberTile({ dim, value, summary, isActive, onSelect, t }: NumberTileProps) {
     const Icon = dim.icon;
     return (
         <button
@@ -435,7 +451,7 @@ function NumberTile({ dim, value, summary, isActive, onSelect }: NumberTileProps
                     <div className="flex items-center gap-1.5 mb-1">
                         <Icon className="h-3.5 w-3.5 text-gray-500" />
                         <p className="text-[11px] uppercase tracking-widest text-gray-500 font-bold">
-                            {dim.label}
+                            {t(dim.labelKey)}
                         </p>
                     </div>
                     <p className="text-sm text-gray-700 leading-relaxed line-clamp-3">
@@ -451,9 +467,10 @@ interface ExpandedDimensionProps {
     dim: DimensionDescriptor;
     value: number;
     meaning: DimensionMeaning | null;
+    t: TFunc;
 }
 
-function ExpandedDimension({ dim, value, meaning }: ExpandedDimensionProps) {
+function ExpandedDimension({ dim, value, meaning, t }: ExpandedDimensionProps) {
     if (!meaning) return null;
     const Icon = dim.icon;
     return (
@@ -470,7 +487,7 @@ function ExpandedDimension({ dim, value, meaning }: ExpandedDimensionProps) {
                     </div>
                     <div>
                         <p className="text-[11px] uppercase tracking-widest text-secondary font-bold">
-                            {dim.label} · Number {value}
+                            {t(dim.labelKey)} {t("dimNumberSeparator")} {value}
                         </p>
                         <h3 className="text-xl font-bold font-heading text-gray-900">
                             {meaning.title}
@@ -489,13 +506,14 @@ interface PersonalityTabProps {
     profile: NumberProfile | null;
     onCopyAffirmation: () => void;
     copied: boolean;
+    t: TFunc;
 }
 
-function PersonalityTab({ profile, onCopyAffirmation, copied }: PersonalityTabProps) {
+function PersonalityTab({ profile, onCopyAffirmation, copied, t }: PersonalityTabProps) {
     if (!profile) {
         return (
             <p className="text-sm text-gray-500">
-                Profile details are not available for this number.
+                {t("personalityUnavailable")}
             </p>
         );
     }
@@ -506,7 +524,7 @@ function PersonalityTab({ profile, onCopyAffirmation, copied }: PersonalityTabPr
                 <CardContent className="p-6 md:p-8 space-y-6">
                     <div>
                         <p className="text-[11px] uppercase tracking-widest text-secondary font-bold mb-2">
-                            Core personality
+                            {t("personalityCoreEyebrow")}
                         </p>
                         <p className="text-sm md:text-base text-gray-700 leading-relaxed">
                             {profile.personality}
@@ -516,7 +534,7 @@ function PersonalityTab({ profile, onCopyAffirmation, copied }: PersonalityTabPr
                     <div className="grid gap-5 md:grid-cols-2">
                         <div>
                             <p className="text-xs font-semibold text-emerald-700 mb-2">
-                                Strengths
+                                {t("strengthsLabel")}
                             </p>
                             <div className="flex flex-wrap gap-2">
                                 {profile.strengths.map((s) => (
@@ -531,7 +549,7 @@ function PersonalityTab({ profile, onCopyAffirmation, copied }: PersonalityTabPr
                         </div>
                         <div>
                             <p className="text-xs font-semibold text-rose-700 mb-2">
-                                Watch-outs
+                                {t("watchoutsLabel")}
                             </p>
                             <div className="flex flex-wrap gap-2">
                                 {profile.weaknesses.map((w) => (
@@ -552,7 +570,7 @@ function PersonalityTab({ profile, onCopyAffirmation, copied }: PersonalityTabPr
                 <Card className="rounded-2xl border-gray-100 py-0">
                     <CardContent className="p-6 md:p-8">
                         <p className="text-[11px] uppercase tracking-widest text-secondary font-bold mb-3">
-                            Famous {profile.number}s
+                            {t("famousPeopleEyebrow")} {profile.number}s
                         </p>
                         <div className="flex flex-wrap gap-3">
                             {profile.famousPeople.map((p) => (
@@ -578,7 +596,7 @@ function PersonalityTab({ profile, onCopyAffirmation, copied }: PersonalityTabPr
                     <div className="flex items-start justify-between gap-4">
                         <div className="min-w-0">
                             <p className="text-[11px] uppercase tracking-widest text-secondary font-bold mb-2">
-                                Daily affirmation
+                                {t("affirmationEyebrow")}
                             </p>
                             <p className="text-base md:text-lg font-heading text-gray-900 leading-snug">
                                 &ldquo;{profile.affirmation}&rdquo;
@@ -594,12 +612,12 @@ function PersonalityTab({ profile, onCopyAffirmation, copied }: PersonalityTabPr
                             {copied ? (
                                 <>
                                     <Check className="h-3.5 w-3.5 mr-1" />
-                                    Copied
+                                    {t("btnCopied")}
                                 </>
                             ) : (
                                 <>
                                     <Copy className="h-3.5 w-3.5 mr-1" />
-                                    Copy
+                                    {t("btnCopy")}
                                 </>
                             )}
                         </Button>
@@ -612,13 +630,14 @@ function PersonalityTab({ profile, onCopyAffirmation, copied }: PersonalityTabPr
 
 interface CareerTabProps {
     profile: NumberProfile | null;
+    t: TFunc;
 }
 
-function CareerTab({ profile }: CareerTabProps) {
+function CareerTab({ profile, t }: CareerTabProps) {
     if (!profile) {
         return (
             <p className="text-sm text-gray-500">
-                Career insights unavailable.
+                {t("careerUnavailable")}
             </p>
         );
     }
@@ -638,10 +657,10 @@ function CareerTab({ profile }: CareerTabProps) {
                         </div>
                         <div>
                             <p className="text-[11px] uppercase tracking-widest text-secondary font-bold">
-                                Career paths that suit you
+                                {t("careerPathsEyebrow")}
                             </p>
                             <p className="text-xs text-gray-500">
-                                Based on your Life Path {profile.number}
+                                {t("careerBasedOn")} {profile.number}
                             </p>
                         </div>
                     </div>
@@ -668,11 +687,11 @@ function CareerTab({ profile }: CareerTabProps) {
                     service="Numerology Career Report"
                     className="bg-primary rounded-xl"
                 >
-                    Get Career Guidance
+                    {t("btnGetCareerGuidance")}
                 </ConsultationButton>
                 <Button variant="outline" className="rounded-xl" asChild>
                     <Link href="/services">
-                        Explore Services
+                        {t("btnExploreServices")}
                         <ArrowRight className="h-4 w-4 ml-1.5" />
                     </Link>
                 </Button>
@@ -688,6 +707,7 @@ interface CompatibilityTabProps {
     compatibility: CompatibilityInfo | null;
     topMatches: Array<{ n: number; info: CompatibilityInfo }>;
     challenging: Array<{ n: number; info: CompatibilityInfo }>;
+    t: TFunc;
 }
 
 function CompatibilityTab({
@@ -697,13 +717,14 @@ function CompatibilityTab({
     compatibility,
     topMatches,
     challenging,
+    t,
 }: CompatibilityTabProps) {
     return (
         <div className="space-y-6">
             <Card className="rounded-2xl border-gray-100 py-0">
                 <CardContent className="p-6 md:p-8">
                     <p className="text-[11px] uppercase tracking-widest text-secondary font-bold mb-2">
-                        Top 3 compatible numbers
+                        {t("topCompatibleEyebrow")}
                     </p>
                     <div className="grid gap-3 md:grid-cols-3 mb-6">
                         {topMatches.map(({ n, info }) => (
@@ -720,7 +741,7 @@ function CompatibilityTab({
                                             {info.label}
                                         </p>
                                         <p className="text-xs text-emerald-700/80">
-                                            Score {info.score}/10
+                                            {t("compatibilityScore")} {info.score}/10
                                         </p>
                                     </div>
                                 </div>
@@ -732,7 +753,7 @@ function CompatibilityTab({
                     </div>
 
                     <p className="text-[11px] uppercase tracking-widest text-secondary font-bold mb-2">
-                        Challenging matches
+                        {t("challengingMatchesEyebrow")}
                     </p>
                     <div className="grid gap-3 md:grid-cols-2">
                         {challenging.map(({ n, info }) => (
@@ -749,7 +770,7 @@ function CompatibilityTab({
                                             {info.label}
                                         </p>
                                         <p className="text-xs text-rose-700/80">
-                                            Score {info.score}/10
+                                            {t("compatibilityScore")} {info.score}/10
                                         </p>
                                     </div>
                                 </div>
@@ -770,10 +791,10 @@ function CompatibilityTab({
                         </div>
                         <div>
                             <p className="text-[11px] uppercase tracking-widest text-secondary font-bold">
-                                Check your match
+                                {t("checkMatchEyebrow")}
                             </p>
                             <p className="text-xs text-gray-500">
-                                Enter partner&apos;s Life Path Number (1-9)
+                                {t("partnerInputHint")}
                             </p>
                         </div>
                     </div>
@@ -783,14 +804,14 @@ function CompatibilityTab({
                             type="number"
                             min={1}
                             max={9}
-                            placeholder="e.g. 5"
+                            placeholder={t("partnerInputPlaceholder")}
                             value={partnerInput}
                             onChange={(e) => onPartnerInputChange(e.target.value)}
                             className="h-11 rounded-xl max-w-[180px]"
                             aria-label="Partner Life Path Number"
                         />
                         <p className="text-xs text-gray-500 self-center">
-                            Your Life Path: <span className="font-semibold text-primary">{lifePath}</span>
+                            {t("yourLifePath")} <span className="font-semibold text-primary">{lifePath}</span>
                         </p>
                     </div>
 
@@ -823,26 +844,28 @@ function CompatibilityTab({
     );
 }
 
-const RELATION_CLASSES: Record<NumberRelation, string> = {
-    Friend: "bg-emerald-100 text-emerald-700 border-emerald-200",
-    Neutral: "bg-gray-100 text-gray-600 border-gray-200",
-    Enemy: "bg-rose-100 text-rose-700 border-rose-200",
-};
-
 interface LuckyTabProps {
     profile: NumberProfile | null;
     relations: Record<number, NumberRelation>;
     moolAnk: number;
+    t: TFunc;
+    lang: string;
 }
 
-function LuckyTab({ profile, relations, moolAnk }: LuckyTabProps) {
+function LuckyTab({ profile, relations, moolAnk, t, lang }: LuckyTabProps) {
     if (!profile) {
         return (
             <p className="text-sm text-gray-500">
-                Lucky data unavailable.
+                {t("luckyUnavailable")}
             </p>
         );
     }
+
+    const relationLabel = (rel: NumberRelation): string => {
+        if (rel === "Friend") return t("relationFriend");
+        if (rel === "Enemy") return t("relationEnemy");
+        return t("relationNeutral");
+    };
 
     return (
         <div className="space-y-6">
@@ -852,7 +875,7 @@ function LuckyTab({ profile, relations, moolAnk }: LuckyTabProps) {
                         <div className="flex items-center gap-2 mb-3">
                             <Calendar className="h-4 w-4 text-primary" />
                             <p className="text-[11px] uppercase tracking-widest text-secondary font-bold">
-                                Lucky days
+                                {t("luckyDaysEyebrow")}
                             </p>
                         </div>
                         <div className="flex flex-wrap gap-2">
@@ -873,7 +896,7 @@ function LuckyTab({ profile, relations, moolAnk }: LuckyTabProps) {
                         <div className="flex items-center gap-2 mb-3">
                             <Hash className="h-4 w-4 text-primary" />
                             <p className="text-[11px] uppercase tracking-widest text-secondary font-bold">
-                                Lucky numbers
+                                {t("luckyNumbersEyebrow")}
                             </p>
                         </div>
                         <div className="flex flex-wrap gap-2">
@@ -892,7 +915,7 @@ function LuckyTab({ profile, relations, moolAnk }: LuckyTabProps) {
                 <Card className="rounded-2xl border-gray-100 py-0">
                     <CardContent className="p-6">
                         <p className="text-[11px] uppercase tracking-widest text-secondary font-bold mb-3">
-                            Lucky colour
+                            {t("luckyColourEyebrow")}
                         </p>
                         <div className="flex items-center gap-3">
                             <span
@@ -917,15 +940,17 @@ function LuckyTab({ profile, relations, moolAnk }: LuckyTabProps) {
                         <div className="flex items-center gap-2 mb-3">
                             <Gem className="h-4 w-4 text-primary" />
                             <p className="text-[11px] uppercase tracking-widest text-secondary font-bold">
-                                Lucky gemstone
+                                {t("luckyGemstoneEyebrow")}
                             </p>
                         </div>
                         <p className="text-lg font-bold font-heading text-gray-900">
-                            {profile.gemstone}
+                            {lang === "hi" ? profile.gemstoneHindi : profile.gemstone}
                         </p>
-                        <p className="text-sm text-primary font-heading">
-                            {profile.gemstoneHindi}
-                        </p>
+                        {lang !== "hi" && (
+                            <p className="text-sm text-primary font-heading">
+                                {profile.gemstoneHindi}
+                            </p>
+                        )}
                     </CardContent>
                 </Card>
             </div>
@@ -936,10 +961,10 @@ function LuckyTab({ profile, relations, moolAnk }: LuckyTabProps) {
                         <Users className="h-4 w-4 text-primary" />
                         <div>
                             <p className="text-[11px] uppercase tracking-widest text-secondary font-bold">
-                                Friendship grid
+                                {t("friendshipGridEyebrow")}
                             </p>
                             <p className="text-xs text-gray-500">
-                                Based on your Mool Ank {moolAnk}
+                                {t("friendshipGridBasedOn")} {moolAnk}
                             </p>
                         </div>
                     </div>
@@ -951,12 +976,16 @@ function LuckyTab({ profile, relations, moolAnk }: LuckyTabProps) {
                                     key={n}
                                     className={cn(
                                         "flex flex-col items-center justify-center rounded-xl p-3 border",
-                                        RELATION_CLASSES[rel]
+                                        rel === "Friend"
+                                            ? "bg-emerald-100 text-emerald-700 border-emerald-200"
+                                            : rel === "Enemy"
+                                            ? "bg-rose-100 text-rose-700 border-rose-200"
+                                            : "bg-gray-100 text-gray-600 border-gray-200"
                                     )}
                                 >
                                     <span className="text-lg font-bold">{n}</span>
                                     <span className="text-[10px] uppercase tracking-wider">
-                                        {rel}
+                                        {relationLabel(rel)}
                                     </span>
                                 </div>
                             );
@@ -972,9 +1001,10 @@ interface PersonalYearTabProps {
     year: number;
     currentCalendarYear: number;
     guide: PersonalYearGuide | null;
+    t: TFunc;
 }
 
-function PersonalYearTab({ year, currentCalendarYear, guide }: PersonalYearTabProps) {
+function PersonalYearTab({ year, currentCalendarYear, guide, t }: PersonalYearTabProps) {
     return (
         <div className="space-y-6">
             <Card className="rounded-3xl border-primary/10 bg-gradient-to-br from-primary/5 via-white to-accent/10 py-0 overflow-hidden">
@@ -987,10 +1017,10 @@ function PersonalYearTab({ year, currentCalendarYear, guide }: PersonalYearTabPr
                         </div>
                         <div className="min-w-0">
                             <p className="text-[11px] uppercase tracking-widest text-secondary font-bold mb-1">
-                                Personal year {year} · {currentCalendarYear}
+                                {t("personalYearLabel")} {year} · {currentCalendarYear}
                             </p>
                             <h3 className="text-2xl font-bold font-heading text-gray-900">
-                                {guide?.theme ?? "Your year ahead"}
+                                {guide?.theme ?? t("yearAhead")}
                             </h3>
                             {guide?.description && (
                                 <p className="text-sm md:text-base text-gray-700 leading-relaxed mt-2">
@@ -1007,7 +1037,7 @@ function PersonalYearTab({ year, currentCalendarYear, guide }: PersonalYearTabPr
                     <Card className="rounded-2xl border-emerald-100 bg-emerald-50/40 py-0">
                         <CardContent className="p-6">
                             <p className="text-xs font-semibold text-emerald-700 mb-3">
-                                Opportunities
+                                {t("opportunitiesLabel")}
                             </p>
                             <ul className="space-y-2">
                                 {guide.opportunities.map((o) => (
@@ -1025,7 +1055,7 @@ function PersonalYearTab({ year, currentCalendarYear, guide }: PersonalYearTabPr
                     <Card className="rounded-2xl border-rose-100 bg-rose-50/40 py-0">
                         <CardContent className="p-6">
                             <p className="text-xs font-semibold text-rose-700 mb-3">
-                                Cautions
+                                {t("cautionsLabel")}
                             </p>
                             <ul className="space-y-2">
                                 {guide.cautions.map((c) => (
@@ -1047,7 +1077,7 @@ function PersonalYearTab({ year, currentCalendarYear, guide }: PersonalYearTabPr
                 <Card className="rounded-2xl border-gray-100 py-0">
                     <CardContent className="p-6">
                         <p className="text-[11px] uppercase tracking-widest text-secondary font-bold mb-3">
-                            Best months
+                            {t("bestMonthsEyebrow")}
                         </p>
                         <div className="flex flex-wrap gap-2">
                             {guide.bestMonths.map((m) => (
@@ -1066,7 +1096,7 @@ function PersonalYearTab({ year, currentCalendarYear, guide }: PersonalYearTabPr
             <Card className="rounded-2xl border-gray-100 py-0">
                 <CardContent className="p-6">
                     <p className="text-[11px] uppercase tracking-widest text-secondary font-bold mb-4">
-                        Your 9-year cycle
+                        {t("nineYearCycleEyebrow")}
                     </p>
                     <div className="grid grid-cols-9 gap-1.5">
                         {Array.from({ length: 9 }, (_, i) => i + 1).map((step) => (
@@ -1084,7 +1114,7 @@ function PersonalYearTab({ year, currentCalendarYear, guide }: PersonalYearTabPr
                         ))}
                     </div>
                     <p className="text-xs text-gray-500 mt-3">
-                        You are in year {year} of a 9-year spiritual cycle.
+                        {t("nineYearCycleDesc")} {year} {t("nineYearCycleSuffix")}
                     </p>
                 </CardContent>
             </Card>
@@ -1094,9 +1124,10 @@ function PersonalYearTab({ year, currentCalendarYear, guide }: PersonalYearTabPr
 
 interface KarmicTabProps {
     lessons: KarmicLesson[];
+    t: TFunc;
 }
 
-function KarmicTab({ lessons }: KarmicTabProps) {
+function KarmicTab({ lessons, t }: KarmicTabProps) {
     if (lessons.length === 0) {
         return (
             <Card className="rounded-2xl border-emerald-100 bg-emerald-50/40 py-0">
@@ -1105,10 +1136,10 @@ function KarmicTab({ lessons }: KarmicTabProps) {
                         <Check className="h-5 w-5" />
                     </div>
                     <p className="text-sm md:text-base font-semibold text-emerald-900 mb-1">
-                        No karmic lessons detected
+                        {t("karmicNoLessonsTitle")}
                     </p>
                     <p className="text-xs text-emerald-800/80">
-                        Your birth date includes all digits 1-9.
+                        {t("karmicNoLessonsDesc")}
                     </p>
                 </CardContent>
             </Card>
@@ -1126,20 +1157,20 @@ function KarmicTab({ lessons }: KarmicTabProps) {
                             </div>
                             <div className="min-w-0">
                                 <p className="text-[11px] uppercase tracking-widest text-secondary font-bold mb-1">
-                                    Missing digit
+                                    {t("karmicMissingDigitLabel")}
                                 </p>
                                 <h4 className="text-lg font-bold font-heading text-gray-900 mb-2">
                                     {l.lesson}
                                 </h4>
                                 <p className="text-sm text-gray-700 leading-relaxed mb-3">
                                     <span className="font-semibold text-gray-900">
-                                        Challenge:{" "}
+                                        {t("karmicChallengeLabel")}{" "}
                                     </span>
                                     {l.challenge}
                                 </p>
                                 <p className="text-sm text-gray-700 leading-relaxed">
                                     <span className="font-semibold text-primary">
-                                        Remedy:{" "}
+                                        {t("karmicRemedyLabel")}{" "}
                                     </span>
                                     {l.remedy}
                                 </p>
@@ -1156,13 +1187,14 @@ interface MantraTabProps {
     profile: NumberProfile | null;
     onCopy: () => void;
     copied: boolean;
+    t: TFunc;
 }
 
-function MantraTab({ profile, onCopy, copied }: MantraTabProps) {
+function MantraTab({ profile, onCopy, copied, t }: MantraTabProps) {
     if (!profile) {
         return (
             <p className="text-sm text-gray-500">
-                Mantra unavailable for this number.
+                {t("mantraUnavailable")}
             </p>
         );
     }
@@ -1180,10 +1212,10 @@ function MantraTab({ profile, onCopy, copied }: MantraTabProps) {
                         </div>
                         <div>
                             <p className="text-[11px] uppercase tracking-widest text-accent font-bold">
-                                Planet mantra · {profile.planet}
+                                {t("planetMantraEyebrow")} · {profile.planet}
                             </p>
                             <p className="text-xs text-white/60">
-                                Chant 108 times daily
+                                {t("chantInstruction")}
                             </p>
                         </div>
                     </div>
@@ -1198,12 +1230,12 @@ function MantraTab({ profile, onCopy, copied }: MantraTabProps) {
                         {copied ? (
                             <>
                                 <Check className="h-3.5 w-3.5 mr-1" />
-                                Copied
+                                {t("btnCopied")}
                             </>
                         ) : (
                             <>
                                 <Copy className="h-3.5 w-3.5 mr-1" />
-                                Copy
+                                {t("btnCopy")}
                             </>
                         )}
                     </Button>
@@ -1227,9 +1259,10 @@ interface ShareStripProps {
     name: string;
     lifePath: number;
     title: string;
+    t: TFunc;
 }
 
-function ShareStrip({ name, lifePath, title }: ShareStripProps) {
+function ShareStrip({ name, lifePath, title, t }: ShareStripProps) {
     const mounted = useMounted();
 
     const shareText = `${name}'s Life Path is ${lifePath} — ${title}. Discover your numerology on AstroEshop.`;
@@ -1242,9 +1275,9 @@ function ShareStrip({ name, lifePath, title }: ShareStripProps) {
     const handleCopyLink = async () => {
         try {
             await navigator.clipboard.writeText(shareUrl);
-            toast.success("Link copied!");
+            toast.success(t("toastLinkCopied"));
         } catch {
-            toast.error("Could not copy link");
+            toast.error(t("toastLinkCopyError"));
         }
     };
 
@@ -1257,7 +1290,7 @@ function ShareStrip({ name, lifePath, title }: ShareStripProps) {
             <div className="flex items-center gap-2">
                 <Share2 className="h-4 w-4 text-primary" />
                 <span className="text-sm font-semibold text-gray-700">
-                    Share your reading
+                    {t("shareLabel")}
                 </span>
             </div>
 
@@ -1335,6 +1368,9 @@ type TabValue =
     | "mantra";
 
 export default function NumerologyPage() {
+    const t = useT(numerologyDict);
+    const lang = useLang();
+
     const [result, setResult] = useState<NumerologyResult | null>(null);
     const [activeTab, setActiveTab] = useState<TabValue>("personality");
     const [selectedDimension, setSelectedDimension] =
@@ -1462,10 +1498,10 @@ export default function NumerologyPage() {
         try {
             await navigator.clipboard.writeText(lifePathProfile.affirmation);
             setAffirmationCopied(true);
-            toast.success("Affirmation copied!");
+            toast.success(t("toastAffirmationCopied"));
             window.setTimeout(() => setAffirmationCopied(false), 2000);
         } catch {
-            toast.error("Could not copy affirmation");
+            toast.error(t("toastAffirmationCopyError"));
         }
     };
 
@@ -1476,16 +1512,16 @@ export default function NumerologyPage() {
                 `${lifePathProfile.mantra}\n${lifePathProfile.mantraTransliteration}\n${lifePathProfile.mantraMeaning}`
             );
             setMantraCopied(true);
-            toast.success("Mantra copied!");
+            toast.success(t("toastMantraCopied"));
             window.setTimeout(() => setMantraCopied(false), 2000);
         } catch {
-            toast.error("Could not copy mantra");
+            toast.error(t("toastMantraCopyError"));
         }
     };
 
     return (
         <MainLayout>
-            <HeroSection hasResult={!!result} />
+            <HeroSection hasResult={!!result} t={t} />
 
             <section className="py-12 md:py-16">
                 <div className="container mx-auto px-4">
@@ -1496,6 +1532,7 @@ export default function NumerologyPage() {
                         handleSubmit={handleSubmit}
                         errors={errors}
                         onSubmit={onSubmit}
+                        t={t}
                     />
                 </div>
             </section>
@@ -1507,11 +1544,13 @@ export default function NumerologyPage() {
                             <LifePathHeroCard
                                 number={result.lifePath}
                                 profile={lifePathProfile}
+                                t={t}
+                                lang={lang}
                             />
 
                             <div>
                                 <p className="text-[11px] uppercase tracking-widest text-secondary font-bold text-center mb-4">
-                                    Your core numbers · Tap a card for details
+                                    {t("coreNumbersEyebrow")}
                                 </p>
                                 <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                                     {DIMENSIONS.map((dim) => (
@@ -1522,6 +1561,7 @@ export default function NumerologyPage() {
                                             summary={dimensionSummaries[dim.id]}
                                             isActive={selectedDimension === dim.id}
                                             onSelect={setSelectedDimension}
+                                            t={t}
                                         />
                                     ))}
                                 </div>
@@ -1534,29 +1574,30 @@ export default function NumerologyPage() {
                                 }
                                 value={dimensionValues[selectedDimension]}
                                 meaning={expandedMeaning}
+                                t={t}
                             />
 
                             <div className="grid grid-cols-2 gap-3 md:max-w-md">
                                 <div className="rounded-2xl p-4 bg-white border border-gray-100">
                                     <p className="text-[11px] uppercase tracking-widest text-secondary font-bold mb-1">
-                                        Mool Ank
+                                        {t("moolAnkLabel")}
                                     </p>
                                     <p className="text-3xl font-bold font-heading text-primary">
                                         {result.moolAnk}
                                     </p>
                                     <p className="text-xs text-gray-500">
-                                        Ruling number from birth day
+                                        {t("moolAnkDesc")}
                                     </p>
                                 </div>
                                 <div className="rounded-2xl p-4 bg-white border border-gray-100">
                                     <p className="text-[11px] uppercase tracking-widest text-secondary font-bold mb-1">
-                                        Bhagya Ank
+                                        {t("bhagyaAnkLabel")}
                                     </p>
                                     <p className="text-3xl font-bold font-heading text-primary">
                                         {result.bhagyaAnk}
                                     </p>
                                     <p className="text-xs text-gray-500">
-                                        Destiny number from full DOB
+                                        {t("bhagyaAnkDesc")}
                                     </p>
                                 </div>
                             </div>
@@ -1570,43 +1611,43 @@ export default function NumerologyPage() {
                                         value="personality"
                                         className="rounded-xl data-[state=active]:bg-primary data-[state=active]:text-white text-gray-600 h-10 text-sm"
                                     >
-                                        Personality
+                                        {t("tabPersonality")}
                                     </TabsTrigger>
                                     <TabsTrigger
                                         value="career"
                                         className="rounded-xl data-[state=active]:bg-primary data-[state=active]:text-white text-gray-600 h-10 text-sm"
                                     >
-                                        Career
+                                        {t("tabCareer")}
                                     </TabsTrigger>
                                     <TabsTrigger
                                         value="love"
                                         className="rounded-xl data-[state=active]:bg-primary data-[state=active]:text-white text-gray-600 h-10 text-sm"
                                     >
-                                        Love
+                                        {t("tabLove")}
                                     </TabsTrigger>
                                     <TabsTrigger
                                         value="lucky"
                                         className="rounded-xl data-[state=active]:bg-primary data-[state=active]:text-white text-gray-600 h-10 text-sm"
                                     >
-                                        Lucky
+                                        {t("tabLucky")}
                                     </TabsTrigger>
                                     <TabsTrigger
                                         value="year"
                                         className="rounded-xl data-[state=active]:bg-primary data-[state=active]:text-white text-gray-600 h-10 text-sm"
                                     >
-                                        Year
+                                        {t("tabYear")}
                                     </TabsTrigger>
                                     <TabsTrigger
                                         value="karmic"
                                         className="rounded-xl data-[state=active]:bg-primary data-[state=active]:text-white text-gray-600 h-10 text-sm"
                                     >
-                                        Karmic
+                                        {t("tabKarmic")}
                                     </TabsTrigger>
                                     <TabsTrigger
                                         value="mantra"
                                         className="rounded-xl data-[state=active]:bg-primary data-[state=active]:text-white text-gray-600 h-10 text-sm"
                                     >
-                                        Mantra
+                                        {t("tabMantra")}
                                     </TabsTrigger>
                                 </TabsList>
 
@@ -1615,11 +1656,12 @@ export default function NumerologyPage() {
                                         profile={lifePathProfile}
                                         onCopyAffirmation={handleCopyAffirmation}
                                         copied={affirmationCopied}
+                                        t={t}
                                     />
                                 </TabsContent>
 
                                 <TabsContent value="career" className="mt-6">
-                                    <CareerTab profile={lifePathProfile} />
+                                    <CareerTab profile={lifePathProfile} t={t} />
                                 </TabsContent>
 
                                 <TabsContent value="love" className="mt-6">
@@ -1630,6 +1672,7 @@ export default function NumerologyPage() {
                                         compatibility={compatibility}
                                         topMatches={topMatches}
                                         challenging={challengingMatches}
+                                        t={t}
                                     />
                                 </TabsContent>
 
@@ -1638,6 +1681,8 @@ export default function NumerologyPage() {
                                         profile={lifePathProfile}
                                         relations={relations}
                                         moolAnk={result.moolAnk}
+                                        t={t}
+                                        lang={lang}
                                     />
                                 </TabsContent>
 
@@ -1646,11 +1691,12 @@ export default function NumerologyPage() {
                                         year={result.personalYear}
                                         currentCalendarYear={currentCalendarYear}
                                         guide={personalYearGuide}
+                                        t={t}
                                     />
                                 </TabsContent>
 
                                 <TabsContent value="karmic" className="mt-6">
-                                    <KarmicTab lessons={karmicLessons} />
+                                    <KarmicTab lessons={karmicLessons} t={t} />
                                 </TabsContent>
 
                                 <TabsContent value="mantra" className="mt-6">
@@ -1658,6 +1704,7 @@ export default function NumerologyPage() {
                                         profile={lifePathProfile}
                                         onCopy={handleCopyMantra}
                                         copied={mantraCopied}
+                                        t={t}
                                     />
                                 </TabsContent>
                             </Tabs>
@@ -1665,7 +1712,12 @@ export default function NumerologyPage() {
                             <ShareStrip
                                 name={result.name}
                                 lifePath={result.lifePath}
-                                title={lifePathProfile?.title ?? `Number ${result.lifePath}`}
+                                title={
+                                    lang === "hi"
+                                        ? (lifePathProfile?.hindi ?? `${t("lifePathFallback")} ${result.lifePath}`)
+                                        : (lifePathProfile?.title ?? `${t("lifePathFallback")} ${result.lifePath}`)
+                                }
+                                t={t}
                             />
                         </div>
                     </div>
@@ -1673,69 +1725,38 @@ export default function NumerologyPage() {
             )}
 
             <FaqSection
-                description="Numerology is the ancient science of numbers that reveals personality, life path and destiny patterns hidden in your name and birth date. Below are common questions about Life Path, Destiny, Soul Urge, Personality numbers, Vedic Anka Jyotish, Mool Ank, Bhagya Ank and how this free numerology calculator works for Indian users."
+                description={t("faqDescription")}
                 faqs={[
-                    {
-                        question: "What is numerology and how does it work?",
-                        answer: "Numerology is the study of how numbers influence personality, relationships and life events. Each letter and birth date digit corresponds to a number from 1 to 9, with each number ruled by a planet. By reducing your name and date of birth to single digits, numerology reveals your strengths, challenges and life direction. In India, this practice is rooted in Vedic Anka Jyotish, which connects numbers to the navagraha planetary system used in Hindu astrology.",
-                    },
-                    {
-                        question: "How is the Life Path number calculated?",
-                        answer: "Your Life Path number is calculated by adding the day, month and year of your birth, then reducing the total to a single digit between 1 and 9. For example, a person born on 15 August 1990 would add 1+5+8+1+9+9+0 = 33, then 3+3 = 6, giving a Life Path 6. The exception is Master Numbers 11, 22 and 33, which are not reduced. The Life Path describes your core life journey and the lessons you came to learn.",
-                    },
-                    {
-                        question: "What is the difference between Life Path, Destiny, Soul Urge and Personality numbers?",
-                        answer: "Each number reveals a different layer of you. The Life Path comes from your birth date and shows your overall journey. The Destiny number, also called Expression, is derived from your full name and reveals your potential and life purpose. The Soul Urge, calculated from the vowels in your name, reflects your inner desires and motivations. The Personality number, from the consonants, shows how others perceive you. Together they form a complete numerology blueprint.",
-                    },
-                    {
-                        question: "What are Mool Ank and Bhagya Ank in Vedic Anka Jyotish?",
-                        answer: "Mool Ank, or root number, is derived only from the date of birth, reduced to a single digit. It represents your basic nature, instincts and ruling planet from the moment you were born. Bhagya Ank, or destiny number, is calculated from the entire date including month and year, and represents the karma and destiny shaped by your full birth time. Both are core concepts in Anka Jyotish, the Vedic numerology system widely used across India.",
-                    },
-                    {
-                        question: "What are Master Numbers 11, 22 and 33?",
-                        answer: "Master Numbers are 11, 22 and 33, considered highly spiritual and powerful in numerology. They are not reduced to single digits. Number 11 is the intuitive visionary, 22 is the master builder who turns dreams into reality, and 33 is the master teacher driven by compassion. People with Master Numbers often feel intense pressure to live up to their potential. They carry both greater gifts and bigger responsibilities than single-digit numbers.",
-                    },
-                    {
-                        question: "What is the Personal Year cycle and why does it change every year?",
-                        answer: "The Personal Year is calculated by adding your birth day, birth month and the current calendar year, reduced to a single digit. It changes annually because the year value changes, placing you in a new phase of a 9-year spiritual cycle. Year 1 brings new beginnings, year 5 brings change and freedom, year 9 brings completion. Knowing your Personal Year helps you plan major decisions, business launches, marriage and travel in alignment with the natural energy of that year.",
-                    },
-                    {
-                        question: "Can changing my name change my life through numerology?",
-                        answer: "Yes, name correction is a popular remedy in Indian numerology. Since the Destiny, Soul Urge and Personality numbers are derived from your name, adjusting the spelling can shift these vibrations and bring them into harmony with your Mool Ank and Bhagya Ank. Many people add or remove a letter to balance challenging numbers. However, name changes work best when paired with mindset, action and consistent use of the new spelling across documents and daily life.",
-                    },
-                    {
-                        question: "What are karmic lessons and missing digits?",
-                        answer: "Karmic lessons are revealed by the digits missing from your full date of birth. If your birth date does not contain a particular digit between 1 and 9, that number represents a quality you came to develop in this lifetime. For instance, a missing 5 may indicate lessons around freedom and change, while a missing 7 may point to deeper spiritual study. Identifying these gaps helps you focus on the traits and habits that need conscious cultivation.",
-                    },
-                    {
-                        question: "How are lucky numbers, colours and gemstones derived?",
-                        answer: "Each Life Path or Mool Ank is ruled by a planet, and lucky days, colours and gemstones come from that planetary association. For example, number 1 is ruled by the Sun, with red and gold colours and ruby as the primary gemstone. Number 6 is ruled by Venus, favouring white and pink with diamond. These choices are believed to amplify positive planetary energy and are commonly used in Indian remedies, jewellery and clothing on important days.",
-                    },
-                    {
-                        question: "How accurate is this free numerology calculator and what are its limitations?",
-                        answer: "This calculator follows the standard Pythagorean and Vedic Anka Jyotish methods, so the numbers it generates are mathematically accurate based on the name and birth date you enter. The interpretations are general guidance drawn from traditional numerology meanings and should not be treated as absolute predictions. For a deeper analysis covering name corrections, business numerology, compatibility with your spouse and personalized remedies, a consultation with a qualified astrologer is recommended.",
-                    },
+                    { question: t("faqQ1"), answer: t("faqA1") },
+                    { question: t("faqQ2"), answer: t("faqA2") },
+                    { question: t("faqQ3"), answer: t("faqA3") },
+                    { question: t("faqQ4"), answer: t("faqA4") },
+                    { question: t("faqQ5"), answer: t("faqA5") },
+                    { question: t("faqQ6"), answer: t("faqA6") },
+                    { question: t("faqQ7"), answer: t("faqA7") },
+                    { question: t("faqQ8"), answer: t("faqA8") },
+                    { question: t("faqQ9"), answer: t("faqA9") },
+                    { question: t("faqQ10"), answer: t("faqA10") },
                 ]}
             />
 
             <section className="py-12 border-t border-gray-100 bg-gray-50/40">
                 <div className="container mx-auto px-4 text-center">
                     <h3 className="text-xl md:text-2xl font-bold font-heading text-gray-900 mb-2">
-                        Want a Detailed Numerology Report?
+                        {t("ctaHeading")}
                     </h3>
                     <p className="text-sm text-gray-500 mb-6 max-w-md mx-auto">
-                        Get a personalized numerology analysis from our expert
-                        astrologers — lucky name corrections, remedies and more.
+                        {t("ctaSubtext")}
                     </p>
                     <div className="flex items-center justify-center gap-3 flex-wrap">
                         <ConsultationButton
                             service="Numerology Report"
                             className="bg-primary rounded-xl"
                         >
-                            Book Consultation
+                            {t("btnBookConsultation")}
                         </ConsultationButton>
                         <Button variant="outline" className="rounded-xl" asChild>
-                            <Link href="/contact">Contact Us</Link>
+                            <Link href="/contact">{t("btnContactUs")}</Link>
                         </Button>
                     </div>
                 </div>

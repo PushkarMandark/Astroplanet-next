@@ -38,8 +38,10 @@ import {
 
 import { MainLayout } from "@/components/templates/main-layout";
 import { ConsultationButton } from "@/components/molecules/consultation-button";
-import { FaqSection } from "@/components/molecules";
+import { FaqSection, LanguageSwitcher } from "@/components/molecules";
 import { Button } from "@/components/ui/button";
+import { useT, useLang } from "@/lib/i18n";
+import { horoscope as horoscopeDict } from "@/lib/i18n/translations/horoscope";
 import { Card, CardContent } from "@/components/ui/card";
 import {
     Tabs,
@@ -63,11 +65,11 @@ import type { HoroscopeSign } from "@/types";
 
 const STORAGE_KEY = "astroplanet-horoscope-sign";
 
-const PERIOD_TABS: { value: HoroscopePeriod; label: string }[] = [
-    { value: "daily", label: "Today" },
-    { value: "weekly", label: "This Week" },
-    { value: "monthly", label: "This Month" },
-    { value: "yearly", label: "This Year" },
+const PERIOD_TABS: { value: HoroscopePeriod; labelKey: "periodToday" | "periodWeekly" | "periodMonthly" | "periodYearly" }[] = [
+    { value: "daily", labelKey: "periodToday" },
+    { value: "weekly", labelKey: "periodWeekly" },
+    { value: "monthly", labelKey: "periodMonthly" },
+    { value: "yearly", labelKey: "periodYearly" },
 ];
 
 const elementMeta: Record<
@@ -128,9 +130,11 @@ function StarRating({
 interface TopLuckyStripProps {
     selectedSignKey: string | null;
     onSelect: (sign: HoroscopeSign) => void;
+    eyebrowLabel: string;
+    titleLabel: string;
 }
 
-function TopLuckyStrip({ selectedSignKey, onSelect }: TopLuckyStripProps) {
+function TopLuckyStrip({ selectedSignKey, onSelect, eyebrowLabel, titleLabel }: TopLuckyStripProps) {
     const ranked = useMemo(() => getRankedSigns("daily").slice(0, 3), []);
 
     if (ranked.length === 0) return null;
@@ -141,10 +145,10 @@ function TopLuckyStrip({ selectedSignKey, onSelect }: TopLuckyStripProps) {
                 <div className="flex items-center justify-between mb-4 max-w-4xl mx-auto">
                     <div>
                         <p className="text-xs font-bold uppercase tracking-widest text-secondary mb-1">
-                            Cosmic Favourites
+                            {eyebrowLabel}
                         </p>
                         <h3 className="text-lg md:text-xl font-bold font-heading text-gray-900">
-                            Top 3 Lucky Signs Today
+                            {titleLabel}
                         </h3>
                     </div>
                     <Sparkles className="h-5 w-5 text-accent shrink-0" />
@@ -234,20 +238,26 @@ interface DobDetectProps {
     value: string;
     onChange: (v: string) => void;
     onDetected: (sign: HoroscopeSign) => void;
+    cardTitle: string;
+    cardSubtitle: string;
+    detectBtnLabel: string;
+    toastNoDate: string;
+    toastInvalid: string;
+    toastError: string;
 }
 
-function DobDetect({ value, onChange, onDetected }: DobDetectProps) {
+function DobDetect({ value, onChange, onDetected, cardTitle, cardSubtitle, detectBtnLabel, toastNoDate, toastInvalid, toastError }: DobDetectProps) {
     const [open, setOpen] = useState(false);
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         if (!value) {
-            toast.error("Please pick a date");
+            toast.error(toastNoDate);
             return;
         }
         const parsed = new Date(value);
         if (Number.isNaN(parsed.getTime())) {
-            toast.error("Invalid date");
+            toast.error(toastInvalid);
             return;
         }
         const signKey = getSignFromDate(parsed);
@@ -257,7 +267,7 @@ function DobDetect({ value, onChange, onDetected }: DobDetectProps) {
             toast.success(`Your sign is ${match.name} (${match.hindi})`);
             setOpen(false);
         } else {
-            toast.error("Could not determine sign");
+            toast.error(toastError);
         }
     };
 
@@ -278,10 +288,10 @@ function DobDetect({ value, onChange, onDetected }: DobDetectProps) {
                                     </div>
                                     <div>
                                         <p className="text-sm font-bold text-gray-900">
-                                            Don&apos;t know your sign?
+                                            {cardTitle}
                                         </p>
                                         <p className="text-xs text-gray-500">
-                                            Enter your date of birth to find out
+                                            {cardSubtitle}
                                         </p>
                                     </div>
                                 </div>
@@ -320,7 +330,7 @@ function DobDetect({ value, onChange, onDetected }: DobDetectProps) {
                                         type="submit"
                                         className="rounded-xl bg-primary hover:bg-primary/90 h-10"
                                     >
-                                        Detect My Sign
+                                        {detectBtnLabel}
                                         <ArrowRight className="h-4 w-4 ml-1.5" />
                                     </Button>
                                 </form>
@@ -336,18 +346,20 @@ function DobDetect({ value, onChange, onDetected }: DobDetectProps) {
 interface ZodiacGridProps {
     selectedSignKey: string | null;
     onSelect: (sign: HoroscopeSign) => void;
+    eyebrowLabel: string;
+    titleLabel: string;
 }
 
-function ZodiacGrid({ selectedSignKey, onSelect }: ZodiacGridProps) {
+function ZodiacGrid({ selectedSignKey, onSelect, eyebrowLabel, titleLabel }: ZodiacGridProps) {
     return (
         <section className="py-10 md:py-12">
             <div className="container mx-auto px-4">
                 <div className="text-center mb-8">
                     <p className="text-xs font-bold uppercase tracking-widest text-secondary mb-2">
-                        Choose Your Sign
+                        {eyebrowLabel}
                     </p>
                     <h2 className="text-2xl md:text-3xl font-bold font-heading text-gray-900">
-                        12 Zodiac Signs
+                        {titleLabel}
                     </h2>
                 </div>
 
@@ -426,9 +438,12 @@ function ZodiacGrid({ selectedSignKey, onSelect }: ZodiacGridProps) {
 interface SignHeaderProps {
     sign: HoroscopeSign;
     data: HoroscopeData;
+    ruledByLabel: string;
+    moodLabel: string;
+    overallRatingLabel: string;
 }
 
-function SignHeader({ sign, data }: SignHeaderProps) {
+function SignHeader({ sign, data, ruledByLabel, moodLabel, overallRatingLabel }: SignHeaderProps) {
     const el = elementMeta[sign.element];
     const ElIcon = el.icon;
 
@@ -460,16 +475,16 @@ function SignHeader({ sign, data }: SignHeaderProps) {
                         </span>
                         <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-accent/20 text-xs text-accent">
                             <Sparkles className="h-3 w-3" />
-                            Ruled by {data.ruler}
+                            {ruledByLabel} {data.ruler}
                         </span>
                         <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 text-xs text-white/90">
-                            Mood: {data.mood}
+                            {moodLabel} {data.mood}
                         </span>
                     </div>
 
                     <div className="mt-4 flex items-center gap-2 justify-center md:justify-start">
                         <span className="text-xs text-white/70">
-                            Overall Rating
+                            {overallRatingLabel}
                         </span>
                         <StarRating value={data.overallRating} size="md" />
                         <span className="text-xs text-accent font-semibold">
@@ -484,9 +499,13 @@ function SignHeader({ sign, data }: SignHeaderProps) {
 
 interface LuckyStatsGridProps {
     data: HoroscopeData;
+    luckyNumberLabel: string;
+    luckyColorLabel: string;
+    luckyTimeLabel: string;
+    bestMatchLabel: string;
 }
 
-function LuckyStatsGrid({ data }: LuckyStatsGridProps) {
+function LuckyStatsGrid({ data, luckyNumberLabel, luckyColorLabel, luckyTimeLabel, bestMatchLabel }: LuckyStatsGridProps) {
     return (
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
             <Card className="rounded-2xl border-gray-100 hover:shadow-md hover:-translate-y-0.5 transition-all py-0">
@@ -495,7 +514,7 @@ function LuckyStatsGrid({ data }: LuckyStatsGridProps) {
                         <HashIcon className="h-5 w-5 text-primary" />
                     </div>
                     <p className="text-xs uppercase tracking-wider text-gray-500 font-semibold">
-                        Lucky Number
+                        {luckyNumberLabel}
                     </p>
                     <p className="text-3xl font-bold font-heading text-primary leading-none">
                         {data.luckyNumber}
@@ -509,7 +528,7 @@ function LuckyStatsGrid({ data }: LuckyStatsGridProps) {
                         <Palette className="h-5 w-5 text-secondary" />
                     </div>
                     <p className="text-xs uppercase tracking-wider text-gray-500 font-semibold">
-                        Lucky Color
+                        {luckyColorLabel}
                     </p>
                     <div className="flex items-center gap-2">
                         <span
@@ -530,7 +549,7 @@ function LuckyStatsGrid({ data }: LuckyStatsGridProps) {
                         <Clock className="h-5 w-5 text-primary" />
                     </div>
                     <p className="text-xs uppercase tracking-wider text-gray-500 font-semibold">
-                        Lucky Time
+                        {luckyTimeLabel}
                     </p>
                     <p className="text-sm font-bold text-gray-900">
                         {data.luckyTime}
@@ -546,7 +565,7 @@ function LuckyStatsGrid({ data }: LuckyStatsGridProps) {
                         </span>
                     </div>
                     <p className="text-xs uppercase tracking-wider text-gray-500 font-semibold">
-                        Best Match
+                        {bestMatchLabel}
                     </p>
                     <p className="text-sm font-bold text-gray-900">
                         {data.compatibleSign.name}
@@ -559,21 +578,24 @@ function LuckyStatsGrid({ data }: LuckyStatsGridProps) {
 
 interface LifeAspectsProps {
     data: HoroscopeData;
+    titleLabel: string;
+    outOfLabel: string;
+    aspectLabels: Record<keyof HoroscopeData["aspects"], string>;
 }
 
-function LifeAspects({ data }: LifeAspectsProps) {
+function LifeAspects({ data, titleLabel, outOfLabel, aspectLabels }: LifeAspectsProps) {
     return (
         <Card className="rounded-2xl border-gray-100 py-0">
             <CardContent className="p-6 md:p-8">
                 <div className="flex items-center justify-between mb-5">
                     <h4 className="text-lg font-bold font-heading text-gray-900">
-                        Life Aspects
+                        {titleLabel}
                     </h4>
-                    <span className="text-xs text-gray-400">out of 5</span>
+                    <span className="text-xs text-gray-400">{outOfLabel}</span>
                 </div>
 
                 <div className="space-y-4">
-                    {aspectMeta.map(({ key, label, icon: Icon }) => {
+                    {aspectMeta.map(({ key, icon: Icon }) => {
                         const value = data.aspects[key];
                         const pct = Math.max(0, Math.min(100, (value / 5) * 100));
 
@@ -587,7 +609,7 @@ function LifeAspects({ data }: LifeAspectsProps) {
                                         <Icon className="h-4 w-4 text-primary" />
                                     </div>
                                     <span className="text-sm font-semibold text-gray-700">
-                                        {label}
+                                        {aspectLabels[key]}
                                     </span>
                                 </div>
 
@@ -611,9 +633,11 @@ function LifeAspects({ data }: LifeAspectsProps) {
 interface DosAndDontsProps {
     dos: string[];
     donts: string[];
+    dosTitle: string;
+    dontsTitle: string;
 }
 
-function DosAndDonts({ dos, donts }: DosAndDontsProps) {
+function DosAndDonts({ dos, donts, dosTitle, dontsTitle }: DosAndDontsProps) {
     return (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Card className="rounded-2xl border-green-100 bg-green-50/50 py-0">
@@ -623,7 +647,7 @@ function DosAndDonts({ dos, donts }: DosAndDontsProps) {
                             <Check className="h-4 w-4 text-green-700" />
                         </div>
                         <h4 className="text-base font-bold font-heading text-green-900">
-                            Today&apos;s Do&apos;s
+                            {dosTitle}
                         </h4>
                     </div>
                     <ul className="space-y-3">
@@ -647,7 +671,7 @@ function DosAndDonts({ dos, donts }: DosAndDontsProps) {
                             <XIcon className="h-4 w-4 text-red-700" />
                         </div>
                         <h4 className="text-base font-bold font-heading text-red-900">
-                            Things to Avoid
+                            {dontsTitle}
                         </h4>
                     </div>
                     <ul className="space-y-3">
@@ -669,9 +693,15 @@ function DosAndDonts({ dos, donts }: DosAndDontsProps) {
 
 interface MantraCardProps {
     mantra: HoroscopeData["mantra"];
+    eyebrowLabel: string;
+    chantHint: string;
+    copyBtnLabel: string;
+    copiedBtnLabel: string;
+    copiedToast: string;
+    copyErrorToast: string;
 }
 
-function MantraCard({ mantra }: MantraCardProps) {
+function MantraCard({ mantra, eyebrowLabel, chantHint, copyBtnLabel, copiedBtnLabel, copiedToast, copyErrorToast }: MantraCardProps) {
     const [copied, setCopied] = useState(false);
 
     const handleCopy = async () => {
@@ -680,10 +710,10 @@ function MantraCard({ mantra }: MantraCardProps) {
                 `${mantra.sanskrit}\n${mantra.transliteration}\n${mantra.meaning}`
             );
             setCopied(true);
-            toast.success("Mantra copied!");
+            toast.success(copiedToast);
             window.setTimeout(() => setCopied(false), 2000);
         } catch {
-            toast.error("Could not copy mantra");
+            toast.error(copyErrorToast);
         }
     };
 
@@ -700,10 +730,10 @@ function MantraCard({ mantra }: MantraCardProps) {
                         </div>
                         <div>
                             <p className="text-[11px] uppercase tracking-widest text-accent font-bold">
-                                Your Mantra
+                                {eyebrowLabel}
                             </p>
                             <p className="text-xs text-white/60">
-                                Chant 11 times for best results
+                                {chantHint}
                             </p>
                         </div>
                     </div>
@@ -718,12 +748,12 @@ function MantraCard({ mantra }: MantraCardProps) {
                         {copied ? (
                             <>
                                 <Check className="h-3.5 w-3.5 mr-1" />
-                                Copied
+                                {copiedBtnLabel}
                             </>
                         ) : (
                             <>
                                 <Copy className="h-3.5 w-3.5 mr-1" />
-                                Copy
+                                {copyBtnLabel}
                             </>
                         )}
                     </Button>
@@ -746,9 +776,13 @@ function MantraCard({ mantra }: MantraCardProps) {
 interface GemstoneCardProps {
     gemstone: HoroscopeData["gemstone"];
     ruler: string;
+    eyebrowLabel: string;
+    subtextTemplate: string;
+    shopBtnLabel: string;
 }
 
-function GemstoneCard({ gemstone, ruler }: GemstoneCardProps) {
+function GemstoneCard({ gemstone, ruler, eyebrowLabel, subtextTemplate, shopBtnLabel }: GemstoneCardProps) {
+    const subtext = subtextTemplate.replace("{{ruler}}", ruler);
     return (
         <Card className="rounded-3xl border-accent/30 bg-gradient-to-br from-accent/10 via-background to-white py-0 overflow-hidden">
             <CardContent className="p-6 md:p-8 flex flex-col md:flex-row items-center gap-6">
@@ -758,7 +792,7 @@ function GemstoneCard({ gemstone, ruler }: GemstoneCardProps) {
 
                 <div className="flex-1 text-center md:text-left">
                     <p className="text-[11px] uppercase tracking-widest text-secondary font-bold mb-1">
-                        Your Lucky Gemstone
+                        {eyebrowLabel}
                     </p>
                     <h4 className="text-2xl font-bold font-heading text-gray-900">
                         {gemstone.name}
@@ -767,8 +801,7 @@ function GemstoneCard({ gemstone, ruler }: GemstoneCardProps) {
                         </span>
                     </h4>
                     <p className="text-sm text-gray-500 mt-1">
-                        Aligned with the energy of {ruler}. Wear on the correct
-                        finger for maximum benefit.
+                        {subtext}
                     </p>
                 </div>
 
@@ -777,7 +810,7 @@ function GemstoneCard({ gemstone, ruler }: GemstoneCardProps) {
                     className="rounded-xl bg-primary hover:bg-primary/90 h-11 px-5"
                 >
                     <Link href={`/shop/${gemstone.shopCategory}`}>
-                        Explore Gemstones
+                        {shopBtnLabel}
                         <ArrowRight className="h-4 w-4 ml-1.5" />
                     </Link>
                 </Button>
@@ -789,14 +822,12 @@ function GemstoneCard({ gemstone, ruler }: GemstoneCardProps) {
 interface ShareBarProps {
     sign: HoroscopeSign;
     overall: string;
-    period: HoroscopePeriod;
+    shareLabel: string;
+    periodLabel: string;
 }
 
-function ShareBar({ sign, overall, period }: ShareBarProps) {
+function ShareBar({ sign, overall, shareLabel, periodLabel }: ShareBarProps) {
     const mounted = useMounted();
-
-    const periodLabel =
-        PERIOD_TABS.find((t) => t.value === period)?.label ?? "Today";
 
     const shareText = `${sign.name} (${sign.hindi}) — ${periodLabel}'s Reading: ${overall.slice(0, 140)}${overall.length > 140 ? "..." : ""}`;
     const shareUrl =
@@ -824,7 +855,7 @@ function ShareBar({ sign, overall, period }: ShareBarProps) {
             <div className="flex items-center gap-2">
                 <Share2 className="h-4 w-4 text-primary" />
                 <span className="text-sm font-semibold text-gray-700">
-                    Share your reading
+                    {shareLabel}
                 </span>
             </div>
 
@@ -893,12 +924,13 @@ function ShareBar({ sign, overall, period }: ShareBarProps) {
 interface QuickSwitchRowProps {
     currentSignKey: string;
     onSelect: (sign: HoroscopeSign) => void;
+    checkAnotherSignLabel: string;
 }
 
-function QuickSwitchRow({ currentSignKey, onSelect }: QuickSwitchRowProps) {
+function QuickSwitchRow({ currentSignKey, onSelect, checkAnotherSignLabel }: QuickSwitchRowProps) {
     return (
         <div className="text-center">
-            <p className="text-xs text-gray-400 mb-3">Check another sign</p>
+            <p className="text-xs text-gray-400 mb-3">{checkAnotherSignLabel}</p>
             <div className="flex flex-wrap justify-center gap-2">
                 {zodiacSigns
                     .filter((s) => s.sign !== currentSignKey)
@@ -923,6 +955,9 @@ function HoroscopeContent() {
     const mounted = useMounted();
     const searchParams = useSearchParams();
     const readingRef = useRef<HTMLDivElement | null>(null);
+
+    const t = useT(horoscopeDict);
+    const lang = useLang();
 
     const [selectedSign, setSelectedSign] = useState<HoroscopeSign | null>(null);
     const [period, setPeriod] = useState<HoroscopePeriod>("daily");
@@ -984,7 +1019,7 @@ function HoroscopeContent() {
         });
     }, []);
 
-    const today = new Date().toLocaleDateString("en-IN", {
+    const today = new Date().toLocaleDateString(lang === "hi" ? "hi-IN" : "en-IN", {
         weekday: "long",
         year: "numeric",
         month: "long",
@@ -992,6 +1027,20 @@ function HoroscopeContent() {
     });
 
     const selectedSignKey = selectedSign?.sign ?? null;
+
+    // Aspect labels driven by the dictionary so they switch with language
+    const aspectLabels: Record<keyof HoroscopeData["aspects"], string> = {
+        love: t("aspectLove"),
+        career: t("aspectCareer"),
+        health: t("aspectHealth"),
+        finance: t("aspectFinance"),
+        family: t("aspectFamily"),
+    };
+
+    // Derive the current period's translated label for ShareBar
+    const currentPeriodLabel = t(
+        PERIOD_TABS.find((tab) => tab.value === period)?.labelKey ?? "periodToday"
+    );
 
     return (
         <MainLayout>
@@ -1002,18 +1051,19 @@ function HoroscopeContent() {
                     <div className="absolute -bottom-10 -left-10 w-56 h-56 bg-secondary/10 rounded-full blur-3xl" />
                 </div>
                 <div className="container mx-auto px-4 relative z-10 py-14 md:py-20">
+                    <div className="flex justify-end mb-4">
+                        <LanguageSwitcher />
+                    </div>
                     <div className="max-w-2xl mx-auto text-center">
                         <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 backdrop-blur-sm text-sm mb-5">
                             <Calendar className="h-3.5 w-3.5 text-accent" />
                             {today}
                         </div>
                         <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold font-heading mb-4 leading-tight">
-                            Free Horoscope
+                            {t("heroTitle")}
                         </h1>
                         <p className="text-white/70 text-base md:text-lg max-w-lg mx-auto">
-                            Daily, weekly, monthly & yearly readings with lucky
-                            numbers, colors, mantras, and gemstones tailored to
-                            your zodiac.
+                            {t("heroSubtitle")}
                         </p>
                     </div>
                 </div>
@@ -1023,6 +1073,8 @@ function HoroscopeContent() {
             <TopLuckyStrip
                 selectedSignKey={selectedSignKey}
                 onSelect={handleSignSelect}
+                eyebrowLabel={t("luckyStripEyebrow")}
+                titleLabel={t("luckyStripTitle")}
             />
 
             {/* DOB Quick-detect */}
@@ -1030,12 +1082,20 @@ function HoroscopeContent() {
                 value={dobInput}
                 onChange={setDobInput}
                 onDetected={handleSignSelect}
+                cardTitle={t("dobCardTitle")}
+                cardSubtitle={t("dobCardSubtitle")}
+                detectBtnLabel={t("dobDetectBtn")}
+                toastNoDate={t("dobToastNoDate")}
+                toastInvalid={t("dobToastInvalid")}
+                toastError={t("dobToastError")}
             />
 
             {/* Zodiac grid */}
             <ZodiacGrid
                 selectedSignKey={selectedSignKey}
                 onSelect={handleSignSelect}
+                eyebrowLabel={t("zodiacEyebrow")}
+                titleLabel={t("zodiacTitle")}
             />
 
             {/* Reading */}
@@ -1044,7 +1104,13 @@ function HoroscopeContent() {
                     <div className="max-w-4xl mx-auto">
                         {selectedSign && data ? (
                             <div className="space-y-6">
-                                <SignHeader sign={selectedSign} data={data} />
+                                <SignHeader
+                                    sign={selectedSign}
+                                    data={data}
+                                    ruledByLabel={t("ruledBy")}
+                                    moodLabel={t("mood")}
+                                    overallRatingLabel={t("overallRating")}
+                                />
 
                                 <Tabs
                                     value={period}
@@ -1053,21 +1119,21 @@ function HoroscopeContent() {
                                     }
                                 >
                                     <TabsList className="w-full h-auto bg-white border border-gray-100 rounded-2xl p-1 grid grid-cols-2 md:grid-cols-4 gap-1">
-                                        {PERIOD_TABS.map((t) => (
+                                        {PERIOD_TABS.map((tab) => (
                                             <TabsTrigger
-                                                key={t.value}
-                                                value={t.value}
+                                                key={tab.value}
+                                                value={tab.value}
                                                 className="rounded-xl data-[state=active]:bg-primary data-[state=active]:text-white text-gray-600 h-10 text-sm"
                                             >
-                                                {t.label}
+                                                {t(tab.labelKey)}
                                             </TabsTrigger>
                                         ))}
                                     </TabsList>
 
-                                    {PERIOD_TABS.map((t) => (
+                                    {PERIOD_TABS.map((tab) => (
                                         <TabsContent
-                                            key={t.value}
-                                            value={t.value}
+                                            key={tab.value}
+                                            value={tab.value}
                                             className="mt-6 space-y-6"
                                         >
                                             {/* Overall paragraph */}
@@ -1082,21 +1148,46 @@ function HoroscopeContent() {
                                                 </CardContent>
                                             </Card>
 
-                                            <LuckyStatsGrid data={data} />
-                                            <LifeAspects data={data} />
+                                            <LuckyStatsGrid
+                                                data={data}
+                                                luckyNumberLabel={t("luckyNumber")}
+                                                luckyColorLabel={t("luckyColor")}
+                                                luckyTimeLabel={t("luckyTime")}
+                                                bestMatchLabel={t("bestMatch")}
+                                            />
+                                            <LifeAspects
+                                                data={data}
+                                                titleLabel={t("lifeAspectsTitle")}
+                                                outOfLabel={t("lifeAspectsOutOf")}
+                                                aspectLabels={aspectLabels}
+                                            />
                                             <DosAndDonts
                                                 dos={data.dos}
                                                 donts={data.donts}
+                                                dosTitle={t("dosTitle")}
+                                                dontsTitle={t("dontsTitle")}
                                             />
-                                            <MantraCard mantra={data.mantra} />
+                                            <MantraCard
+                                                mantra={data.mantra}
+                                                eyebrowLabel={t("mantraEyebrow")}
+                                                chantHint={t("mantraChantHint")}
+                                                copyBtnLabel={t("mantraCopyBtn")}
+                                                copiedBtnLabel={t("mantraCopiedBtn")}
+                                                copiedToast={t("mantraCopiedToast")}
+                                                copyErrorToast={t("mantraCopyError")}
+                                            />
                                             <GemstoneCard
                                                 gemstone={data.gemstone}
                                                 ruler={data.ruler}
+                                                eyebrowLabel={t("gemstoneEyebrow")}
+                                                subtextTemplate={t("gemstoneSubtext")}
+                                                shopBtnLabel={t("gemstoneShopBtn")}
                                             />
                                             <ShareBar
                                                 sign={selectedSign}
                                                 overall={data.overall}
-                                                period={period}
+                                                shareLabel={t("shareLabel")}
+                                                periodLabel={currentPeriodLabel}
                                             />
                                         </TabsContent>
                                     ))}
@@ -1106,6 +1197,7 @@ function HoroscopeContent() {
                                     <QuickSwitchRow
                                         currentSignKey={selectedSign.sign}
                                         onSelect={handleSignSelect}
+                                        checkAnotherSignLabel={t("checkAnotherSign")}
                                     />
                                 </div>
                             </div>
@@ -1116,9 +1208,7 @@ function HoroscopeContent() {
                                         <Star className="h-8 w-8 text-accent" />
                                     </div>
                                     <p className="text-sm text-gray-500">
-                                        Select your zodiac sign above to unlock
-                                        your personalised reading, lucky stats,
-                                        mantra and gemstone.
+                                        {t("emptyPrompt")}
                                     </p>
                                 </div>
                             </div>
@@ -1131,46 +1221,16 @@ function HoroscopeContent() {
             <FaqSection
                 description="Get answers to the most common questions about reading your free horoscope, understanding daily, weekly, monthly and yearly predictions, the difference between Vedic and Western astrology, sun sign vs moon sign (rashi), lucky numbers, colours, mantras, gemstones and zodiac compatibility."
                 faqs={[
-                    {
-                        question: "What is the difference between daily, weekly, monthly and yearly horoscopes?",
-                        answer: "A daily horoscope focuses on short-term planetary transits and is best for day-to-day decisions like meetings, travel or money matters. The weekly reading shows themes building over seven days. The monthly horoscope tracks slower planetary shifts that influence work, relationships and health. The yearly horoscope is a broader outlook covering major life areas, ideal for long-term planning and goal setting.",
-                    },
-                    {
-                        question: "What is the difference between Vedic and Western horoscopes?",
-                        answer: "Vedic astrology, also called Jyotish, uses the sidereal zodiac which is based on the actual position of the stars and accounts for the precession of equinoxes. Western astrology uses the tropical zodiac fixed to the seasons. Because of this, your Vedic sun sign is often one sign earlier than your Western one. Vedic readings rely heavily on the moon sign and nakshatra, while Western readings emphasise the sun sign.",
-                    },
-                    {
-                        question: "Should I read my sun sign or my moon sign (rashi)?",
-                        answer: "In Vedic astrology, your moon sign or rashi is considered the most important because it reflects your mind, emotions and inner nature. Most traditional Indian horoscopes are written for the moon sign. Your sun sign reflects your outer personality and ego. For the most accurate reading, check both, but give priority to your rashi. If you do not know your rashi, use our free Kundli tool to find it.",
-                    },
-                    {
-                        question: "How accurate are free horoscope predictions?",
-                        answer: "A free horoscope offers general guidance based on your zodiac sign and current planetary movements. It is a useful daily companion that helps you stay aware of energies around you. However, since it covers everyone born under the same sign, it cannot match the precision of a personalised birth chart reading that uses your exact date, time and place of birth. Treat it as direction, not a final verdict.",
-                    },
-                    {
-                        question: "Can a horoscope predict my future precisely?",
-                        answer: "Astrology highlights tendencies, timing and energies that are likely to appear in your life. It is not a fixed script. Your free will, choices, karma and effort always shape the actual outcome. A horoscope can warn you about challenges, suggest favourable periods or recommend remedies, but it should be used as a planning tool. Use the insights to make better decisions, not to wait for events to happen on their own.",
-                    },
-                    {
-                        question: "What do lucky number, lucky colour and lucky time really mean?",
-                        answer: "Your lucky number, colour and time are based on the planetary ruler of your zodiac sign and the current cosmic energies. Wearing your lucky colour, scheduling important calls or meetings during your lucky time, and using your lucky number for choices like seats or PIN codes can subtly align you with supportive vibrations. Think of them as small nudges that boost confidence and timing rather than guaranteed shortcuts to success.",
-                    },
-                    {
-                        question: "How do I find my zodiac sign if I do not remember the dates?",
-                        answer: "If you are not sure which sign you belong to, use the date of birth detector available on this page. Just enter your birthday and we will instantly show your sun sign along with its Hindi name. For the Vedic moon sign or rashi, you also need your exact birth time and place. You can generate that using our free Kundli tool, which calculates your nakshatra, rashi and birth chart in seconds.",
-                    },
-                    {
-                        question: "What are the mantras and gemstones shown in my reading?",
-                        answer: "Each zodiac sign is connected to a planetary lord, and that planet has traditional Vedic remedies. The Sanskrit mantra given in your horoscope helps balance and strengthen that planet through sound vibration when chanted regularly, ideally eleven or one hundred and eight times. The recommended gemstone, when worn on the correct finger and metal, is believed to channel the planet's positive energy. Always consult an astrologer before wearing strong stones like ruby, blue sapphire or yellow sapphire.",
-                    },
-                    {
-                        question: "How does zodiac compatibility work?",
-                        answer: "Zodiac compatibility looks at how the elements, ruling planets and qualities of two signs interact. Fire signs energise air signs, water signs nourish earth signs, and similar elements often understand each other naturally. The compatible sign shown in your reading is the one most harmonious with your sun sign on a general level. For marriage or serious relationships, a proper Vedic match-making (guna milan) using both birth charts gives a much deeper picture.",
-                    },
-                    {
-                        question: "How often should I read my horoscope?",
-                        answer: "Reading your daily horoscope once in the morning is enough to set the tone for the day. Check the weekly horoscope on Mondays for planning, the monthly reading at the start of each month, and the yearly horoscope around your birthday or the new year for bigger decisions. Avoid checking many times a day or jumping between sites. Consistency with one trusted source gives clearer patterns and a calmer mind.",
-                    },
+                    { question: t("faqQ1"), answer: t("faqA1") },
+                    { question: t("faqQ2"), answer: t("faqA2") },
+                    { question: t("faqQ3"), answer: t("faqA3") },
+                    { question: t("faqQ4"), answer: t("faqA4") },
+                    { question: t("faqQ5"), answer: t("faqA5") },
+                    { question: t("faqQ6"), answer: t("faqA6") },
+                    { question: t("faqQ7"), answer: t("faqA7") },
+                    { question: t("faqQ8"), answer: t("faqA8") },
+                    { question: t("faqQ9"), answer: t("faqA9") },
+                    { question: t("faqQ10"), answer: t("faqA10") },
                 ]}
             />
 
@@ -1178,21 +1238,20 @@ function HoroscopeContent() {
             <section className="py-12 border-t border-gray-100 bg-gray-50/40">
                 <div className="container mx-auto px-4 text-center">
                     <h3 className="text-xl md:text-2xl font-bold font-heading text-gray-900 mb-2">
-                        Want a Detailed Birth Chart Analysis?
+                        {t("ctaTitle")}
                     </h3>
                     <p className="text-sm text-gray-500 mb-6 max-w-md mx-auto">
-                        Get a personalized reading from our expert astrologers
-                        based on your exact birth details.
+                        {t("ctaSubtitle")}
                     </p>
                     <div className="flex items-center justify-center gap-3 flex-wrap">
                         <ConsultationButton
                             service="Birth Chart Analysis"
                             className="bg-primary rounded-xl"
                         >
-                            Book Consultation
+                            {t("ctaBookBtn")}
                         </ConsultationButton>
                         <Button variant="outline" className="rounded-xl" asChild>
-                            <Link href="/contact">Contact Us</Link>
+                            <Link href="/contact">{t("ctaContactBtn")}</Link>
                         </Button>
                     </div>
                 </div>

@@ -40,6 +40,9 @@ import {
   Hash,
 } from "lucide-react";
 import { LocationSearch } from "@/components/molecules/location-search";
+import { LanguageSwitcher } from "@/components/molecules";
+import { useT, useLang, toLabelLang, type Lang } from "@/lib/i18n";
+import { kundli as kundliDict } from "@/lib/i18n/translations/kundli";
 import {
   getKundli,
   Observer,
@@ -92,6 +95,11 @@ import {
   type Remedy,
   type ChartInput,
 } from "@/lib/data/vedic";
+
+/* ── i18n translator type (kundli dictionary) ──────────── */
+
+type KundliTKey = keyof (typeof kundliDict)["en"];
+type TFn = (key: KundliTKey) => string;
 
 /* ── Planet helpers ────────────────────────────────────── */
 
@@ -171,6 +179,49 @@ function formatEndTime(endTime: Date | string) {
   });
 }
 
+/** Full date-time for the dasha timeline table, e.g. "Mon, 21 Oct 2024, 22:04". */
+function formatDashaDate(value: Date | string, locale: string): string {
+  const d = value instanceof Date ? value : new Date(value);
+  if (Number.isNaN(d.getTime())) return "—";
+  return new Intl.DateTimeFormat(locale, {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+    weekday: "short",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  }).format(d);
+}
+
+interface DashaDurationUnits {
+  year: string;
+  month: string;
+  lessThanMonth: string;
+  /** Hindi inserts a space before the unit ("17 वर्ष"); English does not ("17y"). */
+  spaced: boolean;
+}
+
+const MS_PER_DAY = 24 * 60 * 60 * 1000;
+const MS_PER_DASHA_YEAR = 365.25 * MS_PER_DAY;
+const MS_PER_DASHA_MONTH = 30.44 * MS_PER_DAY;
+
+/** Compact duration like "17y", "6y 11m" (en) or "17 वर्ष", "6 वर्ष 11 माह" (hi). */
+function formatDashaDuration(ms: number, units: DashaDurationUnits): string {
+  if (!Number.isFinite(ms) || ms <= 0) return units.lessThanMonth;
+  let years = Math.floor(ms / MS_PER_DASHA_YEAR);
+  let months = Math.round((ms - years * MS_PER_DASHA_YEAR) / MS_PER_DASHA_MONTH);
+  if (months >= 12) {
+    years += 1;
+    months -= 12;
+  }
+  const glue = units.spaced ? " " : "";
+  const parts: string[] = [];
+  if (years > 0) parts.push(`${years}${glue}${units.year}`);
+  if (months > 0) parts.push(`${months}${glue}${units.month}`);
+  return parts.length > 0 ? parts.join(" ") : units.lessThanMonth;
+}
+
 function formatDate(dateStr: string) {
   if (!dateStr) return "";
   const d = new Date(dateStr);
@@ -179,6 +230,103 @@ function formatDate(dateStr: string) {
     month: "long",
     year: "numeric",
   });
+}
+
+/* ── Vimshottari "current period" correction ───────────────
+ * The library reports currentMahadasha/currentAntardasha as of the BIRTH
+ * moment (it returns fullCycle[0]), not as of today — so a chart whose
+ * balance dasha ended in 2011 still shows it as "current". Derive the true
+ * running periods from fullCycle instead: the mahadasha whose window
+ * contains now, and its antardasha via the classical proportional split
+ * (antar = maha years × antar-lord years / 120, sequence starting from the
+ * maha lord at the maha's notional start).
+ */
+const VIMSHOTTARI_ORDER = [
+  "Ketu",
+  "Venus",
+  "Sun",
+  "Moon",
+  "Mars",
+  "Rahu",
+  "Jupiter",
+  "Saturn",
+  "Mercury",
+] as const;
+
+const VIMSHOTTARI_YEARS: Record<string, number> = {
+  Ketu: 7,
+  Venus: 20,
+  Sun: 6,
+  Moon: 10,
+  Mars: 7,
+  Rahu: 18,
+  Jupiter: 16,
+  Saturn: 19,
+  Mercury: 17,
+};
+
+interface DashaPeriod {
+  planet: string;
+  startTime: Date;
+  endTime: Date;
+}
+
+function deriveCurrentDasha(
+  dasha: KundliDasha | null | undefined,
+  now: Date = new Date()
+): { maha: DashaPeriod; antar: DashaPeriod | null } | null {
+  const cycle = dasha?.fullCycle;
+  if (!cycle || cycle.length === 0) return null;
+
+  const periods: DashaPeriod[] = cycle
+    .map((e) => ({
+      planet: e.planet,
+      startTime:
+        e.startTime instanceof Date ? e.startTime : new Date(e.startTime),
+      endTime: e.endTime instanceof Date ? e.endTime : new Date(e.endTime),
+    }))
+    .filter(
+      (e) =>
+        Number.isFinite(e.startTime.getTime()) &&
+        Number.isFinite(e.endTime.getTime())
+    );
+  if (periods.length === 0) return null;
+
+  const t = now.getTime();
+  const maha =
+    periods.find(
+      (e) => e.startTime.getTime() <= t && t < e.endTime.getTime()
+    ) ??
+    (t < periods[0].startTime.getTime()
+      ? periods[0]
+      : periods[periods.length - 1]);
+
+  // Walk antardashas from the maha's notional start (end − full maha span)
+  // so the partial balance dasha at birth also resolves correctly.
+  let antar: DashaPeriod | null = null;
+  const mahaYears = VIMSHOTTARI_YEARS[maha.planet];
+  const startIdx = (VIMSHOTTARI_ORDER as readonly string[]).indexOf(
+    maha.planet
+  );
+  if (mahaYears && startIdx >= 0) {
+    const mahaMs = mahaYears * MS_PER_DASHA_YEAR;
+    let cursor = maha.endTime.getTime() - mahaMs;
+    for (let i = 0; i < VIMSHOTTARI_ORDER.length; i++) {
+      const lord = VIMSHOTTARI_ORDER[(startIdx + i) % VIMSHOTTARI_ORDER.length];
+      const end = cursor + (mahaMs * VIMSHOTTARI_YEARS[lord]) / 120;
+      if (t >= cursor && t < end) {
+        antar = {
+          planet: lord,
+          startTime: new Date(cursor),
+          endTime: new Date(end),
+        };
+        break;
+      }
+      cursor = end;
+    }
+  }
+
+  return { maha, antar };
 }
 
 /* ── North Indian chart layout ─────────────────────────── */
@@ -202,9 +350,14 @@ interface KundliHouse {
 
 interface KundliDasha {
   birthNakshatra: string;
+  dashaBalance?: string;
   currentMahadasha: { planet: string; endTime: Date | string };
-  currentAntardasha: { planet: string; endTime: Date | string };
-  fullCycle: unknown[];
+  currentAntardasha: { planet: string; endTime: Date | string } | null;
+  fullCycle: Array<{
+    planet: string;
+    startTime: Date | string;
+    endTime: Date | string;
+  }>;
 }
 
 interface KundliResult {
@@ -379,9 +532,10 @@ interface AscendantCardProps {
   traits: AscendantTraits | undefined;
   rashiName: string;
   hindiName: string;
+  t: TFn;
 }
 
-function AscendantCard({ traits, rashiName, hindiName }: AscendantCardProps) {
+function AscendantCard({ traits, rashiName, hindiName, t }: AscendantCardProps) {
   if (!traits) {
     return (
       <Card className="border-gray-100 shadow-sm">
@@ -389,12 +543,11 @@ function AscendantCard({ traits, rashiName, hindiName }: AscendantCardProps) {
           <div className="flex items-center gap-2 mb-3">
             <Info className="h-4 w-4 text-primary" />
             <h3 className="text-base font-bold font-heading text-gray-900">
-              Ascendant Personality
+              {t("ascendantPersonalityTitle")}
             </h3>
           </div>
           <p className="text-sm text-gray-500">
-            Detailed ascendant traits for <strong>{rashiName}</strong> will
-            appear here once the data layer is loaded.
+            {t("ascendantPersonalityFallback")}
           </p>
         </CardContent>
       </Card>
@@ -410,7 +563,7 @@ function AscendantCard({ traits, rashiName, hindiName }: AscendantCardProps) {
           </div>
           <div>
             <p className="text-xs font-bold uppercase tracking-widest text-secondary mb-1">
-              Ascendant Personality — {rashiName}
+              {t("ascendantPersonalityEyebrow")} — {rashiName}
               {hindiName && (
                 <span className="text-accent ml-1.5">({hindiName})</span>
               )}
@@ -426,7 +579,7 @@ function AscendantCard({ traits, rashiName, hindiName }: AscendantCardProps) {
             <div className="flex items-center gap-1.5 mb-2">
               <CheckCircle2 className="h-3.5 w-3.5 text-green-600" />
               <p className="text-[11px] font-bold uppercase tracking-widest text-gray-500">
-                Strengths
+                {t("labelStrengths")}
               </p>
             </div>
             <ChipList items={traits.strengths} tone="green" />
@@ -438,7 +591,7 @@ function AscendantCard({ traits, rashiName, hindiName }: AscendantCardProps) {
             <div className="flex items-center gap-1.5 mb-2">
               <XCircle className="h-3.5 w-3.5 text-red-600" />
               <p className="text-[11px] font-bold uppercase tracking-widest text-gray-500">
-                Weaknesses
+                {t("labelWeaknesses")}
               </p>
             </div>
             <ChipList items={traits.weaknesses} tone="red" />
@@ -450,7 +603,7 @@ function AscendantCard({ traits, rashiName, hindiName }: AscendantCardProps) {
             <div className="flex items-center gap-1.5 mb-2">
               <Briefcase className="h-3.5 w-3.5 text-blue-600" />
               <p className="text-[11px] font-bold uppercase tracking-widest text-gray-500">
-                Suited Careers
+                {t("labelSuitedCareers")}
               </p>
             </div>
             <ChipList items={traits.career} tone="blue" />
@@ -463,9 +616,10 @@ function AscendantCard({ traits, rashiName, hindiName }: AscendantCardProps) {
 
 interface NakshatraSummaryCardProps {
   nakshatraName: string;
+  t: TFn;
 }
 
-function NakshatraSummaryCard({ nakshatraName }: NakshatraSummaryCardProps) {
+function NakshatraSummaryCard({ nakshatraName, t }: NakshatraSummaryCardProps) {
   const info = getNakshatraInfo(nakshatraName);
 
   return (
@@ -474,7 +628,7 @@ function NakshatraSummaryCard({ nakshatraName }: NakshatraSummaryCardProps) {
         <div className="flex items-center gap-2 mb-3">
           <Star className="h-4 w-4 text-accent" />
           <p className="text-[11px] font-bold uppercase tracking-widest text-gray-500">
-            Birth Nakshatra
+            {t("birthNakshatra")}
           </p>
         </div>
         <p className="text-xl font-bold font-heading text-primary mb-0.5">
@@ -487,26 +641,26 @@ function NakshatraSummaryCard({ nakshatraName }: NakshatraSummaryCardProps) {
           <div className="space-y-1.5 text-xs text-gray-600">
             {info.deity && (
               <div className="flex items-center justify-between">
-                <span className="text-gray-400">Deity</span>
+                <span className="text-gray-400">{t("nakshatraDeity")}</span>
                 <span className="font-medium text-gray-800">{info.deity}</span>
               </div>
             )}
             {info.symbol && (
               <div className="flex items-center justify-between">
-                <span className="text-gray-400">Symbol</span>
+                <span className="text-gray-400">{t("nakshatraSymbol")}</span>
                 <span className="font-medium text-gray-800">{info.symbol}</span>
               </div>
             )}
             {info.gana && (
               <div className="flex items-center justify-between">
-                <span className="text-gray-400">Gana</span>
+                <span className="text-gray-400">{t("nakshatraGana")}</span>
                 <span className="font-medium text-gray-800">{info.gana}</span>
               </div>
             )}
           </div>
         ) : (
           <p className="text-xs text-gray-400">
-            Details for this nakshatra will appear once data loads.
+            {t("nakshatraSummaryFallback")}
           </p>
         )}
       </CardContent>
@@ -516,9 +670,10 @@ function NakshatraSummaryCard({ nakshatraName }: NakshatraSummaryCardProps) {
 
 interface MahadashaSummaryCardProps {
   planet: string;
+  t: TFn;
 }
 
-function MahadashaSummaryCard({ planet }: MahadashaSummaryCardProps) {
+function MahadashaSummaryCard({ planet, t }: MahadashaSummaryCardProps) {
   const effects: MahadashaEffects | undefined = MAHADASHA[planet];
   const hindi = PLANET_HINDI[planet as PlanetKey] ?? "";
 
@@ -528,7 +683,7 @@ function MahadashaSummaryCard({ planet }: MahadashaSummaryCardProps) {
         <div className="flex items-center gap-2 mb-3">
           <Clock className="h-4 w-4 text-secondary" />
           <p className="text-[11px] font-bold uppercase tracking-widest text-gray-500">
-            Current Mahadasha
+            {t("currentMahadasha")}
           </p>
         </div>
         <p className="text-2xl font-bold font-heading text-gray-900">
@@ -537,7 +692,7 @@ function MahadashaSummaryCard({ planet }: MahadashaSummaryCardProps) {
         </p>
         {effects?.years !== undefined ? (
           <p className="text-xs text-gray-500 mt-1">
-            Focus period: {effects.years} years
+            {t("focusPeriodLabel")}: {effects.years} {t("yearsUnit")}
           </p>
         ) : null}
         {effects?.description && (
@@ -550,17 +705,164 @@ function MahadashaSummaryCard({ planet }: MahadashaSummaryCardProps) {
   );
 }
 
+interface DashaTimelineTableProps {
+  fullCycle: KundliDasha["fullCycle"];
+  currentPlanet: string;
+  lang: Lang;
+  t: TFn;
+}
+
+function DashaTimelineTable({
+  fullCycle,
+  currentPlanet,
+  lang,
+  t,
+}: DashaTimelineTableProps) {
+  const now = Date.now();
+  const locale = lang === "hi" ? "hi-IN" : "en-IN";
+  const units: DashaDurationUnits = {
+    year: t("unitYearsShort"),
+    month: t("unitMonthsShort"),
+    lessThanMonth: t("unitLessThanMonth"),
+    spaced: lang === "hi",
+  };
+  const toMs = (v: Date | string) =>
+    (v instanceof Date ? v : new Date(v)).getTime();
+
+  return (
+    <div className="overflow-x-auto rounded-xl border border-gray-100">
+      <table className="w-full min-w-130 text-left text-sm">
+        <thead>
+          <tr className="bg-gray-50/80">
+            <th className="px-4 py-2.5 text-[11px] font-bold uppercase tracking-widest text-gray-400">
+              {t("dashaColPlanet")}
+            </th>
+            <th className="px-4 py-2.5 text-[11px] font-bold uppercase tracking-widest text-gray-400">
+              {t("dashaColStart")}
+            </th>
+            <th className="px-4 py-2.5 text-[11px] font-bold uppercase tracking-widest text-gray-400">
+              {t("dashaColEnd")}
+            </th>
+          </tr>
+        </thead>
+        <tbody className="divide-y divide-gray-100">
+          {fullCycle.map((entry, i) => {
+            const startMs = toMs(entry.startTime);
+            const endMs = toMs(entry.endTime);
+            const isCurrent = entry.planet === currentPlanet;
+            const isPast = !isCurrent && Number.isFinite(endMs) && endMs < now;
+            const abbr = PLANET_ABBR[entry.planet as PlanetKey] ?? "";
+            const abbrCls =
+              PLANET_ABBR_COLOR[abbr] ?? "text-gray-600 bg-gray-50";
+            const planetName =
+              lang === "hi"
+                ? PLANET_HINDI[entry.planet as PlanetKey] ?? entry.planet
+                : entry.planet;
+            const nameCls = isCurrent
+              ? "text-primary"
+              : isPast
+                ? "text-gray-400"
+                : "text-gray-900";
+
+            return (
+              <tr
+                key={`${entry.planet}-${i}`}
+                className={cn(isCurrent && "bg-primary/5")}
+              >
+                <td className="px-4 py-3 align-top">
+                  <div className="flex items-start gap-2.5">
+                    <span
+                      className={cn(
+                        "mt-0.5 inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-[11px] font-bold",
+                        abbrCls,
+                        isPast && "opacity-50"
+                      )}
+                    >
+                      {abbr || entry.planet.slice(0, 2)}
+                    </span>
+                    <div>
+                      <div className="flex flex-wrap items-center gap-1.5">
+                        <span className={cn("font-bold", nameCls)}>
+                          {planetName}
+                        </span>
+                        {isCurrent && (
+                          <span className="rounded-full bg-primary px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white">
+                            {t("dashaCurrentBadge")}
+                          </span>
+                        )}
+                      </div>
+                      <p
+                        className={cn(
+                          "mt-0.5 text-[11px]",
+                          isPast ? "text-gray-400" : "text-gray-500"
+                        )}
+                      >
+                        {formatDashaDuration(endMs - startMs, units)}
+                      </p>
+                      {isCurrent && (
+                        <div className="mt-1.5 flex flex-wrap gap-x-4 gap-y-0.5 text-[11px] text-gray-500">
+                          <span>
+                            {t("dashaTotalLabel")}:{" "}
+                            <span className="font-bold text-gray-900">
+                              {formatDashaDuration(endMs - startMs, units)}
+                            </span>
+                          </span>
+                          <span>
+                            {t("dashaRemainingLabel")}:{" "}
+                            <span className="font-bold text-primary">
+                              {formatDashaDuration(
+                                Math.max(0, endMs - now),
+                                units
+                              )}
+                            </span>
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </td>
+                <td
+                  className={cn(
+                    "whitespace-nowrap px-4 py-3 align-top text-xs",
+                    isPast ? "text-gray-400" : "text-gray-600"
+                  )}
+                >
+                  {formatDashaDate(entry.startTime, locale)}
+                </td>
+                <td
+                  className={cn(
+                    "whitespace-nowrap px-4 py-3 align-top text-xs",
+                    isPast ? "text-gray-400" : "text-gray-600"
+                  )}
+                >
+                  {formatDashaDate(entry.endTime, locale)}
+                </td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
 interface DoshaSummaryCardProps {
   mangal: DoshaResult;
   sadeSati: DoshaResult;
   kaalSarp: DoshaResult;
+  t: TFn;
 }
 
-function DoshaSummaryCard({ mangal, sadeSati, kaalSarp }: DoshaSummaryCardProps) {
+function DoshaSummaryCard({
+  mangal,
+  sadeSati,
+  kaalSarp,
+  t,
+}: DoshaSummaryCardProps) {
   const rows: Array<{ name: string; active: boolean }> = [
-    { name: "Manglik", active: mangal.active },
-    { name: "Sade Sati", active: sadeSati.active },
-    { name: "Kaal Sarp", active: kaalSarp.active },
+    { name: t("doshaManglik"), active: mangal.active },
+    { name: t("doshaSadeSati"), active: sadeSati.active },
+    { name: t("doshaKaalSarp"), active: kaalSarp.active },
   ];
 
   return (
@@ -569,7 +871,7 @@ function DoshaSummaryCard({ mangal, sadeSati, kaalSarp }: DoshaSummaryCardProps)
         <div className="flex items-center gap-2 mb-3">
           <Shield className="h-4 w-4 text-primary" />
           <p className="text-[11px] font-bold uppercase tracking-widest text-gray-500">
-            Dosha Summary
+            {t("doshaSummary")}
           </p>
         </div>
         <div className="space-y-2">
@@ -584,7 +886,7 @@ function DoshaSummaryCard({ mangal, sadeSati, kaalSarp }: DoshaSummaryCardProps)
                     : "bg-green-50 text-green-700 border-green-200"
                 )}
               >
-                {r.active ? "Active" : "None"}
+                {r.active ? t("statusActive") : t("statusNone")}
               </span>
             </div>
           ))}
@@ -597,11 +899,13 @@ function DoshaSummaryCard({ mangal, sadeSati, kaalSarp }: DoshaSummaryCardProps)
 interface ChartInsightsCardProps {
   conjunctions: Array<{ rashi: number; planets: string[] }>;
   dignifiedPlanets: Array<{ planet: string; dignity: string }>;
+  t: TFn;
 }
 
 function ChartInsightsCard({
   conjunctions,
   dignifiedPlanets,
+  t,
 }: ChartInsightsCardProps) {
   return (
     <Card className="border-gray-100 shadow-sm">
@@ -609,13 +913,13 @@ function ChartInsightsCard({
         <div className="flex items-center gap-2">
           <TrendingUp className="h-4 w-4 text-secondary" />
           <h3 className="text-base font-bold font-heading text-gray-900">
-            Chart Insights
+            {t("chartInsights")}
           </h3>
         </div>
 
         <div>
           <p className="text-[11px] font-bold uppercase tracking-widest text-gray-500 mb-2">
-            Planetary Conjunctions
+            {t("planetaryConjunctions")}
           </p>
           {conjunctions.length > 0 ? (
             <div className="space-y-2">
@@ -647,14 +951,14 @@ function ChartInsightsCard({
             </div>
           ) : (
             <p className="text-xs text-gray-400">
-              No major conjunctions in this chart.
+              {t("noConjunctions")}
             </p>
           )}
         </div>
 
         <div>
           <p className="text-[11px] font-bold uppercase tracking-widest text-gray-500 mb-2">
-            Dignified Placements
+            {t("dignifiedPlacements")}
           </p>
           {dignifiedPlanets.length > 0 ? (
             <div className="flex flex-wrap gap-1.5">
@@ -676,7 +980,7 @@ function ChartInsightsCard({
             </div>
           ) : (
             <p className="text-xs text-gray-400">
-              No planets in own sign, exalted, or in mooltrikona.
+              {t("noDignifiedPlacements")}
             </p>
           )}
         </div>
@@ -691,6 +995,7 @@ interface PlanetCardProps {
   rashiName: string;
   expanded: boolean;
   onToggle: (id: string) => void;
+  t: TFn;
 }
 
 function PlanetCard({
@@ -699,6 +1004,7 @@ function PlanetCard({
   rashiName,
   expanded,
   onToggle,
+  t,
 }: PlanetCardProps) {
   const hindi = PLANET_HINDI[planetKey as PlanetKey] ?? "";
   const abbr = PLANET_ABBR[planetKey as PlanetKey] ?? planetKey.slice(0, 2);
@@ -736,7 +1042,7 @@ function PlanetCard({
               </p>
               {info?.karaka && (
                 <p className="text-[11px] text-gray-500 truncate">
-                  Karaka: {info.karaka}
+                  {t("karakaLabel")}: {info.karaka}
                 </p>
               )}
             </div>
@@ -756,7 +1062,7 @@ function PlanetCard({
 
       <div className="mt-3 flex items-center gap-2">
         <span className="text-[10px] uppercase tracking-wider text-gray-400">
-          In
+          {t("inLabel")}
         </span>
         <span className="text-[11px] font-medium px-2 py-0.5 rounded-full bg-primary/5 text-primary">
           {rashiName}
@@ -777,7 +1083,7 @@ function PlanetCard({
             {!expanded &&
               info.significations.length > 4 && (
                 <span className="text-[10px] px-2 py-0.5 rounded-full text-primary">
-                  +{info.significations.length - 4} more
+                  +{info.significations.length - 4} {t("moreSuffix")}
                 </span>
               )}
           </div>
@@ -789,7 +1095,7 @@ function PlanetCard({
           {info?.mantra && (
             <div>
               <p className="text-[10px] uppercase tracking-wider text-gray-400 mb-1">
-                Mantra
+                {t("mantraLabel")}
               </p>
               <p className="text-xs text-gray-700 font-medium leading-relaxed">
                 {info.mantra}
@@ -800,14 +1106,14 @@ function PlanetCard({
             <div className="flex items-center gap-1.5">
               <Gem className="h-3 w-3 text-accent" />
               <p className="text-xs">
-                <span className="text-gray-400">Gemstone:</span>{" "}
+                <span className="text-gray-400">{t("gemstoneLabel")}:</span>{" "}
                 <span className="font-medium text-gray-800">{info.gemstone}</span>
               </p>
             </div>
           )}
           {info?.day && (
             <p className="text-xs text-gray-600">
-              <span className="text-gray-400">Day:</span> {info.day}
+              <span className="text-gray-400">{t("dayLabel")}:</span> {info.day}
             </p>
           )}
         </div>
@@ -821,9 +1127,10 @@ interface HouseCardProps {
   info: HouseInfo | undefined;
   rashiIdx: number | undefined;
   planets: string[];
+  t: TFn;
 }
 
-function HouseCard({ num, info, rashiIdx, planets }: HouseCardProps) {
+function HouseCard({ num, info, rashiIdx, planets, t }: HouseCardProps) {
   const badge = getHouseCategoryBadge(num);
   const BadgeIcon = badge.icon;
 
@@ -836,7 +1143,7 @@ function HouseCard({ num, info, rashiIdx, planets }: HouseCardProps) {
           </div>
           <div>
             <p className="text-sm font-bold text-gray-900 leading-tight">
-              {info?.name ?? `House ${num}`}
+              {info?.name ?? `${t("houseLabel")} ${num}`}
             </p>
             <p className="text-[11px] text-gray-500 leading-tight">
               {info?.nameEn ?? "—"}
@@ -871,7 +1178,7 @@ function HouseCard({ num, info, rashiIdx, planets }: HouseCardProps) {
 
       <div className="flex items-center justify-between gap-2 pt-2 border-t border-gray-50">
         <div className="text-[11px]">
-          <span className="text-gray-400">Rashi: </span>
+          <span className="text-gray-400">{t("rashiLabel")}: </span>
           <span className="font-medium text-gray-800">
             {rashiIdx !== undefined ? rashiNames[rashiIdx] ?? "—" : "—"}
           </span>
@@ -890,7 +1197,7 @@ function HouseCard({ num, info, rashiIdx, planets }: HouseCardProps) {
               </span>
             ))
           ) : (
-            <span className="text-[10px] text-gray-300">empty</span>
+            <span className="text-[10px] text-gray-300">{t("houseEmpty")}</span>
           )}
         </div>
       </div>
@@ -902,9 +1209,10 @@ interface DoshaCardProps {
   title: string;
   result: DoshaResult;
   icon: typeof Shield;
+  t: TFn;
 }
 
-function DoshaCard({ title, result, icon: Icon }: DoshaCardProps) {
+function DoshaCard({ title, result, icon: Icon, t }: DoshaCardProps) {
   return (
     <Card
       className={cn(
@@ -934,7 +1242,7 @@ function DoshaCard({ title, result, icon: Icon }: DoshaCardProps) {
               </h3>
               {result.active && result.severity && (
                 <p className="text-[11px] text-gray-500">
-                  Severity: {result.severity}
+                  {t("severityLabel")}: {result.severity}
                 </p>
               )}
             </div>
@@ -947,7 +1255,7 @@ function DoshaCard({ title, result, icon: Icon }: DoshaCardProps) {
                 : "bg-green-50 text-green-700 border-green-200"
             )}
           >
-            {result.active ? "Active" : "Inactive"}
+            {result.active ? t("statusActiveDosha") : t("statusInactiveDosha")}
           </span>
         </div>
 
@@ -960,7 +1268,7 @@ function DoshaCard({ title, result, icon: Icon }: DoshaCardProps) {
         {result.explanation && (
           <div className="p-3 rounded-xl bg-gray-50/70 border border-gray-100">
             <p className="text-[11px] font-bold uppercase tracking-widest text-gray-500 mb-1.5">
-              Why
+              {t("doshaWhyLabel")}
             </p>
             <p className="text-sm text-gray-700 leading-relaxed">
               {result.explanation}
@@ -971,7 +1279,7 @@ function DoshaCard({ title, result, icon: Icon }: DoshaCardProps) {
         {result.remedies && result.remedies.length > 0 && (
           <div>
             <p className="text-[11px] font-bold uppercase tracking-widest text-gray-500 mb-2">
-              Remedies
+              {t("doshaRemediesLabel")}
             </p>
             <ul className="space-y-1.5">
               {result.remedies.map((r, idx) => (
@@ -994,11 +1302,13 @@ function DoshaCard({ title, result, icon: Icon }: DoshaCardProps) {
 interface RemediesByTypeSectionProps {
   remedies: Remedy[];
   mahadashaPlanet: string;
+  t: TFn;
 }
 
 function RemediesByTypeSection({
   remedies,
   mahadashaPlanet,
+  t,
 }: RemediesByTypeSectionProps) {
   const grouped = useMemo(() => {
     const map = new Map<string, Remedy[]>();
@@ -1016,11 +1326,11 @@ function RemediesByTypeSection({
       <Card className="border-gray-100 shadow-sm">
         <CardContent>
           <p className="text-sm text-gray-500">
-            No personalized remedies found for{" "}
+            {t("remediesNoneFound")}{" "}
             <span className="font-medium text-gray-800">
               {mahadashaPlanet}
             </span>
-            . Try consulting an astrologer below.
+            {t("remediesConsultPrompt")}
           </p>
         </CardContent>
       </Card>
@@ -1069,9 +1379,13 @@ function RemediesByTypeSection({
 
 interface NakshatraDetailSectionProps {
   nakshatraName: string;
+  t: TFn;
 }
 
-function NakshatraDetailSection({ nakshatraName }: NakshatraDetailSectionProps) {
+function NakshatraDetailSection({
+  nakshatraName,
+  t,
+}: NakshatraDetailSectionProps) {
   const info = getNakshatraInfo(nakshatraName);
 
   if (!info) {
@@ -1085,9 +1399,7 @@ function NakshatraDetailSection({ nakshatraName }: NakshatraDetailSectionProps) 
             </h3>
           </div>
           <p className="text-sm text-gray-500">
-            Detailed nakshatra information is not available for this name
-            format. This can happen if the computed nakshatra label doesn&apos;t
-            match our dataset.
+            {t("nakshatraDetailMissing")}
           </p>
         </CardContent>
       </Card>
@@ -1095,17 +1407,17 @@ function NakshatraDetailSection({ nakshatraName }: NakshatraDetailSectionProps) 
   }
 
   const topTiles: Array<{ label: string; value: string | undefined }> = [
-    { label: "Deity", value: info.deity },
-    { label: "Symbol", value: info.symbol },
-    { label: "Ruler", value: info.ruler },
-    { label: "Gana", value: info.gana },
+    { label: t("nakshatraTileDeity"), value: info.deity },
+    { label: t("nakshatraTileSymbol"), value: info.symbol },
+    { label: t("nakshatraTileRuler"), value: info.ruler },
+    { label: t("nakshatraTileGana"), value: info.gana },
   ];
 
   const bottomTiles: Array<{ label: string; value: string | undefined }> = [
-    { label: "Nadi", value: info.nadi },
-    { label: "Yoni", value: info.yoni },
-    { label: "Varna", value: info.varna },
-    { label: "Tatva", value: info.tatva },
+    { label: t("nakshatraTileNadi"), value: info.nadi },
+    { label: t("nakshatraTileYoni"), value: info.yoni },
+    { label: t("nakshatraTileVarna"), value: info.varna },
+    { label: t("nakshatraTileTatva"), value: info.tatva },
   ];
 
   return (
@@ -1115,7 +1427,7 @@ function NakshatraDetailSection({ nakshatraName }: NakshatraDetailSectionProps) 
           <div className="absolute top-0 right-0 w-32 h-32 bg-accent/15 rounded-full blur-3xl" />
           <div className="relative z-10">
             <p className="text-[11px] font-bold uppercase tracking-widest text-white/60 mb-1">
-              Birth Nakshatra
+              {t("birthNakshatra")}
             </p>
             <h3 className="text-3xl font-bold font-heading">
               {info.name}
@@ -1161,7 +1473,7 @@ function NakshatraDetailSection({ nakshatraName }: NakshatraDetailSectionProps) 
           {info.description && (
             <div>
               <p className="text-[11px] font-bold uppercase tracking-widest text-gray-500 mb-2">
-                About
+                {t("nakshatraAbout")}
               </p>
               <p className="text-sm text-gray-700 leading-relaxed">
                 {info.description}
@@ -1172,7 +1484,7 @@ function NakshatraDetailSection({ nakshatraName }: NakshatraDetailSectionProps) 
           {info.traits && info.traits.length > 0 && (
             <div>
               <p className="text-[11px] font-bold uppercase tracking-widest text-gray-500 mb-2">
-                Traits
+                {t("nakshatraTraits")}
               </p>
               <ChipList items={info.traits} tone="primary" />
             </div>
@@ -1188,6 +1500,8 @@ function NakshatraDetailSection({ nakshatraName }: NakshatraDetailSectionProps) 
    ───────────────────────────────────────────────────────── */
 
 export default function KundliPage() {
+  const t = useT(kundliDict);
+  const lang = useLang();
   const [dobDate, setDobDate] = useState<Date | undefined>(undefined);
   const [dobOpen, setDobOpen] = useState(false);
   const [dob, setDob] = useState("");
@@ -1196,9 +1510,6 @@ export default function KundliPage() {
   const [generated, setGenerated] = useState(false);
   const [activeTab, setActiveTab] = useState("overview");
   const [expandedPlanet, setExpandedPlanet] = useState<string | null>(null);
-  const [chartLabelLang, setChartLabelLang] = useState<"english" | "hindi">(
-    "english"
-  );
   const [chartStyle, setChartStyle] = useState<ChartStyle>("north");
   const [vargaKey, setVargaKey] = useState<VargaKey>("D1");
   const [ascendantRef, setAscendantRef] = useState<AscendantReference>("lagna");
@@ -1226,6 +1537,11 @@ export default function KundliPage() {
       return null;
     }
   }, [generated, dob, tob, lat, lon]);
+
+  /* True current maha/antar as of today (the library's "current" is as of birth) */
+  const currentDasha = useMemo(() => deriveCurrentDasha(kundli?.dasha), [kundli]);
+  const mahaNow = currentDasha?.maha ?? null;
+  const antarNow = currentDasha?.antar ?? null;
 
   /* Map house number → planet abbreviations in that house */
   const housePlanets = useMemo(() => {
@@ -1378,9 +1694,11 @@ export default function KundliPage() {
 
   /* Personalized remedies based on current Mahadasha planet */
   const personalizedRemedies = useMemo(() => {
-    if (!kundli?.dasha?.currentMahadasha?.planet) return [] as Remedy[];
-    return getPlanetRemedies(kundli.dasha.currentMahadasha.planet);
-  }, [kundli]);
+    const planet =
+      currentDasha?.maha.planet ?? kundli?.dasha?.currentMahadasha?.planet;
+    if (!planet) return [] as Remedy[];
+    return getPlanetRemedies(planet);
+  }, [currentDasha, kundli]);
 
   const handleGenerate = () => {
     if (dob && tob) {
@@ -1435,36 +1753,37 @@ export default function KundliPage() {
           <div className="absolute -bottom-10 -left-10 w-56 h-56 bg-secondary/10 rounded-full blur-3xl" />
         </div>
         <div className="container mx-auto px-4 relative z-10 py-14 md:py-20">
+          <div className="flex justify-end mb-4">
+            <LanguageSwitcher />
+          </div>
           <div className="max-w-2xl mx-auto text-center">
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 backdrop-blur-sm text-sm mb-5">
               <Globe className="h-3.5 w-3.5 text-accent" />
-              Vedic Astrology Dashboard
+              {t("heroBadge")}
             </div>
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold font-heading mb-4 leading-tight">
-              Free Janam Kundli Online
+              {t("heroTitle")}
             </h1>
             <p className="text-white/70 text-base md:text-lg max-w-lg mx-auto">
-              Your complete Janam Kundli with ascendant insights, planetary
-              significations, nakshatra details, dosha analysis and
-              personalized remedies — all in one place.
+              {t("heroSubtitle")}
             </p>
 
             <div className="mt-7 flex flex-wrap items-center justify-center gap-3 text-xs md:text-sm">
               <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/10 backdrop-blur-sm">
                 <CheckCircle2 className="h-3.5 w-3.5 text-accent" />
-                100% Free Forever
+                {t("heroPill1")}
               </span>
               <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/10 backdrop-blur-sm">
                 <CheckCircle2 className="h-3.5 w-3.5 text-accent" />
-                Lahiri Ayanamsa
+                {t("heroPill2")}
               </span>
               <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/10 backdrop-blur-sm">
                 <CheckCircle2 className="h-3.5 w-3.5 text-accent" />
-                16 Divisional Charts
+                {t("heroPill3")}
               </span>
               <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/10 backdrop-blur-sm">
                 <CheckCircle2 className="h-3.5 w-3.5 text-accent" />
-                English &amp; हिंदी
+                {t("heroPill4")}
               </span>
             </div>
           </div>
@@ -1478,10 +1797,10 @@ export default function KundliPage() {
             <div className="bg-white rounded-2xl border border-gray-100 shadow-lg p-6 md:p-8">
               <div className="text-center mb-6">
                 <p className="text-xs font-bold uppercase tracking-widest text-secondary mb-2">
-                  Birth Details
+                  {t("formEyebrow")}
                 </p>
                 <h2 className="text-2xl md:text-3xl font-bold font-heading text-gray-900">
-                  Enter Your Details
+                  {t("formTitle")}
                 </h2>
               </div>
 
@@ -1490,7 +1809,7 @@ export default function KundliPage() {
                 <div className="space-y-2">
                   <Label className="text-sm font-medium text-gray-700 flex items-center gap-1.5">
                     <CalendarDays className="h-3.5 w-3.5 text-primary" />
-                    Date of Birth
+                    {t("labelDob")}
                   </Label>
                   <Popover open={dobOpen} onOpenChange={setDobOpen}>
                     <PopoverTrigger asChild>
@@ -1504,7 +1823,7 @@ export default function KundliPage() {
                         <CalendarDays className="h-4 w-4 mr-2 text-primary" />
                         {dobDate
                           ? format(dobDate, "dd MMMM yyyy")
-                          : "Select date of birth"}
+                          : t("placeholderDob")}
                       </Button>
                     </PopoverTrigger>
                     <PopoverContent className="w-auto p-0" align="start">
@@ -1542,13 +1861,13 @@ export default function KundliPage() {
                     className="text-sm font-medium text-gray-700 flex items-center gap-1.5"
                   >
                     <Clock className="h-3.5 w-3.5 text-primary" />
-                    Time of Birth
+                    {t("labelTob")}
                   </Label>
                   <TimePicker12h
                     id="tob"
                     value={tob}
                     onChange={setTob}
-                    placeholder="Select time of birth"
+                    placeholder={t("placeholderTob")}
                   />
                 </div>
 
@@ -1556,7 +1875,7 @@ export default function KundliPage() {
                 <div className="space-y-2">
                   <Label className="text-sm font-medium text-gray-700 flex items-center gap-1.5">
                     <MapPin className="h-3.5 w-3.5 text-primary" />
-                    Place of Birth
+                    {t("labelPob")}
                   </Label>
                   <LocationSearch
                     defaultValue="Gurugram"
@@ -1579,7 +1898,7 @@ export default function KundliPage() {
                     className="flex-1 bg-primary hover:bg-primary/90 rounded-xl h-11 text-sm font-semibold"
                   >
                     <Sparkles className="h-4 w-4 mr-2" />
-                    Generate Kundli
+                    {t("generateBtn")}
                   </Button>
                   {generated && (
                     <Button
@@ -1604,10 +1923,10 @@ export default function KundliPage() {
             <div className="max-w-5xl mx-auto">
               <div className="text-center mb-8">
                 <p className="text-xs font-bold uppercase tracking-widest text-secondary mb-2">
-                  Why Generate Your Kundli Here
+                  {t("whyEyebrow")}
                 </p>
                 <h2 className="text-2xl md:text-3xl font-bold font-heading text-gray-900">
-                  Everything a Vedic astrologer checks, in one click
+                  {t("whyTitle")}
                 </h2>
               </div>
 
@@ -1615,29 +1934,29 @@ export default function KundliPage() {
                 {[
                   {
                     icon: Globe,
-                    title: "Precise Birth Chart",
-                    desc: "Lagna, Chandra & Surya kundli computed with sidereal Lahiri ayanamsa — the standard used by Indian astrologers.",
+                    title: t("whyCard1Title"),
+                    desc: t("whyCard1Desc"),
                     accent: "text-primary",
                     bg: "bg-primary/10",
                   },
                   {
                     icon: Sparkles,
-                    title: "Planets, Houses & Nakshatra",
-                    desc: "Position of all 9 grahas, 12 bhavas, and your janma nakshatra with classical attributes.",
+                    title: t("whyCard2Title"),
+                    desc: t("whyCard2Desc"),
                     accent: "text-secondary",
                     bg: "bg-secondary/10",
                   },
                   {
                     icon: Shield,
-                    title: "Dosha Check",
-                    desc: "Manglik dosha, Sade Sati and Kaal Sarp dosha flagged automatically from your chart.",
+                    title: t("whyCard3Title"),
+                    desc: t("whyCard3Desc"),
                     accent: "text-rose-600",
                     bg: "bg-rose-50",
                   },
                   {
                     icon: Gem,
-                    title: "Remedies & Lucky Signs",
-                    desc: "Gemstones, mantras, lucky numbers, colors and direction — personalised to your rashi.",
+                    title: t("whyCard4Title"),
+                    desc: t("whyCard4Desc"),
                     accent: "text-amber-600",
                     bg: "bg-amber-50",
                   },
@@ -1676,14 +1995,14 @@ export default function KundliPage() {
               {/* Birth Details Summary Strip */}
               <div className="text-center">
                 <p className="text-xs font-bold uppercase tracking-widest text-secondary mb-2">
-                  Janam Kundli
+                  {t("resultsEyebrow")}
                 </p>
                 <h2 className="text-2xl md:text-3xl font-bold font-heading text-gray-900 mb-1">
-                  Your Birth Chart
+                  {t("resultsTitle")}
                 </h2>
                 <p className="text-sm text-gray-500">
-                  Native &middot; {formatDate(dob)} &middot; {format12h(tob) || tob} &middot;{" "}
-                  {place}
+                  {t("nativeLabel")} &middot; {formatDate(dob)} &middot;{" "}
+                  {format12h(tob) || tob} &middot; {place}
                 </p>
               </div>
 
@@ -1695,28 +2014,28 @@ export default function KundliPage() {
                 <div className="relative z-10">
                   <div className="text-center mb-6">
                     <p className="text-[11px] font-bold uppercase tracking-widest text-white/60 mb-1">
-                      Your Core Trinity
+                      {t("trinityEyebrow")}
                     </p>
                     <h3 className="text-xl md:text-2xl font-bold font-heading">
-                      Three Major Signs
+                      {t("trinityTitle")}
                     </h3>
                   </div>
 
                   <div className="grid sm:grid-cols-3 gap-4">
                     <SignTile
-                      label="Lagna (Ascendant)"
+                      label={t("signLagna")}
                       icon={Sparkles}
                       rashi={ascendantRashiInfo}
                       rashiIdx={kundli.ascendant.rashi}
                     />
                     <SignTile
-                      label="Chandra Rashi"
+                      label={t("signChandra")}
                       icon={Moon}
                       rashi={moonRashiInfo}
                       rashiIdx={kundli.planets.Moon?.rashi ?? 0}
                     />
                     <SignTile
-                      label="Surya Rashi"
+                      label={t("signSurya")}
                       icon={Sun}
                       rashi={sunRashiInfo}
                       rashiIdx={kundli.planets.Sun?.rashi ?? 0}
@@ -1737,43 +2056,49 @@ export default function KundliPage() {
                       value="overview"
                       className="rounded-lg px-3 py-1.5 text-sm"
                     >
-                      <Info className="h-3.5 w-3.5" /> Overview
+                      <Info className="h-3.5 w-3.5" /> {t("tabOverview")}
                     </TabsTrigger>
                     <TabsTrigger
                       value="chart"
                       className="rounded-lg px-3 py-1.5 text-sm"
                     >
-                      <Globe className="h-3.5 w-3.5" /> Chart
+                      <Globe className="h-3.5 w-3.5" /> {t("tabChart")}
                     </TabsTrigger>
                     <TabsTrigger
                       value="planets"
                       className="rounded-lg px-3 py-1.5 text-sm"
                     >
-                      <Sparkles className="h-3.5 w-3.5" /> Planets
+                      <Sparkles className="h-3.5 w-3.5" /> {t("tabPlanets")}
                     </TabsTrigger>
                     <TabsTrigger
                       value="houses"
                       className="rounded-lg px-3 py-1.5 text-sm"
                     >
-                      <Home className="h-3.5 w-3.5" /> Houses
+                      <Home className="h-3.5 w-3.5" /> {t("tabHouses")}
                     </TabsTrigger>
                     <TabsTrigger
                       value="nakshatra"
                       className="rounded-lg px-3 py-1.5 text-sm"
                     >
-                      <Star className="h-3.5 w-3.5" /> Nakshatra
+                      <Star className="h-3.5 w-3.5" /> {t("tabNakshatra")}
+                    </TabsTrigger>
+                    <TabsTrigger
+                      value="dasha"
+                      className="rounded-lg px-3 py-1.5 text-sm"
+                    >
+                      <Clock className="h-3.5 w-3.5" /> {t("tabDasha")}
                     </TabsTrigger>
                     <TabsTrigger
                       value="doshas"
                       className="rounded-lg px-3 py-1.5 text-sm"
                     >
-                      <Shield className="h-3.5 w-3.5" /> Doshas
+                      <Shield className="h-3.5 w-3.5" /> {t("tabDoshas")}
                     </TabsTrigger>
                     <TabsTrigger
                       value="remedies"
                       className="rounded-lg px-3 py-1.5 text-sm"
                     >
-                      <Gem className="h-3.5 w-3.5" /> Remedies
+                      <Gem className="h-3.5 w-3.5" /> {t("tabRemedies")}
                     </TabsTrigger>
                   </TabsList>
                 </div>
@@ -1784,20 +2109,26 @@ export default function KundliPage() {
                     traits={ascendantTraits}
                     rashiName={kundli.ascendant.rashiName}
                     hindiName={ascendantRashiInfo?.hindi ?? ""}
+                    t={t}
                   />
 
                   <div className="grid md:grid-cols-3 gap-4">
                     <NakshatraSummaryCard
                       nakshatraName={kundli.dasha.birthNakshatra}
+                      t={t}
                     />
                     <MahadashaSummaryCard
-                      planet={kundli.dasha.currentMahadasha.planet}
+                      planet={
+                        mahaNow?.planet ?? kundli.dasha.currentMahadasha.planet
+                      }
+                      t={t}
                     />
                     {doshas && (
                       <DoshaSummaryCard
                         mangal={doshas.mangal}
                         sadeSati={doshas.sadeSati}
                         kaalSarp={doshas.kaalSarp}
+                        t={t}
                       />
                     )}
                   </div>
@@ -1815,62 +2146,23 @@ export default function KundliPage() {
 
                 {/* ── Chart Tab ────────────────────────── */}
                 <TabsContent value="chart" className="mt-6 space-y-5">
-                  {/* Chart controls: style / varga / ascendant / labels */}
+                  {/* Chart controls: style / varga / ascendant */}
                   <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 md:p-5">
-                    <div className="flex flex-wrap items-end justify-between gap-4">
-                      <div className="flex flex-wrap items-end gap-4">
-                        <div className="flex flex-col gap-1">
-                          <span className="text-[11px] font-medium uppercase tracking-wide text-gray-500">
-                            Style
-                          </span>
-                          <ChartStyleSwitcher
-                            value={chartStyle}
-                            onChange={setChartStyle}
-                          />
-                        </div>
-                        <VargaSelector
-                          value={vargaKey}
-                          onChange={setVargaKey}
-                        />
-                        <AscendantSwitcher
-                          value={ascendantRef}
-                          onChange={setAscendantRef}
-                        />
-                      </div>
-
+                    <div className="flex flex-wrap items-end gap-4">
                       <div className="flex flex-col gap-1">
                         <span className="text-[11px] font-medium uppercase tracking-wide text-gray-500">
-                          Labels
+                          {t("controlStyle")}
                         </span>
-                        <div className="inline-flex items-center gap-1 rounded-xl border border-amber-100 bg-amber-50/40 p-1">
-                          <Button
-                            variant={chartLabelLang === "english" ? "default" : "ghost"}
-                            size="sm"
-                            onClick={() => setChartLabelLang("english")}
-                            className={cn(
-                              "h-8 rounded-lg px-3 text-xs",
-                              chartLabelLang === "english"
-                                ? "bg-primary text-primary-foreground"
-                                : "text-gray-700 hover:bg-amber-100/70"
-                            )}
-                          >
-                            English
-                          </Button>
-                          <Button
-                            variant={chartLabelLang === "hindi" ? "default" : "ghost"}
-                            size="sm"
-                            onClick={() => setChartLabelLang("hindi")}
-                            className={cn(
-                              "h-8 rounded-lg px-3 text-xs",
-                              chartLabelLang === "hindi"
-                                ? "bg-primary text-primary-foreground"
-                                : "text-gray-700 hover:bg-amber-100/70"
-                            )}
-                          >
-                            हिंदी
-                          </Button>
-                        </div>
+                        <ChartStyleSwitcher
+                          value={chartStyle}
+                          onChange={setChartStyle}
+                        />
                       </div>
+                      <VargaSelector value={vargaKey} onChange={setVargaKey} />
+                      <AscendantSwitcher
+                        value={ascendantRef}
+                        onChange={setAscendantRef}
+                      />
                     </div>
                   </div>
 
@@ -1895,31 +2187,31 @@ export default function KundliPage() {
                         {chartStyle === "north" && (
                           <NorthIndianChart
                             data={activeChartData}
-                            labelLang={chartLabelLang}
+                            labelLang={toLabelLang(lang)}
                           />
                         )}
                         {chartStyle === "south" && (
                           <SouthIndianChart
                             data={activeChartData}
-                            labelLang={chartLabelLang}
+                            labelLang={toLabelLang(lang)}
                           />
                         )}
                         {chartStyle === "east" && (
                           <EastIndianChart
                             data={activeChartData}
-                            labelLang={chartLabelLang}
+                            labelLang={toLabelLang(lang)}
                           />
                         )}
                         {chartStyle === "west" && (
                           <WestIndianChart
                             data={activeChartData}
-                            labelLang={chartLabelLang}
+                            labelLang={toLabelLang(lang)}
                           />
                         )}
                       </>
                     ) : (
                       <div className="py-12 text-center text-sm text-gray-500">
-                        Chart not available.
+                        {t("chartUnavailable")}
                       </div>
                     )}
 
@@ -1944,6 +2236,7 @@ export default function KundliPage() {
                   <ChartInsightsCard
                     conjunctions={chartAnalysis.conjunctions}
                     dignifiedPlanets={chartAnalysis.dignified}
+                    t={t}
                   />
                 </TabsContent>
 
@@ -1956,7 +2249,7 @@ export default function KundliPage() {
                         <Sparkles className="h-4 w-4 text-secondary" />
                       </div>
                       <h3 className="text-lg font-bold font-heading text-gray-900">
-                        Planetary Positions
+                        {t("planetaryPositions")}
                       </h3>
                     </div>
 
@@ -1965,22 +2258,22 @@ export default function KundliPage() {
                         <thead>
                           <tr className="border-b-2 border-primary/10">
                             <th className="text-left py-3 pr-3 text-xs font-bold uppercase tracking-wider text-gray-500">
-                              Planet
+                              {t("colPlanet")}
                             </th>
                             <th className="text-left py-3 px-3 text-xs font-bold uppercase tracking-wider text-gray-500">
-                              Rashi
+                              {t("colRashi")}
                             </th>
                             <th className="text-right py-3 px-3 text-xs font-bold uppercase tracking-wider text-gray-500">
-                              Degree
+                              {t("colDegree")}
                             </th>
                             <th className="text-left py-3 px-3 text-xs font-bold uppercase tracking-wider text-gray-500">
-                              Nakshatra
+                              {t("colNakshatra")}
                             </th>
                             <th className="text-center py-3 px-3 text-xs font-bold uppercase tracking-wider text-gray-500">
-                              Retro
+                              {t("colRetro")}
                             </th>
                             <th className="text-left py-3 pl-3 text-xs font-bold uppercase tracking-wider text-gray-500">
-                              Dignity
+                              {t("colDignity")}
                             </th>
                           </tr>
                         </thead>
@@ -2044,7 +2337,7 @@ export default function KundliPage() {
                                               : "bg-gray-50 text-gray-600"
                                     )}
                                   >
-                                    {planet.dignity || "Neutral"}
+                                    {planet.dignity || t("dignityNeutral")}
                                   </span>
                                 </td>
                               </tr>
@@ -2062,10 +2355,10 @@ export default function KundliPage() {
                         <Info className="h-4 w-4 text-accent" />
                       </div>
                       <h3 className="text-lg font-bold font-heading text-gray-900">
-                        Planet Significations
+                        {t("planetSignifications")}
                       </h3>
                       <span className="text-xs text-gray-400">
-                        Tap a card to reveal mantra &amp; gemstone
+                        {t("planetSignificationsHint")}
                       </span>
                     </div>
                     <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -2077,6 +2370,7 @@ export default function KundliPage() {
                           rashiName={kundli.planets[key]?.rashiName ?? "—"}
                           expanded={expandedPlanet === key}
                           onToggle={togglePlanet}
+                          t={t}
                         />
                       ))}
                     </div>
@@ -2093,6 +2387,7 @@ export default function KundliPage() {
                         info={HOUSES[num]}
                         rashiIdx={houseRashi[num]}
                         planets={housePlanets[num] ?? []}
+                        t={t}
                       />
                     ))}
                   </div>
@@ -2102,7 +2397,127 @@ export default function KundliPage() {
                 <TabsContent value="nakshatra" className="mt-6">
                   <NakshatraDetailSection
                     nakshatraName={kundli.dasha.birthNakshatra}
+                    t={t}
                   />
+                </TabsContent>
+
+                {/* ── Dasha Tab ────────────────────────── */}
+                <TabsContent value="dasha" className="mt-6 space-y-5">
+                  {kundli.dasha && (
+                    <div className="bg-white rounded-2xl border border-gray-100 shadow-lg p-6 md:p-8">
+                      <div className="flex items-center gap-2 mb-6">
+                        <div className="w-8 h-8 rounded-lg bg-accent/10 flex items-center justify-center">
+                          <Clock className="h-4 w-4 text-accent" />
+                        </div>
+                        <h3 className="text-lg font-bold font-heading text-gray-900">
+                          {t("vimshottariDasha")}
+                        </h3>
+                      </div>
+
+                      {/* Birth Nakshatra */}
+                      <div className="mb-6 p-4 rounded-xl bg-primary/[0.03] border border-primary/10">
+                        <p className="text-xs text-gray-500 mb-1">
+                          {t("birthNakshatra")}
+                        </p>
+                        <p className="text-lg font-bold font-heading text-primary">
+                          {kundli.dasha.birthNakshatra}
+                        </p>
+                      </div>
+
+                      <div className="grid sm:grid-cols-2 gap-4">
+                        {/* Current Mahadasha */}
+                        <div className="p-5 rounded-xl border border-gray-100 bg-gray-50/50">
+                          <p className="text-xs font-bold uppercase tracking-widest text-secondary mb-3">
+                            {t("currentMahadasha")}
+                          </p>
+                          <p className="text-2xl font-bold font-heading text-gray-900 mb-1">
+                            {mahaNow?.planet ??
+                              kundli.dasha.currentMahadasha.planet}
+                          </p>
+                          <p className="text-xs text-gray-500">
+                            {PLANET_HINDI[
+                              (mahaNow?.planet ??
+                                kundli.dasha.currentMahadasha
+                                  .planet) as PlanetKey
+                            ] ?? ""}
+                          </p>
+                          <div className="mt-3 space-y-1 text-xs text-gray-500">
+                            {mahaNow && (
+                              <div className="flex items-center gap-1.5">
+                                <CalendarDays className="h-3 w-3" />
+                                {t("dashaColStart")}:{" "}
+                                {formatEndTime(mahaNow.startTime)}
+                              </div>
+                            )}
+                            <div className="flex items-center gap-1.5">
+                              <CalendarDays className="h-3 w-3" />
+                              {t("endsLabel")}{" "}
+                              {formatEndTime(
+                                mahaNow?.endTime ??
+                                  kundli.dasha.currentMahadasha.endTime
+                              )}
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Current Antardasha */}
+                        {(antarNow || kundli.dasha.currentAntardasha) && (
+                          <div className="p-5 rounded-xl border border-gray-100 bg-gray-50/50">
+                            <p className="text-xs font-bold uppercase tracking-widest text-secondary mb-3">
+                              {t("currentAntardasha")}
+                            </p>
+                            <p className="text-2xl font-bold font-heading text-gray-900 mb-1">
+                              {antarNow?.planet ??
+                                kundli.dasha.currentAntardasha?.planet}
+                            </p>
+                            <p className="text-xs text-gray-500">
+                              {PLANET_HINDI[
+                                (antarNow?.planet ??
+                                  kundli.dasha.currentAntardasha
+                                    ?.planet) as PlanetKey
+                              ] ?? ""}
+                            </p>
+                            <div className="mt-3 space-y-1 text-xs text-gray-500">
+                              {antarNow && (
+                                <div className="flex items-center gap-1.5">
+                                  <CalendarDays className="h-3 w-3" />
+                                  {t("dashaColStart")}:{" "}
+                                  {formatEndTime(antarNow.startTime)}
+                                </div>
+                              )}
+                              <div className="flex items-center gap-1.5">
+                                <CalendarDays className="h-3 w-3" />
+                                {t("endsLabel")}{" "}
+                                {formatEndTime(
+                                  antarNow?.endTime ??
+                                    kundli.dasha.currentAntardasha!.endTime
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Mahadasha Timeline */}
+                      {kundli.dasha.fullCycle &&
+                        kundli.dasha.fullCycle.length > 0 && (
+                          <div className="mt-6">
+                            <p className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-3">
+                              {t("dashaTimelineHeading")}
+                            </p>
+                            <DashaTimelineTable
+                              fullCycle={kundli.dasha.fullCycle}
+                              currentPlanet={
+                                mahaNow?.planet ??
+                                kundli.dasha.currentMahadasha.planet
+                              }
+                              lang={lang}
+                              t={t}
+                            />
+                          </div>
+                        )}
+                    </div>
+                  )}
                 </TabsContent>
 
                 {/* ── Doshas Tab ───────────────────────── */}
@@ -2110,26 +2525,29 @@ export default function KundliPage() {
                   {doshas ? (
                     <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
                       <DoshaCard
-                        title="Mangal Dosha"
+                        title={t("doshaMangalTitle")}
                         result={doshas.mangal}
                         icon={Flame}
+                        t={t}
                       />
                       <DoshaCard
-                        title="Sade Sati"
+                        title={t("doshaSadeSatiTitle")}
                         result={doshas.sadeSati}
                         icon={Clock}
+                        t={t}
                       />
                       <DoshaCard
-                        title="Kaal Sarp Dosha"
+                        title={t("doshaKaalSarpTitle")}
                         result={doshas.kaalSarp}
                         icon={Shield}
+                        t={t}
                       />
                     </div>
                   ) : (
                     <Card className="border-gray-100 shadow-sm">
                       <CardContent>
                         <p className="text-sm text-gray-500">
-                          Dosha analysis is loading…
+                          {t("doshaLoading")}
                         </p>
                       </CardContent>
                     </Card>
@@ -2145,13 +2563,17 @@ export default function KundliPage() {
                       </div>
                       <div>
                         <p className="text-[11px] font-bold uppercase tracking-widest text-secondary">
-                          Personalized for Your Current Mahadasha
+                          {t("remediesEyebrow")}
                         </p>
                         <h3 className="text-lg font-bold font-heading text-gray-900">
-                          Remedies for {kundli.dasha.currentMahadasha.planet}
+                          {t("remediesForLabel")}{" "}
+                          {mahaNow?.planet ??
+                            kundli.dasha.currentMahadasha.planet}
                           <span className="text-accent ml-2 text-base">
                             {PLANET_HINDI[
-                              kundli.dasha.currentMahadasha.planet as PlanetKey
+                              (mahaNow?.planet ??
+                                kundli.dasha.currentMahadasha
+                                  .planet) as PlanetKey
                             ] ?? ""}
                           </span>
                         </h3>
@@ -2161,175 +2583,39 @@ export default function KundliPage() {
 
                   <RemediesByTypeSection
                     remedies={personalizedRemedies}
-                    mahadashaPlanet={kundli.dasha.currentMahadasha.planet}
+                    mahadashaPlanet={
+                      mahaNow?.planet ?? kundli.dasha.currentMahadasha.planet
+                    }
+                    t={t}
                   />
 
                   <div className="rounded-2xl bg-primary/[0.04] border border-primary/10 p-6 text-center">
                     <h4 className="text-base font-bold font-heading text-gray-900 mb-1.5">
-                      Want authentic, certified gemstones?
+                      {t("gemstoneCtaTitle")}
                     </h4>
                     <p className="text-sm text-gray-600 mb-4 max-w-md mx-auto">
-                      Explore our curated collection of lab-tested gemstones
-                      aligned with your planetary recommendations.
+                      {t("gemstoneCtaDesc")}
                     </p>
                     <div className="flex flex-wrap items-center justify-center gap-3">
                       <Button asChild className="bg-primary hover:bg-primary/90 rounded-xl">
                         <Link href="/shop/gemstones">
                           <Gem className="h-4 w-4 mr-1.5" />
-                          Shop Gemstones
+                          {t("shopGemstonesBtn")}
                           <ArrowRight className="h-4 w-4 ml-1.5" />
                         </Link>
                       </Button>
                       <ConsultationButton
-                        service={`Mahadasha ${kundli.dasha.currentMahadasha.planet} Remedies`}
+                        service={`Mahadasha ${mahaNow?.planet ?? kundli.dasha.currentMahadasha.planet} Remedies`}
                         variant="outline"
                         className="rounded-xl border-primary/30 text-primary hover:bg-primary/5"
                       >
                         <Users className="h-4 w-4 mr-1.5" />
-                        Talk to an Astrologer
+                        {t("talkToAstrologerBtn")}
                       </ConsultationButton>
                     </div>
                   </div>
                 </TabsContent>
               </Tabs>
-
-              {/* ── Dasha Section ──────────────────────── */}
-              {kundli.dasha && (
-                <div className="bg-white rounded-2xl border border-gray-100 shadow-lg p-6 md:p-8">
-                  <div className="flex items-center gap-2 mb-6">
-                    <div className="w-8 h-8 rounded-lg bg-accent/10 flex items-center justify-center">
-                      <Clock className="h-4 w-4 text-accent" />
-                    </div>
-                    <h3 className="text-lg font-bold font-heading text-gray-900">
-                      Vimshottari Dasha
-                    </h3>
-                  </div>
-
-                  {/* Birth Nakshatra */}
-                  <div className="mb-6 p-4 rounded-xl bg-primary/[0.03] border border-primary/10">
-                    <p className="text-xs text-gray-500 mb-1">
-                      Birth Nakshatra
-                    </p>
-                    <p className="text-lg font-bold font-heading text-primary">
-                      {kundli.dasha.birthNakshatra}
-                    </p>
-                  </div>
-
-                  <div className="grid sm:grid-cols-2 gap-4">
-                    {/* Current Mahadasha */}
-                    <div className="p-5 rounded-xl border border-gray-100 bg-gray-50/50">
-                      <p className="text-xs font-bold uppercase tracking-widest text-secondary mb-3">
-                        Current Mahadasha
-                      </p>
-                      <p className="text-2xl font-bold font-heading text-gray-900 mb-1">
-                        {kundli.dasha.currentMahadasha.planet}
-                      </p>
-                      <p className="text-xs text-gray-500">
-                        {PLANET_HINDI[
-                          kundli.dasha.currentMahadasha.planet as PlanetKey
-                        ] ?? ""}
-                      </p>
-                      <div className="mt-3 flex items-center gap-1.5 text-xs text-gray-500">
-                        <CalendarDays className="h-3 w-3" />
-                        Ends:{" "}
-                        {formatEndTime(
-                          kundli.dasha.currentMahadasha.endTime
-                        )}
-                      </div>
-                    </div>
-
-                    {/* Current Antardasha */}
-                    <div className="p-5 rounded-xl border border-gray-100 bg-gray-50/50">
-                      <p className="text-xs font-bold uppercase tracking-widest text-secondary mb-3">
-                        Current Antardasha
-                      </p>
-                      <p className="text-2xl font-bold font-heading text-gray-900 mb-1">
-                        {kundli.dasha.currentAntardasha.planet}
-                      </p>
-                      <p className="text-xs text-gray-500">
-                        {PLANET_HINDI[
-                          kundli.dasha.currentAntardasha.planet as PlanetKey
-                        ] ?? ""}
-                      </p>
-                      <div className="mt-3 flex items-center gap-1.5 text-xs text-gray-500">
-                        <CalendarDays className="h-3 w-3" />
-                        Ends:{" "}
-                        {formatEndTime(
-                          kundli.dasha.currentAntardasha.endTime
-                        )}
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Full Dasha Cycle */}
-                  {kundli.dasha.fullCycle &&
-                    kundli.dasha.fullCycle.length > 0 && (
-                      <div className="mt-6">
-                        <p className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-3">
-                          Full Mahadasha Cycle
-                        </p>
-                        <div className="flex flex-wrap gap-2">
-                          {kundli.dasha.fullCycle.map(
-                            (entry: unknown, i: number) => {
-                              const d = entry as {
-                                planet: string;
-                                endTime: Date | string;
-                              };
-                              const isCurrent =
-                                d.planet ===
-                                kundli.dasha.currentMahadasha.planet;
-                              const accentCls =
-                                PLANET_ABBR_COLOR[
-                                  PLANET_ABBR[d.planet as PlanetKey] ?? ""
-                                ] ?? "";
-                              return (
-                                <div
-                                  key={i}
-                                  className={cn(
-                                    "px-3 py-2 rounded-lg text-center border transition-colors relative overflow-hidden",
-                                    isCurrent
-                                      ? "bg-primary text-white border-primary shadow-md shadow-primary/20"
-                                      : "bg-white border-gray-100 hover:border-primary/20"
-                                  )}
-                                >
-                                  {!isCurrent && accentCls && (
-                                    <span
-                                      className={cn(
-                                        "absolute top-1 right-1 w-1.5 h-1.5 rounded-full",
-                                        accentCls.split(" ")[1] ?? ""
-                                      )}
-                                      aria-hidden
-                                    />
-                                  )}
-                                  <p
-                                    className={cn(
-                                      "text-xs font-bold",
-                                      isCurrent
-                                        ? "text-white"
-                                        : "text-gray-900"
-                                    )}
-                                  >
-                                    {d.planet}
-                                  </p>
-                                  <p
-                                    className={cn(
-                                      "text-[10px] mt-0.5",
-                                      isCurrent
-                                        ? "text-white/60"
-                                        : "text-gray-400"
-                                    )}
-                                  >
-                                    {formatEndTime(d.endTime)}
-                                  </p>
-                                </div>
-                              );
-                            }
-                          )}
-                        </div>
-                      </div>
-                    )}
-                </div>
-              )}
             </div>
           </div>
         </section>
@@ -2344,8 +2630,7 @@ export default function KundliPage() {
                 <Star className="h-8 w-8 text-red-400" />
               </div>
               <p className="text-sm text-gray-500">
-                Unable to generate Kundli. Please check your birth details
-                and try again.
+                {t("errorStateMessage")}
               </p>
             </div>
           </div>
@@ -2361,9 +2646,7 @@ export default function KundliPage() {
                 <Star className="h-8 w-8 text-accent" />
               </div>
               <p className="text-sm text-gray-500">
-                Enter your birth details above and click &quot;Generate
-                Kundli&quot; to see your Vedic birth chart, planetary
-                positions, and dasha periods.
+                {t("emptyStateMessage")}
               </p>
             </div>
           </div>
@@ -2376,13 +2659,13 @@ export default function KundliPage() {
           <div className="max-w-5xl mx-auto">
             <div className="text-center mb-10">
               <p className="text-xs font-bold uppercase tracking-widest text-secondary mb-2">
-                Understanding Your Janam Kundli
+                {t("seoEyebrow")}
               </p>
               <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold font-heading text-gray-900 mb-3">
-                What does your free kundli actually reveal?
+                {t("seoTitle")}
               </h2>
               <p className="text-sm md:text-base text-gray-600 leading-relaxed max-w-2xl mx-auto">
-                A Janam Kundli is the cosmic blueprint of your life. Below is a quick guide to what each part of your free online kundli means and how to use it.
+                {t("seoIntro")}
               </p>
             </div>
 
@@ -2390,33 +2673,33 @@ export default function KundliPage() {
               {[
                 {
                   icon: Sparkles,
-                  title: "Lagna (Ascendant)",
-                  body: "The rashi rising on the eastern horizon at your exact moment of birth. Lagna shapes your personality, body type, attitude and how the world sees you. The lagna also decides which rashi sits in which bhava (house).",
+                  title: t("seoCard1Title"),
+                  body: t("seoCard1Body"),
                 },
                 {
                   icon: Moon,
-                  title: "Chandra Rashi (Moon Sign)",
-                  body: "The rashi where the Moon is placed in your kundli. Chandra rashi rules your mind, emotions, motherhood, and is the anchor of all Vedic predictions — including dasha calculations and kundli milan.",
+                  title: t("seoCard2Title"),
+                  body: t("seoCard2Body"),
                 },
                 {
                   icon: Sun,
-                  title: "Surya Rashi (Sun Sign)",
-                  body: "Your sidereal Vedic sun sign. This is different from your Western sun sign. Surya rashi governs ego, authority, father, career direction, and your core sense of self.",
+                  title: t("seoCard3Title"),
+                  body: t("seoCard3Body"),
                 },
                 {
                   icon: Star,
-                  title: "Janma Nakshatra",
-                  body: "One of the 27 lunar mansions. Your birth nakshatra is the starting point of your Vimshottari Dasha and reveals deep personality traits, life karma and your ruling planetary energy.",
+                  title: t("seoCard4Title"),
+                  body: t("seoCard4Body"),
                 },
                 {
                   icon: TrendingUp,
-                  title: "Vimshottari Dasha",
-                  body: "A 120-year planetary timeline unique to Vedic astrology. The current mahadasha tells you which planet is shaping this phase of your life, and antardashas describe finer events year by year.",
+                  title: t("seoCard5Title"),
+                  body: t("seoCard5Body"),
                 },
                 {
                   icon: Shield,
-                  title: "Doshas (Manglik, Sade Sati, Kaal Sarp)",
-                  body: "Specific planetary placements that traditional astrology considers challenging. Our calculator automatically flags Manglik dosha, Sade Sati phase and Kaal Sarp dosha so you know what to check with an astrologer.",
+                  title: t("seoCard6Title"),
+                  body: t("seoCard6Body"),
                 },
               ].map((c) => (
                 <div
@@ -2442,27 +2725,27 @@ export default function KundliPage() {
               <div className="grid md:grid-cols-[1fr_auto] items-center gap-5">
                 <div>
                   <p className="text-[11px] font-bold uppercase tracking-widest text-primary mb-1.5">
-                    Free, Accurate, Astrologer-Grade
+                    {t("trustEyebrow")}
                   </p>
                   <h3 className="text-xl md:text-2xl font-bold font-heading text-gray-900 mb-2">
-                    Why thousands trust our free Vedic kundli calculator
+                    {t("trustTitle")}
                   </h3>
                   <p className="text-sm md:text-base text-gray-600 leading-relaxed">
-                    We use the same astronomical engine and Lahiri ayanamsa that professional Indian astrologers rely on — no watered-down generic content, no email signup, no hidden charges. The mathematical accuracy of your janam patrika here matches a paid software reading; what you get on top is a clean, mobile-friendly dashboard with chart styles, divisional charts (D1 to D60), planetary periods and remedies in plain language.
+                    {t("trustBody")}
                   </p>
                 </div>
                 <div className="flex md:flex-col gap-3 md:gap-4 justify-center">
                   <div className="text-center">
                     <p className="text-2xl md:text-3xl font-bold font-heading text-primary">16+</p>
-                    <p className="text-[10px] uppercase tracking-wider text-gray-500 font-semibold">Divisional Charts</p>
+                    <p className="text-[10px] uppercase tracking-wider text-gray-500 font-semibold">{t("statDivisionalCharts")}</p>
                   </div>
                   <div className="text-center">
                     <p className="text-2xl md:text-3xl font-bold font-heading text-secondary">27</p>
-                    <p className="text-[10px] uppercase tracking-wider text-gray-500 font-semibold">Nakshatras</p>
+                    <p className="text-[10px] uppercase tracking-wider text-gray-500 font-semibold">{t("statNakshatras")}</p>
                   </div>
                   <div className="text-center">
                     <p className="text-2xl md:text-3xl font-bold font-heading text-accent">9</p>
-                    <p className="text-[10px] uppercase tracking-wider text-gray-500 font-semibold">Grahas</p>
+                    <p className="text-[10px] uppercase tracking-wider text-gray-500 font-semibold">{t("statGrahas")}</p>
                   </div>
                 </div>
               </div>
@@ -2471,10 +2754,10 @@ export default function KundliPage() {
             {/* Related Tools strip */}
             <div className="text-center mb-6">
               <p className="text-xs font-bold uppercase tracking-widest text-secondary mb-2">
-                Explore More
+                {t("exploreMoreEyebrow")}
               </p>
               <h3 className="text-xl md:text-2xl font-bold font-heading text-gray-900">
-                Other free Vedic astrology tools
+                {t("exploreMoreTitle")}
               </h3>
             </div>
             <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
@@ -2482,44 +2765,44 @@ export default function KundliPage() {
                 {
                   href: "/free-match-making-calculator/",
                   icon: Heart,
-                  title: "Kundli Milan",
-                  desc: "Match marriage compatibility with 36-point Guna Milan.",
+                  title: t("toolMilanTitle"),
+                  desc: t("toolMilanDesc"),
                 },
                 {
                   href: "/free-numerology-calculator/",
                   icon: Hash,
-                  title: "Numerology",
-                  desc: "Discover your life path, lucky number and destiny.",
+                  title: t("toolNumerologyTitle"),
+                  desc: t("toolNumerologyDesc"),
                 },
                 {
                   href: "/free-horoscope/",
                   icon: Sparkles,
-                  title: "Daily Horoscope",
-                  desc: "Today's reading personalised to your rashi.",
+                  title: t("toolHoroscopeTitle"),
+                  desc: t("toolHoroscopeDesc"),
                 },
                 {
                   href: "/gemstone-recommender/",
                   icon: Gem,
-                  title: "Gemstone Advice",
-                  desc: "Right stone for you based on your kundli.",
+                  title: t("toolGemstoneTitle"),
+                  desc: t("toolGemstoneDesc"),
                 },
-              ].map((t) => (
+              ].map((tool) => (
                 <Link
-                  key={t.href}
-                  href={t.href}
+                  key={tool.href}
+                  href={tool.href}
                   className="group rounded-2xl border border-gray-100 bg-white p-4 transition-all duration-200 hover:border-primary/30 hover:shadow-md hover:-translate-y-0.5"
                 >
                   <div className="w-9 h-9 rounded-lg bg-accent/15 flex items-center justify-center mb-2.5 group-hover:scale-110 transition-transform">
-                    <t.icon className="h-4 w-4 text-primary" />
+                    <tool.icon className="h-4 w-4 text-primary" />
                   </div>
                   <h4 className="text-sm font-bold font-heading text-gray-900 mb-1">
-                    {t.title}
+                    {tool.title}
                   </h4>
                   <p className="text-xs text-gray-500 leading-snug mb-2">
-                    {t.desc}
+                    {tool.desc}
                   </p>
                   <span className="inline-flex items-center gap-1 text-xs font-semibold text-primary group-hover:gap-1.5 transition-all">
-                    Try now
+                    {t("tryNow")}
                     <ArrowRight className="h-3 w-3" />
                   </span>
                 </Link>
@@ -2532,62 +2815,52 @@ export default function KundliPage() {
       {/* ── FAQ Section ─────────────────────────────────── */}
       <FaqSection
         initialVisible={4}
-        description="Got questions about your free kundli online? Below we answer the most common queries about the janam kundli, how our kundli calculator works, what your vedic astrology birth chart reveals, and when a free kundli analysis is enough versus consulting a professional astrologer."
+        description={t("faqDescription")}
         faqs={[
           {
-            question: "What is a Janam Kundli and why is it important?",
-            answer:
-              "A Janam Kundli, also called a janam patrika or vedic astrology birth chart, is a snapshot of the sky at the exact moment you were born. It maps the position of the Sun, Moon, planets, and ascendant (lagna) across 12 houses. In Vedic tradition, the kundli is used to understand personality, career direction, relationships, health tendencies, and timing of life events through dashas.",
+            question: t("faqQ1"),
+            answer: t("faqA1"),
             readMoreHref:
               "/blog/what-is-a-janam-kundli-and-why-is-it-important-in-vedic-astrology-complete-guide/",
           },
           {
-            question: "How is the free kundli calculated on this page?",
-            answer:
-              "Our free kundli calculator uses your name, date of birth, exact time of birth, and place of birth to compute the planetary longitudes using the sidereal zodiac with the Lahiri ayanamsa, which is the standard in Indian astrology. From those positions we derive your lagna, rashi, nakshatra, planetary house placements, basic doshas, and your current Vimshottari Dasha period.",
+            question: t("faqQ2"),
+            answer: t("faqA2"),
             readMoreHref: "/blog/how-is-the-free-kundli-calculated/",
           },
           {
-            question: "Is a free online kundli accurate compared to a paid astrologer?",
-            answer:
-              "The mathematical kundli generated here is accurate as long as your birth time and place are correct. The planetary positions, nakshatra, and dasha will match what a professional astrologer calculates. The difference lies in interpretation. A trained astrologer can read combinations, divisional charts, and timing nuances that no automated tool can fully replicate, which is why deeper readings still benefit from a human expert.",
+            question: t("faqQ3"),
+            answer: t("faqA3"),
             readMoreHref:
               "/blog/is-a-free-online-kundli-accurate-compared-to-a-paid-astrologer/",
           },
           {
-            question: "Why do I need exact time and place of birth?",
-            answer:
-              "The ascendant changes roughly every two hours, and house placements shift with it. Even a 15 minute difference in birth time can change your lagna and the entire house structure of your kundli. Place of birth sets the latitude and longitude used to calculate the local horizon, so a horoscope by date of birth alone, without time and place, cannot give you a reliable Vedic chart.",
+            question: t("faqQ4"),
+            answer: t("faqA4"),
           },
           {
-            question: "What does my janam kundli actually reveal?",
-            answer:
-              "Your kundli shows the rashi (sign) and nakshatra of each planet, the house each planet sits in, your ascendant, and aspects between planets. From these we read tendencies in personality, mind, career, marriage, finances, health, and family. The Vimshottari Dasha system layered on top tells you which planet is currently influencing your life, which helps explain present circumstances and upcoming themes.",
+            question: t("faqQ5"),
+            answer: t("faqA5"),
           },
           {
-            question: "What is Manglik dosha and does my kundli show it?",
-            answer:
-              "Manglik dosha, sometimes called Mangal dosha, is formed when Mars sits in specific houses from the lagna, Moon, or Venus. It is traditionally considered when matching kundlis for marriage. Our free kundli analysis flags whether Mars placement indicates a Manglik combination, but the strength of the dosha and its cancellations need careful evaluation by an astrologer before drawing any conclusion.",
+            question: t("faqQ6"),
+            answer: t("faqA6"),
           },
           {
-            question: "What is Vimshottari Dasha and how do I read it?",
-            answer:
-              "Vimshottari Dasha is a 120 year planetary cycle unique to Vedic astrology. Each planet rules a fixed number of years, and the order is decided by the nakshatra of your Moon at birth. The current mahadasha tells you which planet is shaping the broad themes of this period of your life, and antardashas inside it bring the finer events. Our calculator shows your active mahadasha automatically.",
+            question: t("faqQ7"),
+            answer: t("faqA7"),
           },
           {
-            question: "What is the difference between a Vedic kundli and a Western horoscope?",
-            answer:
-              "Western astrology uses the tropical zodiac, which is tied to the seasons, while Vedic astrology uses the sidereal zodiac, which is tied to the actual fixed stars. Because of this, your sun sign in a Western chart is often different from your rashi in a janam kundli. Vedic astrology also adds nakshatras, dashas, and divisional charts, which give it a much more time based predictive structure.",
+            question: t("faqQ8"),
+            answer: t("faqA8"),
           },
           {
-            question: "Can I save or print my free kundli from this page?",
-            answer:
-              "Yes. Once your janam kundli is generated, you can use your browser's print option to save it as a PDF or print a hard copy. Many users keep a printed kundli handy when consulting an astrologer or for matchmaking. Make sure your birth details are entered correctly before saving, since any correction will require regenerating the chart.",
+            question: t("faqQ9"),
+            answer: t("faqA9"),
           },
           {
-            question: "When should I consult a real astrologer instead of relying only on this tool?",
-            answer:
-              "A free kundli online is great for self study, basic understanding, and casual queries. For important life decisions like marriage matching, career changes, business launches, health concerns, or remedies for difficult dasha periods, it is wise to consult a qualified Vedic astrologer. They can study your divisional charts, transits, and family context together, which a generic kundli calculator cannot do on its own.",
+            question: t("faqQ10"),
+            answer: t("faqA10"),
           },
         ]}
       />
@@ -2596,22 +2869,21 @@ export default function KundliPage() {
       <section className="py-12 border-t border-gray-100 bg-gray-50/40">
         <div className="container mx-auto px-4 text-center">
           <h3 className="text-xl md:text-2xl font-bold font-heading text-gray-900 mb-2">
-            Want a Detailed Kundli Reading?
+            {t("ctaTitle")}
           </h3>
           <p className="text-sm text-gray-500 mb-6 max-w-md mx-auto">
-            Get a personalized birth chart analysis from our expert Vedic
-            astrologers with remedies and predictions.
+            {t("ctaDesc")}
           </p>
           <div className="flex items-center justify-center gap-3">
             <ConsultationButton
               service="Detailed Kundli Reading"
               className="bg-primary rounded-xl"
             >
-              Book Consultation
+              {t("bookConsultationBtn")}
               <ArrowRight className="h-4 w-4 ml-1.5" />
             </ConsultationButton>
             <Button variant="outline" className="rounded-xl" asChild>
-              <Link href="/contact">Contact Us</Link>
+              <Link href="/contact">{t("contactUsBtn")}</Link>
             </Button>
           </div>
         </div>

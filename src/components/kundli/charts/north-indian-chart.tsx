@@ -5,6 +5,8 @@ import {
   KundliChartProps,
   rashiLabel,
   PLANET_ABBR_COLOR,
+  planetLabel,
+  rashiCellLabel,
 } from "@/lib/astrology/chart-types";
 
 /**
@@ -257,22 +259,23 @@ export function NorthIndianChart({
                 >
                   {r.house}
                 </text>
-                {/* Rashi number, small below the house number */}
+                {/* Rashi name, centred above the planet row */}
                 <text
-                  x={r.rashiX}
-                  y={r.rashiY + 12}
+                  x={r.cx}
+                  y={r.cy - 18}
                   fontSize="9"
-                  fill="#9ca3af"
+                  fontWeight="500"
+                  fill="#6b7280"
                   textAnchor="middle"
                   dominantBaseline="middle"
                 >
-                  {rashi || ""}
+                  {rashiCellLabel(rashi, labelLang)}
                 </text>
                 {/* Lagna marker pill */}
                 {isLagna ? (
                   <text
                     x={r.cx}
-                    y={r.cy - 14}
+                    y={r.cy - 30}
                     fontSize="9"
                     fontWeight="700"
                     fill="rgba(128,9,9,0.75)"
@@ -298,7 +301,7 @@ export function NorthIndianChart({
                           PLANET_ABBR_COLOR[p] ?? "text-gray-700",
                         )}
                       >
-                        {p}
+                        {planetLabel(p, labelLang)}
                       </span>
                     ))}
                   </div>

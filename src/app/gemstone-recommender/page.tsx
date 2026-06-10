@@ -13,6 +13,9 @@ import { format } from "date-fns";
 import { LocationSearch } from "@/components/molecules/location-search";
 import { ConsultationButton } from "@/components/molecules/consultation-button";
 import { FaqSection } from "@/components/molecules";
+import { LanguageSwitcher } from "@/components/molecules";
+import { useT } from "@/lib/i18n";
+import { gemstone } from "@/lib/i18n/translations/gemstone";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { getKundli, Observer, rashiNames } from "@ishubhamx/panchangam-js";
@@ -173,6 +176,7 @@ interface AdditionalRec {
 const DEFAULT_ELEVATION = 217;
 
 export default function GemstoneRecommenderPage() {
+  const t = useT(gemstone);
   const [birthDate, setBirthDate] = useState("");
   const [birthTime, setBirthTime] = useState("");
   const [result, setResult] = useState<{
@@ -188,12 +192,20 @@ export default function GemstoneRecommenderPage() {
   const [lat, setLat] = useState(28.4595);
   const [lon, setLon] = useState(77.0266);
 
+  // The benefit/caution prose lives in the dictionary keyed per planet
+  // (benefit<Planet>/caution<Planet>); the gemstone data record only carries
+  // the language-neutral values (name, metal, finger, day, alt).
+  const planetBenefit = (planet: string) =>
+    t(`benefit${planet}` as keyof typeof gemstone.en);
+  const planetCaution = (planet: string) =>
+    t(`caution${planet}` as keyof typeof gemstone.en);
+
   function handleCalculate() {
     setError("");
     setResult(null);
 
     if (!birthDate || !birthTime) {
-      setError("Please enter both date and time of birth.");
+      setError(t("errBothRequired"));
       return;
     }
 
@@ -237,7 +249,7 @@ export default function GemstoneRecommenderPage() {
 
       setResult({ kundli, primaryPlanet, primaryGemstone, additional });
     } catch {
-      setError("Could not calculate Kundli. Please check your inputs and try again.");
+      setError(t("errCalcFailed"));
     }
   }
 
@@ -257,17 +269,19 @@ export default function GemstoneRecommenderPage() {
           <div className="absolute -bottom-10 -left-10 w-56 h-56 bg-secondary/10 rounded-full blur-3xl" />
         </div>
         <div className="container mx-auto px-4 relative z-10 py-14 md:py-20">
+          <div className="flex justify-end mb-4">
+            <LanguageSwitcher />
+          </div>
           <div className="max-w-2xl mx-auto text-center">
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 backdrop-blur-sm text-sm mb-5">
               <Gem className="h-3.5 w-3.5 text-accent" />
-              Vedic Gemstone Therapy
+              {t("heroBadge")}
             </div>
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold font-heading mb-4 leading-tight">
-              Gemstone Recommender
+              {t("heroTitle")}
             </h1>
             <p className="text-white/70 text-base md:text-lg max-w-lg mx-auto">
-              Discover the perfect gemstone for you based on your birth chart. Our Vedic astrology engine analyzes your
-              Kundli to recommend stones that strengthen beneficial planets and protect against afflictions.
+              {t("heroSubtitle")}
             </p>
           </div>
         </div>
@@ -281,14 +295,14 @@ export default function GemstoneRecommenderPage() {
               <CardHeader className="text-center pb-2">
                 <CardTitle className="text-xl font-heading flex items-center justify-center gap-2 text-primary">
                   <Sparkles className="h-5 w-5 text-secondary" />
-                  Enter Your Birth Details
+                  {t("formTitle")}
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-5">
                 <div className="space-y-2">
                   <Label className="text-sm font-medium text-gray-700 flex items-center gap-1.5">
                     <CalendarDays className="h-3.5 w-3.5 text-primary" />
-                    Date of Birth
+                    {t("labelDob")}
                   </Label>
                   <Popover open={dobOpen} onOpenChange={setDobOpen}>
                     <PopoverTrigger asChild>
@@ -300,7 +314,7 @@ export default function GemstoneRecommenderPage() {
                         )}
                       >
                         <CalendarDays className="h-4 w-4 mr-2 text-primary" />
-                        {dobDate ? format(dobDate, "dd MMMM yyyy") : "Select date of birth"}
+                        {dobDate ? format(dobDate, "dd MMMM yyyy") : t("dobPlaceholder")}
                       </Button>
                     </PopoverTrigger>
                     <PopoverContent className="w-auto p-0" align="start">
@@ -332,7 +346,7 @@ export default function GemstoneRecommenderPage() {
                 <div className="space-y-2">
                   <Label className="text-sm font-medium text-gray-700 flex items-center gap-1.5">
                     <Clock className="h-3.5 w-3.5 text-primary" />
-                    Time of Birth
+                    {t("labelTime")}
                   </Label>
                   <Input
                     type="time"
@@ -344,7 +358,7 @@ export default function GemstoneRecommenderPage() {
                 <div className="space-y-2">
                   <Label className="text-sm font-medium text-gray-700 flex items-center gap-1.5">
                     <MapPin className="h-3.5 w-3.5 text-primary" />
-                    Place of Birth
+                    {t("labelPlace")}
                   </Label>
                   <LocationSearch
                     defaultValue="Gurugram"
@@ -366,7 +380,7 @@ export default function GemstoneRecommenderPage() {
                   className="w-full bg-primary hover:bg-primary/90 text-white font-semibold py-3"
                 >
                   <Gem className="h-4 w-4 mr-2" />
-                  Find My Gemstones
+                  {t("findBtn")}
                 </Button>
               </CardContent>
             </Card>
@@ -382,10 +396,10 @@ export default function GemstoneRecommenderPage() {
             <div className="max-w-2xl mx-auto">
               <div className="text-center mb-6">
                 <p className="text-xs font-bold uppercase tracking-widest text-secondary mb-2">
-                  Your Primary Gemstone
+                  {t("primaryEyebrow")}
                 </p>
                 <h2 className="text-2xl md:text-3xl font-bold font-heading text-gray-900">
-                  Based on Your Ascendant
+                  {t("primaryHeading")}
                 </h2>
               </div>
               <Card className="shadow-xl border-2 border-accent/40 overflow-hidden">
@@ -395,11 +409,11 @@ export default function GemstoneRecommenderPage() {
                     {result.primaryGemstone.primary}
                   </h3>
                   <p className="text-white/80 mt-2 text-sm">
-                    Based on your Ascendant:{" "}
+                    {t("basedOnAscendant")}{" "}
                     <span className="text-accent font-semibold">
                       {rashiNames[result.kundli.ascendant.rashi] || result.kundli.ascendant.rashiName}
                     </span>{" "}
-                    &mdash; Ruled by{" "}
+                    &mdash; {t("ruledBy")}{" "}
                     <span className="text-accent font-semibold">{result.primaryPlanet}</span>
                   </p>
                 </div>
@@ -407,45 +421,45 @@ export default function GemstoneRecommenderPage() {
                   <div>
                     <h4 className="font-semibold text-gray-900 mb-1 flex items-center gap-1.5">
                       <ShieldCheck className="h-4 w-4 text-primary" />
-                      Benefits
+                      {t("benefits")}
                     </h4>
                     <p className="text-gray-600 text-sm leading-relaxed">
-                      {result.primaryGemstone.benefits}
+                      {planetBenefit(result.primaryPlanet)}
                     </p>
                   </div>
 
                   <div className="grid grid-cols-3 gap-4 text-center">
                     <div className="bg-background rounded-lg p-3">
-                      <p className="text-xs text-gray-500 mb-1">Metal</p>
+                      <p className="text-xs text-gray-500 mb-1">{t("metal")}</p>
                       <p className="text-sm font-semibold text-gray-800">{result.primaryGemstone.metal}</p>
                     </div>
                     <div className="bg-background rounded-lg p-3">
                       <Hand className="h-3.5 w-3.5 mx-auto text-secondary mb-1" />
-                      <p className="text-xs text-gray-500 mb-1">Finger</p>
+                      <p className="text-xs text-gray-500 mb-1">{t("finger")}</p>
                       <p className="text-sm font-semibold text-gray-800">{result.primaryGemstone.finger}</p>
                     </div>
                     <div className="bg-background rounded-lg p-3">
                       <Calendar className="h-3.5 w-3.5 mx-auto text-secondary mb-1" />
-                      <p className="text-xs text-gray-500 mb-1">Best Day</p>
+                      <p className="text-xs text-gray-500 mb-1">{t("bestDay")}</p>
                       <p className="text-sm font-semibold text-gray-800">{result.primaryGemstone.day}</p>
                     </div>
                   </div>
 
                   <div>
-                    <p className="text-xs text-gray-500 mb-1">Alternative Stones</p>
+                    <p className="text-xs text-gray-500 mb-1">{t("alternativeStones")}</p>
                     <p className="text-sm font-medium text-gray-700">{result.primaryGemstone.alt}</p>
                   </div>
 
                   <div className="bg-amber-50 border border-amber-200 rounded-lg p-3">
                     <p className="text-xs text-amber-800">
                       <AlertTriangle className="h-3 w-3 inline mr-1" />
-                      {result.primaryGemstone.caution}
+                      {planetCaution(result.primaryPlanet)}
                     </p>
                   </div>
 
                   <Link href="/shop" className="block">
                     <Button className="w-full bg-secondary hover:bg-secondary/90 text-white font-semibold">
-                      Shop {result.primaryGemstone.primary.split(" (")[0]}
+                      {t("shopPrefix")} {result.primaryGemstone.primary.split(" (")[0]}
                       <ArrowRight className="h-4 w-4 ml-2" />
                     </Button>
                   </Link>
@@ -458,13 +472,13 @@ export default function GemstoneRecommenderPage() {
               <div className="max-w-4xl mx-auto">
                 <div className="text-center mb-6">
                   <p className="text-xs font-bold uppercase tracking-widest text-secondary mb-2">
-                    Additional Recommendations
+                    {t("additionalEyebrow")}
                   </p>
                   <h2 className="text-2xl md:text-3xl font-bold font-heading text-gray-900">
-                    Strengthen Weak Planets
+                    {t("additionalHeading")}
                   </h2>
                   <p className="text-gray-500 text-sm mt-1">
-                    These planets need support in your birth chart
+                    {t("additionalSub")}
                   </p>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
@@ -478,14 +492,20 @@ export default function GemstoneRecommenderPage() {
                             </div>
                             <div>
                               <p className="font-semibold text-gray-900 text-sm">{rec.planet}</p>
-                              <p className="text-xs text-red-600 font-medium">{rec.condition}</p>
+                              <p className="text-xs text-red-600 font-medium">
+                                {rec.condition === "Debilitated"
+                                  ? t("condDebilitated")
+                                  : rec.condition === "In enemy sign"
+                                    ? t("condEnemy")
+                                    : t("condRetrograde")}
+                              </p>
                             </div>
                           </div>
                           <Gem className="h-5 w-5 text-accent" />
                         </div>
                         <div>
                           <p className="font-semibold text-primary text-sm">{rec.gemstone.primary}</p>
-                          <p className="text-xs text-gray-500 mt-1 line-clamp-2">{rec.gemstone.benefits}</p>
+                          <p className="text-xs text-gray-500 mt-1 line-clamp-2">{planetBenefit(rec.planet)}</p>
                         </div>
                         <div className="flex items-center justify-between text-xs text-gray-500">
                           <span>{rec.gemstone.metal} &middot; {rec.gemstone.finger}</span>
@@ -497,7 +517,7 @@ export default function GemstoneRecommenderPage() {
                             size="sm"
                             className="w-full border-primary/20 text-primary hover:bg-primary/5 text-xs"
                           >
-                            Shop {rec.gemstone.primary.split(" (")[0]}
+                            {t("shopPrefix")} {rec.gemstone.primary.split(" (")[0]}
                             <ArrowRight className="h-3 w-3 ml-1" />
                           </Button>
                         </Link>
@@ -512,10 +532,10 @@ export default function GemstoneRecommenderPage() {
             <div className="max-w-2xl mx-auto">
               <div className="text-center mb-6">
                 <p className="text-xs font-bold uppercase tracking-widest text-secondary mb-2">
-                  Your Birth Chart
+                  {t("chartEyebrow")}
                 </p>
                 <h2 className="text-2xl md:text-3xl font-bold font-heading text-gray-900">
-                  Summary
+                  {t("chartHeading")}
                 </h2>
               </div>
               <Card className="shadow-md border-gray-200">
@@ -523,7 +543,7 @@ export default function GemstoneRecommenderPage() {
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
                     <div className="bg-background rounded-lg p-4">
                       <Star className="h-5 w-5 mx-auto mb-2 text-primary" />
-                      <p className="text-xs text-gray-500 mb-1">Ascendant (Lagna)</p>
+                      <p className="text-xs text-gray-500 mb-1">{t("ascendantLagna")}</p>
                       <p className="font-semibold text-gray-900 text-sm">
                         {rashiNames[result.kundli.ascendant.rashi] || result.kundli.ascendant.rashiName}
                       </p>
@@ -533,17 +553,17 @@ export default function GemstoneRecommenderPage() {
                     </div>
                     <div className="bg-background rounded-lg p-4">
                       <Moon className="h-5 w-5 mx-auto mb-2 text-primary" />
-                      <p className="text-xs text-gray-500 mb-1">Moon Sign</p>
+                      <p className="text-xs text-gray-500 mb-1">{t("moonSign")}</p>
                       <p className="font-semibold text-gray-900 text-sm">{moonRashiName}</p>
                     </div>
                     <div className="bg-background rounded-lg p-4">
                       <Sun className="h-5 w-5 mx-auto mb-2 text-secondary" />
-                      <p className="text-xs text-gray-500 mb-1">Sun Sign</p>
+                      <p className="text-xs text-gray-500 mb-1">{t("sunSign")}</p>
                       <p className="font-semibold text-gray-900 text-sm">{sunRashiName}</p>
                     </div>
                     <div className="bg-background rounded-lg p-4">
                       <Sparkles className="h-5 w-5 mx-auto mb-2 text-accent" />
-                      <p className="text-xs text-gray-500 mb-1">Mahadasha</p>
+                      <p className="text-xs text-gray-500 mb-1">{t("mahadasha")}</p>
                       <p className="font-semibold text-gray-900 text-sm">
                         {result.kundli.dasha?.currentMahadasha?.planet || "---"}
                       </p>
@@ -559,11 +579,9 @@ export default function GemstoneRecommenderPage() {
                 <CardContent className="p-5 flex gap-3">
                   <AlertTriangle className="h-5 w-5 text-amber-600 shrink-0 mt-0.5" />
                   <div>
-                    <h4 className="font-semibold text-amber-900 mb-1">Important Note</h4>
+                    <h4 className="font-semibold text-amber-900 mb-1">{t("importantNote")}</h4>
                     <p className="text-sm text-amber-800 leading-relaxed">
-                      Gemstone recommendations are based on Vedic astrology principles. Please consult a qualified
-                      astrologer before wearing any gemstone, especially Blue Sapphire (Neelam). The effectiveness of
-                      gemstones depends on stone quality, correct weight, and proper energization (Pran Pratishtha).
+                      {t("disclaimerBody")}
                     </p>
                   </div>
                 </CardContent>
@@ -575,48 +593,18 @@ export default function GemstoneRecommenderPage() {
 
       {/* FAQ Section */}
       <FaqSection
-        description="Vedic gemstones, also known as Ratnas, channel planetary energies from your birth chart to amplify benefic influences and soothe afflictions. Below are answers to the most common questions about lucky gemstone recommendations, the Navaratna system, Pukhraj, Neelam, certification, weight, and how to wear them safely."
+        description={t("faqDescription")}
         faqs={[
-          {
-            question: "How do Vedic gemstones actually work?",
-            answer: "Each gemstone is believed to act like an antenna for a specific planet. Ruby resonates with the Sun, Pearl with the Moon, Pukhraj with Jupiter, and so on. When the matching planet is benefic but weak in your Kundli, wearing its stone is said to absorb cosmic rays of that planet through the skin and strengthen its influence in areas like career, marriage, health, or wealth.",
-          },
-          {
-            question: "What is Navaratna and which 9 gemstones make it up?",
-            answer: "Navaratna means nine gems, one for each of the nine Vedic planets. The traditional set is Ruby for Sun, Pearl for Moon, Red Coral for Mars, Emerald for Mercury, Yellow Sapphire (Pukhraj) for Jupiter, Diamond for Venus, Blue Sapphire (Neelam) for Saturn, Hessonite (Gomed) for Rahu, and Cat's Eye (Lehsunia) for Ketu. A Navaratna pendant combines all nine in a fixed pattern.",
-          },
-          {
-            question: "Why should gemstone choice be based on the birth chart and not just zodiac sign?",
-            answer: "Sun-sign suggestions are too generic. The right gemstone depends on your Lagna (ascendant), the strength of planets in your chart, the houses they rule, and the current Mahadasha. Two people born under the same sign can need very different stones. Our recommender uses your full birth date, time, and place to compute the Kundli, which is far more accurate than zodiac-only advice.",
-          },
-          {
-            question: "Can a wrong gemstone harm you?",
-            answer: "Yes, especially Blue Sapphire (Neelam). If Saturn is malefic for your ascendant, Neelam can intensify struggles instead of helping. Even Pukhraj or Moonga can backfire when the ruling planet sits in a hostile house. This is why we recommend a 3-day trial wear for sensitive stones and always suggest confirming with a qualified astrologer before permanent use.",
-          },
-          {
-            question: "What is the minimum carat weight for a gemstone to work?",
-            answer: "A common Vedic guideline is one ratti (around 0.91 carats) for every 12 kilograms of body weight, with most adults wearing between 3 and 7 carats. Ruby, Pukhraj, and Neelam usually start showing effects from 3 carats. Pearl and Moonga can be effective at 5 to 7 carats. Quality matters more than size, an untreated 3-carat stone outperforms a treated 7-carat one.",
-          },
-          {
-            question: "Which finger and metal should I use for my gemstone?",
-            answer: "Pukhraj goes on the index finger in gold. Ruby and Moonga sit on the ring finger, Ruby in gold and Moonga in copper or gold. Pearl and Emerald are worn on the little finger in silver or gold. Neelam, Diamond, and Gomed go on the middle finger. Cat's Eye sits on the little finger in silver. Always wear the gem so it touches the skin to allow energy flow.",
-          },
-          {
-            question: "How do I energize or activate a gemstone before wearing?",
-            answer: "On the planet's day and during a clean Hora or Choghadiya, soak the ring in raw cow milk, Ganga jal, or a mix of milk, honey, curd, ghee, and sugar (Panchamrit) for a few hours. Then chant the planet's beej mantra 108 times, light a diya, and wear the ring with the planet's mantra in mind. This Pran Pratishtha process is believed to awaken the stone's vibration.",
-          },
-          {
-            question: "What are uparatnas and when should I use a substitute stone?",
-            answer: "Uparatnas are softer, more affordable substitutes for the nine main gems. Yellow Topaz or Citrine substitutes Pukhraj, Garnet or Red Spinel for Ruby, Green Tourmaline or Peridot for Emerald, Amethyst for Neelam, and White Sapphire or Zircon for Diamond. They work at lower intensity but are useful when budget is tight or when you want to test compatibility before investing in a precious stone.",
-          },
-          {
-            question: "Why is gemstone certification important?",
-            answer: "A genuine natural gemstone with no heat or chemical treatment is essential for astrological results. Always insist on a lab certificate from GIA, IGI, GRS, Gubelin, or an equivalent gemmological lab. The report should mention origin, treatment status, weight in carats, and clarity. Treated, glass-filled, or synthetic stones are cheap but carry no astrological value and can mislead the wearer.",
-          },
-          {
-            question: "When should I remove or replace my gemstone?",
-            answer: "If a stone develops a visible crack, internal cloudiness, or simply slips off on its own, treat it as a sign that the gem has absorbed energy and needs replacement. Many wearers re-energize their gem every six months. Remove the stone when its planet's Mahadasha or Antardasha ends and the next planet becomes more relevant. A short astrology check before replacing is always wise.",
-          },
+          { question: t("faqQ1"), answer: t("faqA1") },
+          { question: t("faqQ2"), answer: t("faqA2") },
+          { question: t("faqQ3"), answer: t("faqA3") },
+          { question: t("faqQ4"), answer: t("faqA4") },
+          { question: t("faqQ5"), answer: t("faqA5") },
+          { question: t("faqQ6"), answer: t("faqA6") },
+          { question: t("faqQ7"), answer: t("faqA7") },
+          { question: t("faqQ8"), answer: t("faqA8") },
+          { question: t("faqQ9"), answer: t("faqA9") },
+          { question: t("faqQ10"), answer: t("faqA10") },
         ]}
       />
 
@@ -625,15 +613,14 @@ export default function GemstoneRecommenderPage() {
         <div className="container mx-auto px-4">
           <div className="max-w-2xl mx-auto text-center space-y-6">
             <h2 className="text-2xl md:text-3xl font-bold font-heading text-gray-900">
-              Need Expert Guidance?
+              {t("ctaHeading")}
             </h2>
             <p className="text-gray-500 max-w-lg mx-auto">
-              Our experienced Vedic astrologers can provide personalized gemstone recommendations based on a detailed
-              analysis of your complete birth chart.
+              {t("ctaBody")}
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <ConsultationButton service="Gemstone Consultation" className="bg-primary hover:bg-primary/90 text-white font-semibold px-8">
-                Get Personalized Consultation
+                {t("ctaConsultBtn")}
                 <ArrowRight className="h-4 w-4 ml-2" />
               </ConsultationButton>
               <Link href="/shop">
@@ -642,7 +629,7 @@ export default function GemstoneRecommenderPage() {
                   className="border-primary text-primary hover:bg-primary/5 font-semibold px-8"
                 >
                   <Gem className="h-4 w-4 mr-2" />
-                  Shop All Gemstones
+                  {t("ctaShopBtn")}
                 </Button>
               </Link>
             </div>

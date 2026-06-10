@@ -4,7 +4,9 @@ import { cn } from "@/lib/utils";
 import {
   KundliChartProps,
   rashiLabel,
+  rashiCellLabel,
   PLANET_ABBR_COLOR,
+  planetLabel,
 } from "@/lib/astrology/chart-types";
 
 /**
@@ -118,7 +120,7 @@ export function SouthIndianChart({
               >
                 <div className="flex items-center justify-between">
                   <span className="text-[9px] text-gray-500 font-medium">
-                    {rashiLabel(rashi, labelLang)}
+                    {rashiCellLabel(rashi, labelLang)}
                   </span>
                   {isLagna ? (
                     <span className="text-[8px] bg-primary text-white rounded px-1 leading-tight">
@@ -135,7 +137,7 @@ export function SouthIndianChart({
                         PLANET_ABBR_COLOR[p] ?? "text-gray-700"
                       )}
                     >
-                      {p}
+                      {planetLabel(p, labelLang)}
                     </span>
                   ))}
                 </div>

@@ -27,12 +27,14 @@ import {
 } from "lucide-react";
 import { LocationSearch } from "@/components/molecules/location-search";
 import { ConsultationButton } from "@/components/molecules/consultation-button";
-import { FaqSection } from "@/components/molecules";
+import { FaqSection, LanguageSwitcher } from "@/components/molecules";
 import {
   getKundli,
   matchKundli,
   Observer,
 } from "@ishubhamx/panchangam-js";
+import { useT } from "@/lib/i18n";
+import { matchmaking as matchmakingDict } from "@/lib/i18n/translations/matchmaking";
 
 interface KootaResult {
   name: string;
@@ -81,30 +83,32 @@ function getCircleColor(total: number): string {
 }
 
 function getRecommendation(total: number): {
-  text: string;
+  textKey: keyof typeof matchmakingDict.en;
   icon: typeof CheckCircle2;
   color: string;
 } {
   if (total >= 25)
     return {
-      text: "Excellent match! Highly recommended.",
+      textKey: "recommendationExcellent",
       icon: CheckCircle2,
       color: "text-green-600",
     };
   if (total >= 18)
     return {
-      text: "Good match with minor adjustments needed.",
+      textKey: "recommendationGood",
       icon: AlertTriangle,
       color: "text-amber-500",
     };
   return {
-    text: "Consultation recommended before proceeding.",
+    textKey: "recommendationConsult",
     icon: XCircle,
     color: "text-red-500",
   };
 }
 
 export default function CompatibilityPage() {
+  const t = useT(matchmakingDict);
+
   const [boyDobDate, setBoyDobDate] = useState<Date | undefined>(undefined);
   const [boyDobOpen, setBoyDobOpen] = useState(false);
   const [boyDob, setBoyDob] = useState("");
@@ -130,11 +134,11 @@ export default function CompatibilityPage() {
     setResult(null);
 
     if (!boyDob || !boyTob) {
-      setError("Please enter the boy's date and time of birth.");
+      setError(t("errorBoyDetails"));
       return;
     }
     if (!girlDob || !girlTob) {
-      setError("Please enter the girl's date and time of birth.");
+      setError(t("errorGirlDetails"));
       return;
     }
 
@@ -145,7 +149,7 @@ export default function CompatibilityPage() {
       const girlDateTime = new Date(`${girlDob}T${girlTob}:00`);
 
       if (isNaN(boyDateTime.getTime()) || isNaN(girlDateTime.getTime())) {
-        setError("Invalid date or time entered. Please check and try again.");
+        setError(t("errorInvalidDate"));
         setIsCalculating(false);
         return;
       }
@@ -158,9 +162,7 @@ export default function CompatibilityPage() {
 
       setResult(match);
     } catch {
-      setError(
-        "Unable to calculate compatibility. Please check the details and try again."
-      );
+      setError(t("errorGeneral"));
     } finally {
       setIsCalculating(false);
     }
@@ -186,17 +188,19 @@ export default function CompatibilityPage() {
           <div className="absolute -bottom-10 -left-10 w-56 h-56 bg-secondary/10 rounded-full blur-3xl" />
         </div>
         <div className="container mx-auto px-4 relative z-10 py-14 md:py-20">
+          <div className="flex justify-end mb-4">
+            <LanguageSwitcher />
+          </div>
           <div className="max-w-2xl mx-auto text-center">
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 backdrop-blur-sm text-sm mb-5">
               <Heart className="h-3.5 w-3.5 text-accent" />
-              Vedic Compatibility
+              {t("heroBadge")}
             </div>
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold font-heading mb-4 leading-tight">
-              Free Kundli Match Making Calculator
+              {t("heroTitle")}
             </h1>
             <p className="text-white/70 text-base md:text-lg max-w-lg mx-auto">
-              Check marriage compatibility using the ancient 36-point Ashtakoot
-              Guna Milan system based on Vedic astrology.
+              {t("heroSubtitle")}
             </p>
           </div>
         </div>
@@ -208,10 +212,10 @@ export default function CompatibilityPage() {
           <div className="max-w-4xl mx-auto">
             <div className="text-center mb-10">
               <p className="text-xs font-bold uppercase tracking-widest text-secondary mb-2">
-                Enter Birth Details
+                {t("formEyebrow")}
               </p>
               <h2 className="text-2xl md:text-3xl font-bold font-heading text-gray-900">
-                Boy &amp; Girl Details
+                {t("formTitle")}
               </h2>
             </div>
 
@@ -223,7 +227,7 @@ export default function CompatibilityPage() {
                     <Users className="h-5 w-5 text-blue-600" />
                   </div>
                   <h3 className="text-lg font-bold font-heading text-gray-900">
-                    Boy&apos;s Details
+                    {t("boyCardTitle")}
                   </h3>
                 </div>
 
@@ -231,7 +235,7 @@ export default function CompatibilityPage() {
                   <div>
                     <Label className="text-sm font-medium text-gray-700 mb-1.5 flex items-center gap-1.5">
                       <CalendarDays className="h-3.5 w-3.5 text-primary" />
-                      Date of Birth
+                      {t("labelDob")}
                     </Label>
                     <Popover open={boyDobOpen} onOpenChange={setBoyDobOpen}>
                       <PopoverTrigger asChild>
@@ -243,7 +247,7 @@ export default function CompatibilityPage() {
                           )}
                         >
                           <CalendarDays className="h-4 w-4 mr-2 text-primary" />
-                          {boyDobDate ? format(boyDobDate, "dd MMMM yyyy") : "Select date of birth"}
+                          {boyDobDate ? format(boyDobDate, "dd MMMM yyyy") : t("placeholderDob")}
                         </Button>
                       </PopoverTrigger>
                       <PopoverContent className="w-auto p-0" align="start">
@@ -275,7 +279,7 @@ export default function CompatibilityPage() {
                   <div>
                     <Label className="text-sm font-medium text-gray-700 mb-1.5 flex items-center gap-1.5">
                       <Clock className="h-3.5 w-3.5 text-primary" />
-                      Time of Birth
+                      {t("labelTob")}
                     </Label>
                     <Input
                       type="time"
@@ -287,7 +291,7 @@ export default function CompatibilityPage() {
                   <div>
                     <Label className="text-sm font-medium text-gray-700 mb-1.5 flex items-center gap-1.5">
                       <MapPin className="h-3.5 w-3.5 text-primary" />
-                      Place of Birth
+                      {t("labelPlace")}
                     </Label>
                     <LocationSearch
                       defaultValue="Gurugram"
@@ -309,7 +313,7 @@ export default function CompatibilityPage() {
                     <Heart className="h-5 w-5 text-pink-500" />
                   </div>
                   <h3 className="text-lg font-bold font-heading text-gray-900">
-                    Girl&apos;s Details
+                    {t("girlCardTitle")}
                   </h3>
                 </div>
 
@@ -317,7 +321,7 @@ export default function CompatibilityPage() {
                   <div>
                     <Label className="text-sm font-medium text-gray-700 mb-1.5 flex items-center gap-1.5">
                       <CalendarDays className="h-3.5 w-3.5 text-primary" />
-                      Date of Birth
+                      {t("labelDob")}
                     </Label>
                     <Popover open={girlDobOpen} onOpenChange={setGirlDobOpen}>
                       <PopoverTrigger asChild>
@@ -329,7 +333,7 @@ export default function CompatibilityPage() {
                           )}
                         >
                           <CalendarDays className="h-4 w-4 mr-2 text-primary" />
-                          {girlDobDate ? format(girlDobDate, "dd MMMM yyyy") : "Select date of birth"}
+                          {girlDobDate ? format(girlDobDate, "dd MMMM yyyy") : t("placeholderDob")}
                         </Button>
                       </PopoverTrigger>
                       <PopoverContent className="w-auto p-0" align="start">
@@ -361,7 +365,7 @@ export default function CompatibilityPage() {
                   <div>
                     <Label className="text-sm font-medium text-gray-700 mb-1.5 flex items-center gap-1.5">
                       <Clock className="h-3.5 w-3.5 text-primary" />
-                      Time of Birth
+                      {t("labelTob")}
                     </Label>
                     <Input
                       type="time"
@@ -373,7 +377,7 @@ export default function CompatibilityPage() {
                   <div>
                     <Label className="text-sm font-medium text-gray-700 mb-1.5 flex items-center gap-1.5">
                       <MapPin className="h-3.5 w-3.5 text-primary" />
-                      Place of Birth
+                      {t("labelPlace")}
                     </Label>
                     <LocationSearch
                       defaultValue="Gurugram"
@@ -409,12 +413,12 @@ export default function CompatibilityPage() {
                 {isCalculating ? (
                   <>
                     <Loader2 className="h-5 w-5 mr-2 animate-spin" />
-                    Calculating...
+                    {t("calculatingBtn")}
                   </>
                 ) : (
                   <>
                     <Sparkles className="h-5 w-5 mr-2" />
-                    Check Compatibility
+                    {t("calculateBtn")}
                   </>
                 )}
               </Button>
@@ -431,7 +435,7 @@ export default function CompatibilityPage() {
               {/* Score Circle */}
               <div className="text-center mb-12">
                 <p className="text-xs font-bold uppercase tracking-widest text-secondary mb-6">
-                  Compatibility Score
+                  {t("compatibilityScoreEyebrow")}
                 </p>
                 <div className="relative w-40 h-40 mx-auto mb-6">
                   <svg
@@ -468,7 +472,7 @@ export default function CompatibilityPage() {
                     >
                       {result.ashtakoot.totalScore}
                     </span>
-                    <span className="text-sm text-gray-400">out of 36</span>
+                    <span className="text-sm text-gray-400">{t("outOf36")}</span>
                   </div>
                 </div>
                 <p className="text-lg font-semibold text-gray-700">
@@ -496,7 +500,7 @@ export default function CompatibilityPage() {
                     recommendation.color
                   )}
                 >
-                  {recommendation.text}
+                  {t(recommendation.textKey)}
                 </p>
               </div>
 
@@ -504,10 +508,10 @@ export default function CompatibilityPage() {
               <div className="mb-12">
                 <div className="text-center mb-8">
                   <p className="text-xs font-bold uppercase tracking-widest text-secondary mb-2">
-                    Detailed Analysis
+                    {t("detailedAnalysisEyebrow")}
                   </p>
                   <h3 className="text-2xl font-bold font-heading text-gray-900">
-                    Ashtakoot Guna Milan
+                    {t("ashtakootTitle")}
                   </h3>
                 </div>
 
@@ -559,10 +563,10 @@ export default function CompatibilityPage() {
               <div className="mb-12">
                 <div className="text-center mb-8">
                   <p className="text-xs font-bold uppercase tracking-widest text-secondary mb-2">
-                    Dosha Analysis
+                    {t("doshaAnalysisEyebrow")}
                   </p>
                   <h3 className="text-2xl font-bold font-heading text-gray-900">
-                    Mangal Dosha Status
+                    {t("mangalDoshaTitle")}
                   </h3>
                 </div>
 
@@ -604,7 +608,7 @@ export default function CompatibilityPage() {
                       </div>
                       <div>
                         <h4 className="font-bold text-gray-900">
-                          Boy - Mangal Dosha
+                          {t("boyMangalDosha")}
                         </h4>
                         <p
                           className={cn(
@@ -618,9 +622,9 @@ export default function CompatibilityPage() {
                         >
                           {result.dosha.boy.hasDosha
                             ? result.dosha.boy.isHigh
-                              ? "High Mangal Dosha"
-                              : "Mangal Dosha Present"
-                            : "No Mangal Dosha"}
+                              ? t("highMangalDosha")
+                              : t("mangalDoshaPresent")
+                            : t("noMangalDosha")}
                         </p>
                       </div>
                     </div>
@@ -666,7 +670,7 @@ export default function CompatibilityPage() {
                       </div>
                       <div>
                         <h4 className="font-bold text-gray-900">
-                          Girl - Mangal Dosha
+                          {t("girlMangalDosha")}
                         </h4>
                         <p
                           className={cn(
@@ -680,9 +684,9 @@ export default function CompatibilityPage() {
                         >
                           {result.dosha.girl.hasDosha
                             ? result.dosha.girl.isHigh
-                              ? "High Mangal Dosha"
-                              : "Mangal Dosha Present"
-                            : "No Mangal Dosha"}
+                              ? t("highMangalDosha")
+                              : t("mangalDoshaPresent")
+                            : t("noMangalDosha")}
                         </p>
                       </div>
                     </div>
@@ -699,58 +703,18 @@ export default function CompatibilityPage() {
 
       {/* FAQ Section */}
       <FaqSection
-        description="Get clarity on Vedic Kundli matching, Ashtakoot Guna Milan, Mangal Dosha, and Nadi Dosha. These FAQs explain how horoscope matching scores work, what makes a good marriage compatibility result, and when to consult an expert pandit for a deeper free Kundli match for marriage."
+        description={t("faqDescription")}
         faqs={[
-          {
-            question: "What is Guna Milan in Kundli matching?",
-            answer:
-              "Guna Milan is the traditional Vedic system of checking marriage compatibility between a boy and girl using their birth charts. It is also called Ashtakoot, meaning eight categories. Each Kundli is analysed across eight kootas, and points are awarded out of a total of 36. The higher the matching score, the more harmonious the partnership is believed to be on mental, physical, and karmic levels.",
-          },
-          {
-            question: "What is a good score in Kundli matching out of 36?",
-            answer:
-              "In Vedic astrology, a score of 18 out of 36 is considered the minimum acceptable level for marriage. A score between 18 and 24 is treated as average to good, 25 to 32 is excellent, and 32 plus is rare and considered ideal. Anything below 18 is generally not recommended without expert review. Remember, the final verdict also depends on Mangal dosha, Nadi dosha, and overall planetary placement, not just the total guna count.",
-          },
-          {
-            question: "What do the eight kootas in Ashtakoot measure?",
-            answer:
-              "The eight kootas each cover a specific area. Varna checks spiritual compatibility, Vashya measures mutual control and influence, Tara looks at health and well-being, Yoni shows physical and sexual compatibility, Graha Maitri measures mental and intellectual harmony, Gana indicates temperament, Bhakoot reflects family welfare and finances, and Nadi shows genetic and progeny compatibility. Nadi carries the highest weight at 8 points, which is why it strongly influences the final matching result.",
-          },
-          {
-            question: "What is Mangal Dosha and how does it affect marriage?",
-            answer:
-              "Mangal Dosha, also known as Manglik dosha, occurs when Mars sits in the 1st, 2nd, 4th, 7th, 8th, or 12th house of the birth chart. It is believed to bring tension, delays, or conflict in marriage. The traditional remedy is to match a Manglik person with another Manglik partner, as the doshas cancel out. Mild Mangal dosha can also be balanced through specific pujas, gemstones, and remedies suggested by an experienced astrologer.",
-          },
-          {
-            question: "Why is Nadi Dosha given so much importance?",
-            answer:
-              "Nadi carries 8 points, the highest weight in Ashtakoot, because it represents genetic, biological, and health compatibility between partners. When both boy and girl share the same Nadi, called Nadi Dosha, classical texts warn of issues with progeny, health, and long-term wellbeing of children. However, Nadi Dosha can sometimes be cancelled if both Kundlis share the same nakshatra or rashi. A pandit should always confirm Nadi Dosha before drawing conclusions.",
-          },
-          {
-            question: "Why are exact birth time and place needed for Kundli matching?",
-            answer:
-              "Vedic astrology calculates the moon sign, nakshatra, and lagna based on the precise moment and location of birth. Even a 10 minute difference can change the nakshatra, which directly affects 6 out of 8 kootas, including Nadi. The place of birth determines the latitude and longitude used for planetary positions. For an accurate free Kundli match for marriage, always enter exact time of birth from the hospital record and the correct city.",
-          },
-          {
-            question: "How accurate is online Kundli matching versus a pandit?",
-            answer:
-              "An online tool like this gives you a fast, mathematically accurate Ashtakoot score and dosha check based on classical Vedic rules. It is excellent for an initial compatibility filter and self-understanding. However, an experienced astrologer also studies dasha periods, planetary strengths, divisional charts like D9 Navamsa, and life context. For low scores, doshas, or important final decisions, a personal consultation with a Vedic pandit is strongly recommended.",
-          },
-          {
-            question: "Can a low Kundli matching score be fixed or improved?",
-            answer:
-              "A low guna score cannot be changed mathematically, but its negative effects can often be reduced. Astrologers may suggest specific remedies such as gemstone therapy, mantra chanting, planetary pujas, donations, or Manglik dosha nivaran rituals. In some cases, dosha cancellation rules apply automatically based on planetary positions. Never panic over a single low score, as a complete chart reading by an expert may reveal strong yogas that balance and support a successful marriage.",
-          },
-          {
-            question: "Is Kundli matching only for arranged marriages?",
-            answer:
-              "Not at all. While horoscope matching is a strong tradition in arranged marriages across India, more couples in love marriages now use it for self-awareness and to understand each other deeply. It helps both partners see strengths, friction points, and karmic patterns in the relationship. Whether your match is arranged by family or chosen by love, a Kundli match offers an extra layer of clarity before committing to lifelong partnership.",
-          },
-          {
-            question: "Is Vedic Kundli matching still relevant today?",
-            answer:
-              "Yes, Kundli matching remains highly relevant in modern Indian society. While lifestyles have changed, the core challenges in marriage, such as compatibility of values, temperament, family, finances, and health, are still real. Ashtakoot Guna Milan offers a structured, time-tested framework to assess these areas. Treat it as one valuable input alongside emotional connection, communication, and shared goals. Remember, no chart guarantees outcomes, but it can guide you with awareness.",
-          },
+          { question: t("faq1Q"), answer: t("faq1A") },
+          { question: t("faq2Q"), answer: t("faq2A") },
+          { question: t("faq3Q"), answer: t("faq3A") },
+          { question: t("faq4Q"), answer: t("faq4A") },
+          { question: t("faq5Q"), answer: t("faq5A") },
+          { question: t("faq6Q"), answer: t("faq6A") },
+          { question: t("faq7Q"), answer: t("faq7A") },
+          { question: t("faq8Q"), answer: t("faq8A") },
+          { question: t("faq9Q"), answer: t("faq9A") },
+          { question: t("faq10Q"), answer: t("faq10A") },
         ]}
       />
 
@@ -758,21 +722,20 @@ export default function CompatibilityPage() {
       <section className="py-12 border-t border-gray-100 bg-gray-50/40">
         <div className="container mx-auto px-4 text-center">
           <h3 className="text-xl md:text-2xl font-bold font-heading text-gray-900 mb-2">
-            Want a Detailed Compatibility Analysis?
+            {t("ctaTitle")}
           </h3>
           <p className="text-sm text-gray-500 mb-6 max-w-md mx-auto">
-            Get personalized marriage consultation from our expert Vedic
-            astrologers with complete Kundli analysis.
+            {t("ctaSubtitle")}
           </p>
           <div className="flex items-center justify-center gap-3">
             <ConsultationButton service="Marriage Compatibility Analysis" className="bg-primary rounded-xl">
-              Book Consultation
+              {t("ctaBookBtn")}
               <ArrowRight className="h-4 w-4 ml-1.5" />
             </ConsultationButton>
             <Button variant="outline" className="rounded-xl" asChild>
               <Link href="/contact">
                 <Star className="h-4 w-4 mr-1.5" />
-                Contact Us
+                {t("ctaContactBtn")}
               </Link>
             </Button>
           </div>

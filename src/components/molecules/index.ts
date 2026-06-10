@@ -10,3 +10,4 @@ export * from "./page-header";
 export * from "./cookie-consent";
 export * from "./faq-section";
 export * from "./time-picker-12h";
+export * from "./language-switcher";

@@ -5,6 +5,8 @@ import {
   KundliChartProps,
   rashiLabel,
   PLANET_ABBR_COLOR,
+  planetLabel,
+  rashiCellLabel,
 } from "@/lib/astrology/chart-types";
 
 /**
@@ -44,6 +46,8 @@ interface Region {
   cy: number;
   rashiX: number;
   rashiY: number;
+  /** Anchor for the rashi name so it stays inside the region near edges. */
+  rashiAnchor: "start" | "middle" | "end";
 }
 
 const REGIONS: Region[] = [
@@ -53,8 +57,9 @@ const REGIONS: Region[] = [
     points: "0,0 100,0 100,100 0,100",
     cx: 50,
     cy: 50,
-    rashiX: 10,
+    rashiX: 8,
     rashiY: 12,
+    rashiAnchor: "start",
   },
   // House 2 — top side triangle: (100,0)→(300,0)→(200,100)
   {
@@ -64,6 +69,7 @@ const REGIONS: Region[] = [
     cy: 35,
     rashiX: 200,
     rashiY: 12,
+    rashiAnchor: "middle",
   },
   // House 3 — top-right corner square (300,0)-(400,100)
   {
@@ -71,8 +77,9 @@ const REGIONS: Region[] = [
     points: "300,0 400,0 400,100 300,100",
     cx: 350,
     cy: 50,
-    rashiX: 390,
+    rashiX: 392,
     rashiY: 12,
+    rashiAnchor: "end",
   },
   // House 4 — inner top-left cell (100,100)-(200,200)
   {
@@ -80,8 +87,9 @@ const REGIONS: Region[] = [
     points: "100,100 200,100 200,200 100,200",
     cx: 150,
     cy: 150,
-    rashiX: 112,
+    rashiX: 106,
     rashiY: 112,
+    rashiAnchor: "start",
   },
   // House 5 — right side triangle: (400,100)→(400,300)→(300,200)
   {
@@ -89,8 +97,9 @@ const REGIONS: Region[] = [
     points: "400,100 400,300 300,200",
     cx: 365,
     cy: 200,
-    rashiX: 390,
+    rashiX: 392,
     rashiY: 108,
+    rashiAnchor: "end",
   },
   // House 6 — inner top-right cell (200,100)-(300,200)
   {
@@ -98,8 +107,9 @@ const REGIONS: Region[] = [
     points: "200,100 300,100 300,200 200,200",
     cx: 250,
     cy: 150,
-    rashiX: 212,
+    rashiX: 206,
     rashiY: 112,
+    rashiAnchor: "start",
   },
   // House 7 — bottom-right corner square (300,300)-(400,400)
   {
@@ -107,8 +117,9 @@ const REGIONS: Region[] = [
     points: "300,300 400,300 400,400 300,400",
     cx: 350,
     cy: 350,
-    rashiX: 390,
+    rashiX: 392,
     rashiY: 392,
+    rashiAnchor: "end",
   },
   // House 8 — bottom side triangle: (100,400)→(300,400)→(200,300)
   {
@@ -118,6 +129,7 @@ const REGIONS: Region[] = [
     cy: 365,
     rashiX: 200,
     rashiY: 392,
+    rashiAnchor: "middle",
   },
   // House 9 — bottom-left corner square (0,300)-(100,400)
   {
@@ -125,8 +137,9 @@ const REGIONS: Region[] = [
     points: "0,300 100,300 100,400 0,400",
     cx: 50,
     cy: 350,
-    rashiX: 10,
+    rashiX: 8,
     rashiY: 392,
+    rashiAnchor: "start",
   },
   // House 10 — inner bottom-right cell (200,200)-(300,300)
   {
@@ -134,8 +147,9 @@ const REGIONS: Region[] = [
     points: "200,200 300,200 300,300 200,300",
     cx: 250,
     cy: 250,
-    rashiX: 212,
+    rashiX: 206,
     rashiY: 212,
+    rashiAnchor: "start",
   },
   // House 11 — left side triangle: (0,100)→(0,300)→(100,200)
   {
@@ -143,8 +157,9 @@ const REGIONS: Region[] = [
     points: "0,100 0,300 100,200",
     cx: 35,
     cy: 200,
-    rashiX: 10,
+    rashiX: 8,
     rashiY: 108,
+    rashiAnchor: "start",
   },
   // House 12 — inner bottom-left cell (100,200)-(200,300)
   {
@@ -152,8 +167,9 @@ const REGIONS: Region[] = [
     points: "100,200 200,200 200,300 100,300",
     cx: 150,
     cy: 250,
-    rashiX: 112,
+    rashiX: 106,
     rashiY: 212,
+    rashiAnchor: "start",
   },
 ];
 
@@ -227,11 +243,12 @@ export function EastIndianChart({
                   x={r.rashiX}
                   y={r.rashiY}
                   fontSize="9"
-                  fill="#9ca3af"
-                  textAnchor="middle"
+                  fontWeight="500"
+                  fill="#6b7280"
+                  textAnchor={r.rashiAnchor}
                   dominantBaseline="middle"
                 >
-                  {rashi || ""}
+                  {rashiCellLabel(rashi, labelLang)}
                 </text>
                 {isLagna ? (
                   <text
@@ -261,7 +278,7 @@ export function EastIndianChart({
                           PLANET_ABBR_COLOR[p] ?? "text-gray-700"
                         )}
                       >
-                        {p}
+                        {planetLabel(p, labelLang)}
                       </span>
                     ))}
                   </div>

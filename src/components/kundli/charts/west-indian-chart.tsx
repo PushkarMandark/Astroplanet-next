@@ -5,6 +5,8 @@ import {
   KundliChartProps,
   rashiLabel,
   PLANET_ABBR_COLOR,
+  planetLabel,
+  rashiCellLabel,
 } from "@/lib/astrology/chart-types";
 
 /**
@@ -49,6 +51,8 @@ interface Region {
   cy: number;
   rashiX: number;
   rashiY: number;
+  /** Anchor for the rashi name so it stays inside the region near edges. */
+  rashiAnchor: "start" | "end";
 }
 
 // Grid: each cell is 400/3 ≈ 133.33 wide. We use exact thirds to keep edges clean.
@@ -63,8 +67,9 @@ const REGIONS: Region[] = [
     points: `0,0 ${T},0 ${T},${T}`,
     cx: T * 0.66,
     cy: T * 0.33,
-    rashiX: T - 12,
+    rashiX: T - 8,
     rashiY: 12,
+    rashiAnchor: "end",
   },
   // House 12 — lower-left triangle of the same cell
   {
@@ -72,8 +77,9 @@ const REGIONS: Region[] = [
     points: `0,0 ${T},${T} 0,${T}`,
     cx: T * 0.33,
     cy: T * 0.66,
-    rashiX: 12,
+    rashiX: 8,
     rashiY: T - 12,
+    rashiAnchor: "start",
   },
   // Top middle rectangle (T,0)-(T2,T) — House 2
   {
@@ -81,8 +87,9 @@ const REGIONS: Region[] = [
     points: `${T},0 ${T2},0 ${T2},${T} ${T},${T}`,
     cx: (T + T2) / 2,
     cy: T / 2,
-    rashiX: T + 12,
+    rashiX: T + 8,
     rashiY: 12,
+    rashiAnchor: "start",
   },
   // Top-right corner cell (T2,0)-(SIZE,T) split along the anti-diagonal.
   // House 4 — upper-left triangle (outer)
@@ -91,8 +98,9 @@ const REGIONS: Region[] = [
     points: `${T2},0 ${SIZE},0 ${T2},${T}`,
     cx: T2 + T * 0.33,
     cy: T * 0.33,
-    rashiX: T2 + 12,
+    rashiX: T2 + 8,
     rashiY: 12,
+    rashiAnchor: "start",
   },
   // House 3 — lower-right triangle
   {
@@ -100,8 +108,9 @@ const REGIONS: Region[] = [
     points: `${SIZE},0 ${SIZE},${T} ${T2},${T}`,
     cx: T2 + T * 0.66,
     cy: T * 0.66,
-    rashiX: SIZE - 12,
+    rashiX: SIZE - 8,
     rashiY: T - 12,
+    rashiAnchor: "end",
   },
   // Right middle rectangle (T2,T)-(SIZE,T2) — House 5
   {
@@ -109,8 +118,9 @@ const REGIONS: Region[] = [
     points: `${T2},${T} ${SIZE},${T} ${SIZE},${T2} ${T2},${T2}`,
     cx: (T2 + SIZE) / 2,
     cy: (T + T2) / 2,
-    rashiX: SIZE - 12,
+    rashiX: SIZE - 8,
     rashiY: T + 12,
+    rashiAnchor: "end",
   },
   // Bottom-right corner cell (T2,T2)-(SIZE,SIZE) split along the main diagonal.
   // House 7 — lower-left triangle (outer)
@@ -119,8 +129,9 @@ const REGIONS: Region[] = [
     points: `${T2},${T2} ${SIZE},${SIZE} ${T2},${SIZE}`,
     cx: T2 + T * 0.33,
     cy: T2 + T * 0.66,
-    rashiX: T2 + 12,
+    rashiX: T2 + 8,
     rashiY: SIZE - 12,
+    rashiAnchor: "start",
   },
   // House 6 — upper-right triangle
   {
@@ -128,8 +139,9 @@ const REGIONS: Region[] = [
     points: `${T2},${T2} ${SIZE},${T2} ${SIZE},${SIZE}`,
     cx: T2 + T * 0.66,
     cy: T2 + T * 0.33,
-    rashiX: SIZE - 12,
+    rashiX: SIZE - 8,
     rashiY: T2 + 12,
+    rashiAnchor: "end",
   },
   // Bottom middle rectangle (T,T2)-(T2,SIZE) — House 8
   {
@@ -137,8 +149,9 @@ const REGIONS: Region[] = [
     points: `${T},${T2} ${T2},${T2} ${T2},${SIZE} ${T},${SIZE}`,
     cx: (T + T2) / 2,
     cy: (T2 + SIZE) / 2,
-    rashiX: T + 12,
+    rashiX: T + 8,
     rashiY: SIZE - 12,
+    rashiAnchor: "start",
   },
   // Bottom-left corner cell (0,T2)-(T,SIZE) split along the anti-diagonal.
   // House 10 — upper-right triangle (outer)
@@ -147,8 +160,9 @@ const REGIONS: Region[] = [
     points: `0,${T2} ${T},${T2} 0,${SIZE}`,
     cx: T * 0.33,
     cy: T2 + T * 0.33,
-    rashiX: 12,
+    rashiX: 8,
     rashiY: T2 + 12,
+    rashiAnchor: "start",
   },
   // House 9 — lower-right triangle
   {
@@ -156,8 +170,9 @@ const REGIONS: Region[] = [
     points: `${T},${T2} ${T},${SIZE} 0,${SIZE}`,
     cx: T * 0.66,
     cy: T2 + T * 0.66,
-    rashiX: T - 12,
+    rashiX: T - 8,
     rashiY: SIZE - 12,
+    rashiAnchor: "end",
   },
   // Left middle rectangle (0,T)-(T,T2) — House 11
   {
@@ -165,8 +180,9 @@ const REGIONS: Region[] = [
     points: `0,${T} ${T},${T} ${T},${T2} 0,${T2}`,
     cx: T / 2,
     cy: (T + T2) / 2,
-    rashiX: 12,
+    rashiX: 8,
     rashiY: T + 12,
+    rashiAnchor: "start",
   },
 ];
 
@@ -250,11 +266,12 @@ export function WestIndianChart({
                   x={r.rashiX}
                   y={r.rashiY}
                   fontSize="9"
-                  fill="#9ca3af"
-                  textAnchor="middle"
+                  fontWeight="500"
+                  fill="#6b7280"
+                  textAnchor={r.rashiAnchor}
                   dominantBaseline="middle"
                 >
-                  {rashi || ""}
+                  {rashiCellLabel(rashi, labelLang)}
                 </text>
                 {isLagna ? (
                   <text
@@ -284,7 +301,7 @@ export function WestIndianChart({
                           PLANET_ABBR_COLOR[p] ?? "text-gray-700"
                         )}
                       >
-                        {p}
+                        {planetLabel(p, labelLang)}
                       </span>
                     ))}
                   </div>
