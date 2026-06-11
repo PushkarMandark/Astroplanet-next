@@ -1069,14 +1069,6 @@ function HoroscopeContent() {
                 </div>
             </section>
 
-            {/* Top 3 Lucky Strip */}
-            <TopLuckyStrip
-                selectedSignKey={selectedSignKey}
-                onSelect={handleSignSelect}
-                eyebrowLabel={t("luckyStripEyebrow")}
-                titleLabel={t("luckyStripTitle")}
-            />
-
             {/* DOB Quick-detect */}
             <DobDetect
                 value={dobInput}
@@ -1088,6 +1080,14 @@ function HoroscopeContent() {
                 toastNoDate={t("dobToastNoDate")}
                 toastInvalid={t("dobToastInvalid")}
                 toastError={t("dobToastError")}
+            />
+
+            {/* Top 3 Lucky Strip */}
+            <TopLuckyStrip
+                selectedSignKey={selectedSignKey}
+                onSelect={handleSignSelect}
+                eyebrowLabel={t("luckyStripEyebrow")}
+                titleLabel={t("luckyStripTitle")}
             />
 
             {/* Zodiac grid */}
