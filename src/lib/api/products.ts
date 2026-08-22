@@ -15,7 +15,18 @@ export async function getProducts(
         `/wc/v3/products${query ? `?${query}` : ""}`
     );
 
-    return response.success ? response.data || [] : [];
+    if (!response.success) {
+        // Log loudly: an empty array here renders "No products found." straight
+        // into static HTML and the build still exits 0. `npm run verify` is the
+        // hard gate, but this line tells you which query died and why.
+        console.error(
+            `[getProducts] FAILED (${query || "no params"}): ${response.error}` +
+                (response.transportFailure ? " [backend unreachable]" : "")
+        );
+        return [];
+    }
+
+    return response.data || [];
 }
 
 // Get single product by ID
@@ -24,9 +35,26 @@ export async function getProduct(id: number): Promise<Product | null> {
     return response.success ? response.data || null : null;
 }
 
-// Get product by slug
+// Get product by slug.
+//
+// Throws when the backend is unreachable rather than returning null. The caller
+// (`/product/[slug]`) turns null into notFound(), and under `output: "export"`
+// that writes the 404 page to out/product/<slug>/index.html and exits 0 — a
+// transient database blip becomes a permanently dead product URL that nobody
+// notices until a customer lands on it. A slug reaching this function came from
+// generateStaticParams, so the product provably exists; "no data" can only mean
+// the fetch failed. Failing the build is the correct outcome.
 export async function getProductBySlug(slug: string): Promise<Product | null> {
-    const response = await wcRequest<Product[]>(`/wc/v3/products?slug=${slug}`);
+    const response = await wcRequest<Product[]>(
+        `/wc/v3/products?slug=${encodeURIComponent(slug)}`
+    );
+
+    if (response.transportFailure) {
+        throw new Error(
+            `[getProductBySlug] backend unreachable for "${slug}" after retries: ${response.error}`
+        );
+    }
+
     if (response.success && response.data && response.data.length > 0) {
         return response.data[0];
     }

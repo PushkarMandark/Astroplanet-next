@@ -5,9 +5,10 @@
   "scripts": {
     "dev": "next dev",
     "sitemap": "node scripts/generate-sitemap.mjs",
-    "build": "npx rimraf .next && npm run sitemap && next build",
+    "build": "npx rimraf .next && npm run sitemap && next build && npm run verify",
     "start": "npx serve out",
-    "lint": "eslint"
+    "lint": "eslint",
+    "verify": "node scripts/verify-build.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
