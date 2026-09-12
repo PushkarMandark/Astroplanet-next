@@ -12,7 +12,6 @@ import { Label } from "@/components/ui/label";
 import { useAuthStore } from "@/stores";
 import { register as registerApi } from "@/lib/api/auth";
 import { toast } from "sonner";
-import { useRouter } from "next/navigation";
 
 const registerSchema = z
     .object({
@@ -30,7 +29,6 @@ type RegisterFormData = z.infer<typeof registerSchema>;
 
 export default function RegisterPage() {
     const [isLoading, setIsLoading] = useState(false);
-    const router = useRouter();
     const authLogin = useAuthStore((state) => state.login);
 
     const {
@@ -43,6 +41,8 @@ export default function RegisterPage() {
 
     const onSubmit = async (data: RegisterFormData) => {
         setIsLoading(true);
+        // Keeps the busy state on through the redirect; see the login page.
+        let navigating = false;
 
         try {
             const result = await registerApi({
@@ -54,14 +54,18 @@ export default function RegisterPage() {
             if (result.success && result.token && result.user) {
                 authLogin(result.user, result.token);
                 toast.success("Registration successful!");
-                router.push("/dashboard");
+                // Direct navigation, same as the login page: on a static export
+                // router.push first fetches RSC payloads from the host (slow, and
+                // seen 404ing), whereas a full navigation is one cached HTML file.
+                navigating = true;
+                window.location.href = "/dashboard";
             } else {
                 toast.error(result.message || "Registration failed");
             }
         } catch {
             toast.error("An error occurred. Please try again.");
         } finally {
-            setIsLoading(false);
+            if (!navigating) setIsLoading(false);
         }
     };
 

@@ -57,6 +57,20 @@ if (!fs.existsSync(OUT)) {
 }
 
 const pages = walk(OUT);
+
+// Nested RSC payload dirs mean the Windows exporter bug went unflattened and
+// every client-side navigation will 404 on the live site. See
+// scripts/flatten-rsc-payloads.mjs for the full explanation.
+function findNestedPayloadDirs(dir, found = []) {
+    for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+        if (!entry.isDirectory() || entry.name === "_next") continue;
+        const full = path.join(dir, entry.name);
+        if (entry.name.startsWith("__next.")) { found.push(full); continue; }
+        findNestedPayloadDirs(full, found);
+    }
+    return found;
+}
+const nestedPayloadDirs = findNestedPayloadDirs(OUT).map((d) => path.relative(OUT, d).split(path.sep).join("/"));
 const unexpected404 = [];
 const unexpectedEmpty = [];
 const emptyWarnings = [];
@@ -87,7 +101,13 @@ if (emptyWarnings.length) {
     console.warn("  (legitimate for a category with no published products)");
 }
 
-const failed = unexpected404.length + unexpectedEmpty.length;
+if (nestedPayloadDirs.length) {
+    console.error(`\n[verify-build] FAIL - ${nestedPayloadDirs.length} nested RSC payload dir(s) in /out (client navigation will 404):`);
+    for (const d of nestedPayloadDirs.slice(0, 15)) console.error(`  - ${d}/`);
+    console.error("  Run `npm run flatten-rsc` (it is chained into `npm run build`; a bare `next build` skips it).");
+}
+
+const failed = unexpected404.length + unexpectedEmpty.length + nestedPayloadDirs.length;
 
 if (unexpected404.length) {
     console.error(`\n[verify-build] FAIL — ${unexpected404.length} content route(s) rendered the 404 page:`);

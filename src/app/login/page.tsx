@@ -51,6 +51,10 @@ function LoginForm() {
 
     const onSubmit = async (data: LoginFormData) => {
         setIsLoading(true);
+        // `return` inside try does NOT skip `finally`. The previous version relied
+        // on it, so the spinner switched off the instant the token arrived and the
+        // form looked idle for the 1-3 s the redirect takes on this host.
+        let navigating = false;
 
         try {
             const result = await login(data);
@@ -60,14 +64,14 @@ function LoginForm() {
                 toast.success("Login successful!");
                 // Use direct navigation for instant redirect on static export
                 window.location.href = redirectTo;
-                return; // Don't setIsLoading(false) — page is navigating away
+                navigating = true; // keep the busy state until the page unloads
             } else {
                 toast.error(result.message || "Invalid credentials");
             }
         } catch {
             toast.error("An error occurred. Please try again.");
         } finally {
-            setIsLoading(false);
+            if (!navigating) setIsLoading(false);
         }
     };
 

@@ -364,3 +364,12 @@
   margin-top: 0.25rem;
   font-family: var(--font-heading);
 }
+
+/* Indeterminate route-transition bar (components/molecules/navigation-progress).
+   The moving element is 1/3 of the track wide, so -100% .. 300% slides it fully
+   off both edges. Kept here rather than in the component: styled-jsx is not
+   allowed in this project (see CLAUDE.md). */
+@keyframes astro-nav-progress {
+  0%   { transform: translateX(-100%); }
+  100% { transform: translateX(300%); }
+}

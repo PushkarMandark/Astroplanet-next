@@ -15,9 +15,12 @@ import { toast } from "sonner";
 import { checkoutSchema, CheckoutFormData } from "@/lib/validations/checkout";
 import { CheckoutFormFields } from "@/components/checkout/checkout-form-fields";
 import { OrderSummary } from "@/components/checkout/order-summary";
+import { LoadingOverlay } from "@/components/atoms";
 
 export default function CheckoutPage() {
     const [isSubmitting, setIsSubmitting] = useState(false);
+    // True once the order exists and the browser is heading to the pay page.
+    const [isRedirecting, setIsRedirecting] = useState(false);
     const { items, getSubtotal, clearCart } = useCartStore();
     const { user, token } = useAuthStore();
 
@@ -108,6 +111,9 @@ export default function CheckoutPage() {
         }
 
         setIsSubmitting(true);
+        // Set when we hand off to the payment page, so `finally` leaves the
+        // busy state on: `return` inside try does NOT skip finally.
+        let navigating = false;
 
         // Reuse an existing idempotency key across retries; only generate a new
         // one for the first Pay attempt of this checkout session. The key is
@@ -176,6 +182,11 @@ export default function CheckoutPage() {
                     postcode: data.postcode,
                 });
 
+                // Flip to the redirect screen BEFORE emptying the cart: the empty
+                // store would otherwise swap the form for "Your cart is empty" while
+                // the WooCommerce pay page loads, which reads as a broken checkout.
+                navigating = true;
+                setIsRedirecting(true);
                 clearCart();
                 // Order successfully created — clear the idempotency key so the
                 // next checkout session starts fresh.
@@ -188,9 +199,19 @@ export default function CheckoutPage() {
         } catch {
             toast.error("An error occurred. Please try again.");
         } finally {
-            setIsSubmitting(false);
+            if (!navigating) setIsSubmitting(false);
         }
     };
+
+    // Must come before the empty-cart check (see onSubmit): the order is
+    // placed and the browser is on its way to secure payment.
+    if (isRedirecting) {
+        return (
+            <MainLayout>
+                <LoadingOverlay message="Order placed — taking you to secure payment…" />
+            </MainLayout>
+        );
+    }
 
     if (items.length === 0) {
         return (

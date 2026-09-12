@@ -22,12 +22,12 @@ export function Spinner({ size = "md", className }: SpinnerProps) {
     );
 }
 
-export function LoadingOverlay() {
+export function LoadingOverlay({ message = "Loading..." }: { message?: string }) {
     return (
         <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center">
             <div className="flex flex-col items-center gap-4">
                 <Spinner size="lg" />
-                <p className="text-muted-foreground">Loading...</p>
+                <p className="text-muted-foreground">{message}</p>
             </div>
         </div>
     );

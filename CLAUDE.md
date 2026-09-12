@@ -6,8 +6,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ```bash
 npm run dev      # Dev server at localhost:3000
-npm run build    # Clears .next/, regenerates sitemap, next build → /out, then verifies /out
-npm run verify   # Post-build gate: fails if any content route rendered a 404 or empty listing
+npm run build    # Clears .next/, sitemap, next build → /out, flattens RSC payloads, verifies /out. ALWAYS use this, never bare `next build`
+npm run flatten-rsc  # Renames nested __next.*/ payload dirs to the flat names the client requests (Windows exporter bug; see below)
+npm run verify   # Post-build gate: fails on 404 pages, empty listings, or any nested __next.* dir left in /out
 npm run start    # Serve built output (npx serve out)
 npm run lint     # ESLint (eslint-config-next core-web-vitals + typescript)
 ```
@@ -32,6 +33,8 @@ No test suite is configured. TypeScript strict mode is enabled. Package manager:
 **API timeout awareness:** `wpRequest`/`wcRequest` in `src/lib/api/client.ts` have a 30-second timeout. A single `getPosts({ per_page: 100, _embed: true })` against a slow WP backend can exceed it and silently return `[]` (rendering "No Blog Posts Found" into the built HTML). Always use the parallel batching helpers when fetching many items at build time: `getAllPosts(100, 25)` from `src/lib/api/blog.ts` and `getAllProducts(100, 25)` from `src/lib/api/products.ts`. They split into 4× per_page=25 parallel requests (~5s total instead of 30s+).
 
 **Silent build failures — the most dangerous class of bug here.** Under `output: "export"` a failed build-time fetch does not fail the build, it *renders*. `getProductBySlug` returning null makes the page call `notFound()`, so Next writes the styled 404 page to `out/product/<slug>/index.html` and exits 0; an empty listing renders "No products found." the same way. One build shipped **47 of 96 product pages as static 404s** plus an empty homepage, with a green build log, because `wcRequest` had no retry while `wpRequest` did. Two guards now exist and both must stay: the shared retry core in `client.ts`, and `scripts/verify-build.mjs` (`npm run verify`, chained into `npm run build`) which re-reads `/out` and exits non-zero if any content route came out as a 404 or an empty critical listing. **Never deploy `/out` from a build where verify did not pass.**
+
+**Windows-only Next.js exporter bug — client-side navigation 404s.** The client requests a route's RSC payload as the FLAT file `__next.<seg>.__PAGE__.txt` (`segment-value-encoding.js` replaces every `/` with `.`), but the exporter builds that name from a filesystem walk, and on Windows the walk yields backslashes that the replace() leaves alone — `path.join` then turns them into directories, writing the NESTED `__next.<seg>/__PAGE__.txt` instead (`next/dist/export/index.js` ~689). Every deploy built on Windows therefore had every nav click 404 its payload (seen live as `blog/__next.blog.__PAGE__.txt 404`) and fall back to a full reload — double latency, no transition. `scripts/flatten-rsc-payloads.mjs` renames them (980 files / 79 MB per build) and is chained into `npm run build`; `verify` fails if any nested `__next.*` dir survives. It is a no-op on Linux builds. A bare `next build` skips it — don't. Transition UX lives in `components/molecules/navigation-progress` (click-started bar, derived state, no setState-in-effect) and `app/loading.tsx`.
 
 ## Path Alias
 
@@ -114,6 +117,7 @@ Three base functions in `client.ts`:
 - All three apply a **30-second timeout** via `AbortSignal.timeout(30_000)`.
 - `wcRequest` and `wpRequest` share one retry core: **4 attempts** on timeout/5xx with 1s/2s/4s backoff, retries doubling the timeout. Retries apply to **GET/HEAD only** — replaying a POST would duplicate an order or inquiry. `authenticatedWpRequest` is deliberately un-retried.
 - On exhaustion the response carries `transportFailure: true`, which means "the host is broken" as opposed to "the answer is no". `getProductBySlug` **throws** on it so a bad build fails instead of baking a 404 page.
+- **JWT preflight intercept on the api host.** OPTIONS requests to exactly `/jwt-auth/v1/token` and `/jwt-auth/v1/token/validate` are answered by the web server with a bare 200 that never reaches WordPress (no `X-Powered-By`, no `Access-Control-*`), so browsers reject the preflight and login fails with "Failed to fetch" while curl/Node work. Fingerprint of a "fast preflight" rewrite, most likely the JWT Auth plugin's CORS feature. `jwtRoute()` in `auth.ts` appends `?_=<timestamp>`, which slips past the exact-match rule; WordPress core's own CORS is correct on every route, so that plugin feature should be disabled at the source. **Test CORS with a browser or an OPTIONS preflight, never with a plain POST.**
 - `WP_URL` is **exported** from `client.ts` — all other files import it from here, never redeclare it.
 - Also exports `formatPrice(amount)` → INR formatted string and `buildQueryString(params)`.
 

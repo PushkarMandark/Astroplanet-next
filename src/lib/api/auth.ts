@@ -20,6 +20,21 @@ function cleanErrorMessage(message: string): string {
     return cleanMessage || 'Login failed. Please try again.';
 }
 
+// The api host answers OPTIONS for exactly /jwt-auth/v1/token and
+// /jwt-auth/v1/token/validate with a bare 200 that never reaches WordPress
+// (no X-Powered-By, no Access-Control-* headers) - the fingerprint of a
+// "fast preflight" rewrite, most likely written by the JWT Auth plugin's CORS
+// feature. Browsers reject that preflight, so login failed with
+// "Failed to fetch" while curl/Node (which skip preflights) worked fine.
+// A query string slips past the exact-match rule and the request reaches
+// WordPress, whose core CORS handling is correct on every route. The param is
+// ignored by the endpoint; a timestamp also defeats any caching layer.
+// Verified 2026-09-12 against the live host. Safe to keep if the server rule
+// is later removed.
+function jwtRoute(path: string): string {
+    return `${path}?_=${Date.now()}`;
+}
+
 // Login with JWT — uses wpRequest for consistent timeout/error handling
 export async function login(
     credentials: AuthCredentials
@@ -30,7 +45,7 @@ export async function login(
         user_email?: string;
         user_display_name?: string;
         message?: string;
-    }>("/jwt-auth/v1/token", {
+    }>(jwtRoute("/jwt-auth/v1/token"), {
         method: "POST",
         body: JSON.stringify({
             username: credentials.username,
@@ -91,7 +106,7 @@ export async function register(data: RegisterData): Promise<AuthResponse> {
 // Validate JWT token
 export async function validateToken(token: string): Promise<boolean> {
     const response = await wpRequest<{ data?: { status: number } }>(
-        "/jwt-auth/v1/token/validate",
+        jwtRoute("/jwt-auth/v1/token/validate"),
         {
             method: "POST",
             headers: {

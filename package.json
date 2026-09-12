@@ -5,10 +5,11 @@
   "scripts": {
     "dev": "next dev",
     "sitemap": "node scripts/generate-sitemap.mjs",
-    "build": "npx rimraf .next && npm run sitemap && next build && npm run verify",
+    "build": "npx rimraf .next && npm run sitemap && next build && npm run flatten-rsc && npm run verify",
     "start": "npx serve out",
     "lint": "eslint",
-    "verify": "node scripts/verify-build.mjs"
+    "verify": "node scripts/verify-build.mjs",
+    "flatten-rsc": "node scripts/flatten-rsc-payloads.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",

@@ -4,6 +4,7 @@ import { Playfair_Display, Inter } from "next/font/google";
 import { Toaster } from "@/components/ui/sonner";
 import { LeadPopupProvider } from "@/components/molecules/lead-popup/LeadPopupProvider";
 import { CookieConsent } from "@/components/molecules/cookie-consent";
+import { NavigationProgress } from "@/components/molecules/navigation-progress";
 import "./globals.css";
 
 const GA_MEASUREMENT_ID = "G-7LXHM29F4R";
@@ -108,6 +109,8 @@ export default function RootLayout({
           `}
         </Script>
         {children}
+        {/* Route-transition bar; see the component for why a static export needs one. */}
+        <NavigationProgress />
         <CookieConsent />
         <Toaster position="top-right" />
         <LeadPopupProvider />
