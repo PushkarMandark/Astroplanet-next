@@ -113,6 +113,10 @@ interface ApiResponse<T> {
     data?: T;
     error?: string;
     httpCode?: number;
+    // WordPress REST error code from the body (e.g. "jwt_auth_invalid_token",
+    // "rest_no_route"). Lets callers tell a real application-level rejection
+    // from a WAF/host error that happens to share the status code.
+    code?: string;
     // True when the host never returned a usable answer — a timeout, a network
     // error, or a 5xx with every retry spent. Separates "the backend is broken
     // right now" from "the backend answered, and the answer is no". Build-time
@@ -228,6 +232,10 @@ async function requestWithRetry<T>(
             data && typeof data === "object" && "message" in data
                 ? String((data as { message?: unknown }).message ?? "")
                 : "";
+        const code =
+            data && typeof data === "object" && "code" in data
+                ? String((data as { code?: unknown }).code ?? "")
+                : "";
 
         if (response.ok) {
             return { success: true, data: data as T, httpCode: response.status };
@@ -262,6 +270,7 @@ async function requestWithRetry<T>(
         return {
             success: false,
             error: message || "Request failed",
+            code: code || undefined,
             httpCode: response.status,
             // A throttle or 5xx with retries spent is the host failing to answer,
             // not a real answer — callers must not read it as "not found".

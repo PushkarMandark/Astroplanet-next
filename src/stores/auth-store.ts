@@ -2,7 +2,7 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { User } from "@/types";
 import { setUnauthorizedHandler } from "@/lib/api/client";
-import { validateToken } from "@/lib/api/auth";
+import { validateToken, isJwtExpired } from "@/lib/api/auth";
 
 const STORAGE_KEY = "astroplanet-auth";
 
@@ -80,16 +80,33 @@ export const useAuthStore = create<AuthState>()(
                     });
                 }
 
-                // Passive token validation: if we rehydrated a token but the
-                // server rejects it, log out so the UI doesn't pretend to be
-                // authenticated. Fire-and-forget — the result of this check
-                // does not block initial render.
+                // Passive token validation. Two rules, both learned from a bug
+                // where a hard refresh logged users out:
+                //  1. A token whose own `exp` has passed is dead - log out at once,
+                //     no request needed.
+                //  2. Otherwise ask the server, but log out ONLY on a definitive
+                //     rejection ("invalid"). "unknown" (throttled host, CORS-blocked
+                //     preflight, offline) keeps the session; the global 401 handler
+                //     above still ends it the moment a real request is refused.
+                // The server check is deferred so it lands after the page-load
+                // burst of ~37 asset requests, which is what was tripping the host's
+                // per-IP limit and returning a 429 to this very call.
                 if (state?.token) {
-                    void validateToken(state.token).then((ok) => {
-                        if (!ok) {
-                            useAuthStore.getState().logout();
-                        }
-                    });
+                    const token = state.token;
+                    if (isJwtExpired(token, Date.now())) {
+                        useAuthStore.getState().logout();
+                        return;
+                    }
+                    window.setTimeout(() => {
+                        // The user may have logged out or re-logged in meanwhile;
+                        // only act if this exact token is still the live one.
+                        if (useAuthStore.getState().token !== token) return;
+                        void validateToken(token).then((verdict) => {
+                            if (verdict === "invalid" && useAuthStore.getState().token === token) {
+                                useAuthStore.getState().logout();
+                            }
+                        });
+                    }, 4000);
                 }
             },
         }

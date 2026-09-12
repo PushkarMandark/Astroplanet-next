@@ -103,9 +103,45 @@ export async function register(data: RegisterData): Promise<AuthResponse> {
     return login({ username: data.username, password: data.password });
 }
 
-// Validate JWT token
-export async function validateToken(token: string): Promise<boolean> {
-    const response = await wpRequest<{ data?: { status: number } }>(
+// Outcome of a token check. "unknown" means we could not get an answer from
+// the server (throttled, offline, CORS-blocked, 5xx) - NOT that the token is
+// bad. Callers must never log the user out on "unknown".
+export type TokenValidity = "valid" | "invalid" | "unknown";
+
+// Read the `exp` claim out of a JWT without verifying it. Verification is the
+// server's job; this only lets us skip a network round-trip for a token that
+// is obviously dead, and it costs zero requests. Returns null if the token
+// isn't a decodable JWT.
+export function getJwtExpiry(token: string): number | null {
+    const parts = token.split(".");
+    if (parts.length !== 3) return null;
+    try {
+        const base64 = parts[1].replace(/-/g, "+").replace(/_/g, "/");
+        const padded = base64 + "=".repeat((4 - (base64.length % 4)) % 4);
+        const payload = JSON.parse(atob(padded)) as { exp?: unknown };
+        return typeof payload.exp === "number" ? payload.exp * 1000 : null;
+    } catch {
+        return null;
+    }
+}
+
+export function isJwtExpired(token: string, nowMs: number): boolean {
+    const exp = getJwtExpiry(token);
+    return exp !== null && exp <= nowMs;
+}
+
+// Validate JWT token against the server.
+//
+// Only a 401/403 that carries the JWT plugin's own error code counts as a
+// rejection. Everything else - a 429 from the host's rate limiter, a
+// CORS-blocked preflight (fetch throws), a timeout, a 5xx - is "unknown".
+// The previous version returned a bare boolean and the auth store logged the
+// user out on false, so a hard refresh (37 asset requests + this POST in one
+// burst) could throttle this single call and end the session. Before the
+// preflight fix it failed on EVERY page load, which is why nobody stayed
+// signed in past their next navigation.
+export async function validateToken(token: string): Promise<TokenValidity> {
+    const response = await wpRequest<{ code?: string; data?: { status: number } }>(
         jwtRoute("/jwt-auth/v1/token/validate"),
         {
             method: "POST",
@@ -115,7 +151,13 @@ export async function validateToken(token: string): Promise<boolean> {
         }
     );
 
-    return response.success;
+    if (response.success) return "valid";
+
+    const rejected =
+        (response.httpCode === 401 || response.httpCode === 403) &&
+        typeof response.code === "string" &&
+        response.code.startsWith("jwt_auth_");
+    return rejected ? "invalid" : "unknown";
 }
 
 // Get current user data

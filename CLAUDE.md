@@ -154,6 +154,8 @@ Five Zustand stores:
 
 Import from barrel: `import { useAuthStore, useCartStore } from "@/stores"`.
 
+**Session validation on load (auth-store `onRehydrateStorage`):** log out ONLY on a definitive rejection. `validateToken()` returns `"valid" | "invalid" | "unknown"`; only a 401/403 carrying a `jwt_auth_*` code is `"invalid"`. A 429 from the host, a CORS-blocked preflight, a timeout or a 5xx is `"unknown"` and MUST keep the session (the global 401 handler still ends it on the next refused request). The store first checks the token's own `exp` locally (`isJwtExpired`, zero requests) and defers the server check 4 s so it lands after the page-load burst. Before this, `validateToken` returned a bare boolean and the store logged out on any `false` - a hard refresh could throttle that one POST and end the session, and while the JWT preflight was intercepted it failed on EVERY page load (the real reason "3 tokens in 210 days": nobody stayed signed in past one navigation). Never revert to `if (!ok) logout()`.
+
 **Auth gate pattern:** The cart sidebar checks `isAuthenticated()` before showing the checkout button — unauthenticated users see a login prompt instead. Same pattern in `AccountLayout` (redirects to `/login?redirect=<path>`).
 
 **Checkout address prefill:** `src/app/checkout/page.tsx` reads saved address from (a) `useCheckoutStore.savedAddress`, (b) the custom `/astroeshop/v1/user-address` endpoint. The fetch uses a `cancelled` flag for unmount cleanup. The auth check uses `user && token` directly — do not call `isAuthenticated()` redundantly. The `savedAddress` dep is **intentionally excluded** from the `useEffect` array (including it would loop); this is the one accepted ESLint warning.
