@@ -39,3 +39,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Built plugin archive — rebuild from wordpress-plugin/astroeshop-api/, don't commit
+wordpress-plugin/*.zip

@@ -131,6 +131,8 @@ Three base functions in `client.ts`:
 - `POST /astroeshop/v1/create-order` — creates order AND returns a WooCommerce checkout redirect URL (`checkout.createOrder()`)
 - `POST /astroeshop/v1/inquiry` — contact form submission (`contact.submitInquiry()`)
 
+**These four endpoints are served by our own plugin, versioned in this repo:** `wordpress-plugin/astroeshop-api/` (single file `astroeshop-api.php` + README). It is the **source of truth** — never edit the plugin on the server; change it here, commit, zip the folder, upload via Plugins → Add New. It also registers the **Inquiries** post type (`inquiry`) that stores leads, exposes `GET /astroeshop/v1/health` as a liveness probe, and mirrors the shipping constants from `src/lib/constants.ts` (keep both in sync — the PayU total must equal what the storefront showed). **If any storefront flow returns `rest_no_route`, hit `/health` first** — a 404 there means the plugin is inactive and register + checkout + contact + address-prefill are all down together. The original version had no copy anywhere and vanished from production in Sept 2026 (likely theme-`functions.php` + theme update).
+
 The checkout flow does **not** use the standard `/wc/v3/orders` endpoint. It calls the custom `create-order` endpoint which returns a URL, validates the URL host against `WP_URL` before redirecting, then sends the user to WooCommerce to complete payment.
 
 ## State Management (`src/stores/`)
@@ -269,3 +271,5 @@ NEXT_PUBLIC_DEBUG           # "false" in production
 ## Deployment
 
 Static files in `/out/` are deployed to an **Apache/PHP host** (not Vercel/Netlify). `/out/` is gitignored. `.htaccess` handles routing. No Dockerfile, no CI/CD workflows — deployment is manual.
+
+The WordPress backend (`api.astroeshop.com`) is a **separate Hostinger hosting account**. The only code we own there is the plugin in `wordpress-plugin/astroeshop-api/` — deploy it by zipping that folder and uploading through WP admin. `api` is intentionally **not proxied through Cloudflare** (grey cloud): Hostinger rate-limits by source IP (~50 requests/window), and behind Cloudflare all traffic arrives from a few Cloudflare IPs and gets throttled as one abusive client — that produced site-wide 429s on cart/checkout/my-account. The static site can be proxied (it benefits from edge caching) but only with a cache rule that never stores ≥400 responses.

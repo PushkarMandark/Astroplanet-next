@@ -136,7 +136,10 @@ export default function CheckoutPage() {
                     country: "IN",
                 },
                 data.notes || "",
-                key
+                key,
+                // Ties the order to the signed-in customer; without it WooCommerce
+                // creates a guest order and warns the customer on the pay page.
+                token || undefined
             );
 
             if (result.success && result.checkout_url) {
