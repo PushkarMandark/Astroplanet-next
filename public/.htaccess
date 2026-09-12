@@ -55,12 +55,20 @@ ErrorDocument 404 /404.html
         Header set Cache-Control "public, max-age=31536000, immutable"
     </FilesMatch>
 
+    # INCIDENT 2026-09-12: with s-maxage=86400 + stale-while-revalidate=86400
+    # Hostinger's CDN kept serving 41-hour-old HTML after a deploy that had
+    # removed the previous build's hashed JS chunks -> every cached page threw
+    # ChunkLoadError ("Something went wrong!") site-wide until a manual purge.
+    # Edge TTL is now 1h (+5 min stale) so a forgotten purge costs an hour, not
+    # two days. Still purge the CDN after every upload, and upload by MERGING
+    # (never delete _next/static/ - old hashed chunks are harmless and keep any
+    # still-cached HTML working).
     # Explicit Cache-Control for HTML. mod_expires alone only emits max-age; we
     # need s-maxage so Cloudflare (and any shared cache) holds the page far longer
     # than the browser does. stale-while-revalidate keeps serving instantly while
     # the edge refetches in the background.
     <FilesMatch "\.html$">
-        Header set Cache-Control "public, max-age=600, s-maxage=86400, stale-while-revalidate=86400"
+        Header set Cache-Control "public, max-age=300, s-maxage=3600, stale-while-revalidate=300"
     </FilesMatch>
 </IfModule>
 
