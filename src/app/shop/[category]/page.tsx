@@ -1,6 +1,6 @@
 import { MainLayout } from "@/components/templates/main-layout";
 import { PaginatedProductGrid } from "@/components/organisms/paginated-product-grid";
-import { getAllProducts, getCategories, buildCategoryTree } from "@/lib/api/products";
+import { getAllProducts, getCategories, buildCategoryTree, PRODUCT_CARD_FIELDS } from "@/lib/api/products";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -58,6 +58,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
 
     const products = await getAllProducts(ALL_PRODUCTS_FETCH_LIMIT, 25, {
         category: selectedCategory.id,
+        fields: PRODUCT_CARD_FIELDS,
     });
 
     const categoryTree = buildCategoryTree(categories);

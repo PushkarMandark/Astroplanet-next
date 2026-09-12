@@ -83,13 +83,74 @@ const STATIC_ROUTES = [
 // --- Fetch helpers -----------------------------------------------------------
 const TIMEOUT_MS = 30_000;
 
+// This script runs immediately before `next build` and talks to the same
+// rate-limited host. It deliberately mirrors the throttle + retry policy in
+// src/lib/api/client.ts, which it cannot import (that is TypeScript, this is a
+// plain .mjs run by node). Keep the two in sync.
+//
+// Without this the script fired its paged fetches unthrottled and treated a 429
+// as fatal, which silently truncated the sitemap (a throttled run produced 91
+// products / 369 posts instead of the real totals) AND left the limiter engaged
+// for the build that starts seconds later.
+const MAX_ATTEMPTS = 5;
+const MIN_SPACING_MS = Number(process.env.WP_MIN_SPACING_MS ?? 250);
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+let lastStart = 0;
+let spacingChain = Promise.resolve();
+function awaitSpacing() {
+    spacingChain = spacingChain.then(async () => {
+        const gap = Date.now() - lastStart;
+        if (gap < MIN_SPACING_MS) await sleep(MIN_SPACING_MS - gap);
+        lastStart = Date.now();
+    });
+    return spacingChain;
+}
+
 async function fetchJson(url, headers = {}) {
-    const ctrl = AbortSignal.timeout(TIMEOUT_MS);
-    const res = await fetch(url, { headers, signal: ctrl });
-    if (!res.ok) {
-        throw new Error(`HTTP ${res.status} for ${url}`);
+    let lastErr;
+    for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
+        await awaitSpacing();
+        try {
+            const res = await fetch(url, {
+                headers,
+                signal: AbortSignal.timeout(TIMEOUT_MS),
+            });
+            if (res.ok) return res.json();
+            // 429 (throttled) and 5xx (DB blip) are transient — back off and retry.
+            // Any other status is a real answer and fails immediately.
+            if (res.status !== 429 && res.status < 500) {
+                throw new Error(`HTTP ${res.status} for ${url}`);
+            }
+            lastErr = new Error(`HTTP ${res.status} for ${url}`);
+            const retryAfter = Number(res.headers.get("retry-after"));
+            const waitMs = Number.isFinite(retryAfter) && retryAfter > 0
+                ? Math.min(retryAfter * 1000, 30_000)
+                : Math.min(1000 * 2 ** attempt, 8000);
+            if (attempt < MAX_ATTEMPTS - 1) {
+                console.warn(`[sitemap] HTTP ${res.status} — retry ${attempt + 1}/${MAX_ATTEMPTS - 1} in ${waitMs}ms`);
+                await sleep(waitMs);
+                continue;
+            }
+        } catch (err) {
+            lastErr = err;
+            if (attempt < MAX_ATTEMPTS - 1 && /timeout|fetch failed|network/i.test(err.message)) {
+                await sleep(Math.min(1000 * 2 ** attempt, 8000));
+                continue;
+            }
+            throw err;
+        }
     }
-    return res.json();
+    throw lastErr;
+}
+
+// Promise.allSettled-shaped result for a single sequential call.
+async function settle(fn) {
+    try {
+        return { status: "fulfilled", value: await fn() };
+    } catch (reason) {
+        return { status: "rejected", reason };
+    }
 }
 
 function wcAuthHeader() {
@@ -108,8 +169,13 @@ async function fetchAllPaged(buildUrl, headers, label) {
         try {
             batch = await fetchJson(url, headers);
         } catch (err) {
+            // Breaking here truncates the sitemap. Say so unmistakably — a short
+            // sitemap silently de-indexes real pages.
             console.warn(
-                `[sitemap] ${label} page ${page} failed: ${err.message}`
+                `[sitemap] TRUNCATED: ${label} page ${page} failed after retries: ${err.message}
+` +
+                `[sitemap] The sitemap is INCOMPLETE (${results.length} ${label} so far). ` +
+                `Do not deploy it — re-run when the backend is healthy.`
             );
             break;
         }
@@ -274,11 +340,12 @@ async function main() {
     let categories = [];
     let posts = [];
 
-    const [pRes, cRes, postRes] = await Promise.allSettled([
-        fetchProductSlugs(),
-        fetchCategorySlugs(),
-        fetchPostSlugs(),
-    ]);
+    // Sequential, not Promise.allSettled: three paged collectors in parallel
+    // burst the rate-limited host right before `next build` starts its own
+    // collection phase, and the build then begins already throttled.
+    const pRes = await settle(fetchProductSlugs);
+    const cRes = await settle(fetchCategorySlugs);
+    const postRes = await settle(fetchPostSlugs);
 
     if (pRes.status === "fulfilled") {
         products = pRes.value;

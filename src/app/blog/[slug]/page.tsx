@@ -1,8 +1,17 @@
+import { cache } from "react";
 import { notFound } from "next/navigation";
 import { getPostBySlug, getRecentPosts, getFeaturedImage, getAuthorName, getAllPostSlugs } from "@/lib/api/blog";
 import { stripHtml } from "@/lib/sanitize";
 import { articleJsonLd, breadcrumbJsonLd } from "@/lib/structured-data";
 import { BlogPostClient } from "./BlogPostClient";
+
+// Deduped per page render: generateMetadata and the component below both need
+// the same post, and without this each of the 376 blog pages fetched it TWICE —
+// ~750 redundant requests per build against a host that rate-limits (429) under
+// exactly that load. cache() is wrapped here rather than in the shared API module
+// because @/lib/api/blog is also imported by a client component, where React's cache() is
+// not available.
+const getPost = cache(getPostBySlug);
 import { MainLayout } from "@/components/templates/main-layout";
 
 interface BlogPostPageProps {
@@ -21,7 +30,7 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }: BlogPostPageProps) {
     const { slug } = await params;
-    const post = await getPostBySlug(slug);
+    const post = await getPost(slug);
 
     if (!post) {
         return { title: "Post Not Found" };
@@ -67,7 +76,7 @@ export async function generateMetadata({ params }: BlogPostPageProps) {
 export default async function BlogPostPage({ params }: BlogPostPageProps) {
     const { slug } = await params;
     const [post, recentPosts] = await Promise.all([
-        getPostBySlug(slug),
+        getPost(slug),
         getRecentPosts(5),
     ]);
 

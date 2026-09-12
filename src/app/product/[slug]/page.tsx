@@ -1,9 +1,18 @@
+import { cache } from "react";
 import { notFound } from "next/navigation";
 import { MainLayout } from "@/components/templates/main-layout";
-import { getProductBySlug, getProducts, getAllProducts } from "@/lib/api/products";
+import { getProductBySlug, getProducts, getAllProducts, PRODUCT_CARD_FIELDS } from "@/lib/api/products";
 import { stripHtml } from "@/lib/sanitize";
 import { productJsonLd, breadcrumbJsonLd } from "@/lib/structured-data";
 import { ProductDetailClient } from "./ProductDetailClient";
+
+// Deduped per page render: generateMetadata and the component below both need
+// the same product, and without this each of the 94 product pages fetched it TWICE —
+// ~190 redundant requests per build against a host that rate-limits (429) under
+// exactly that load. cache() is wrapped here rather than in the shared API module
+// because @/lib/api/products is also imported by a client component, where React's cache() is
+// not available.
+const getCachedProduct = cache(getProductBySlug);
 
 interface ProductPageProps {
     params: Promise<{
@@ -12,7 +21,9 @@ interface ProductPageProps {
 }
 
 export async function generateStaticParams() {
-    const products = await getAllProducts(100, 25);
+    // Slug-only: this pass just enumerates routes, so pulling full products
+    // fetched ~1.5 MB of description/Yoast payload to read one string each.
+    const products = await getAllProducts(100, 25, { fields: "slug" });
     return products.map((product) => ({
         slug: product.slug,
     }));
@@ -20,7 +31,7 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }: ProductPageProps) {
     const { slug } = await params;
-    const product = await getProductBySlug(slug);
+    const product = await getCachedProduct(slug);
 
     if (!product) {
         return { title: "Product Not Found" };
@@ -63,7 +74,7 @@ export async function generateMetadata({ params }: ProductPageProps) {
 
 export default async function ProductPage({ params }: ProductPageProps) {
     const { slug } = await params;
-    const product = await getProductBySlug(slug);
+    const product = await getCachedProduct(slug);
 
     if (!product) {
         notFound();
@@ -74,7 +85,8 @@ export default async function ProductPage({ params }: ProductPageProps) {
     if (product.categories?.[0]) {
         const categoryProducts = await getProducts({
             category: product.categories[0].id,
-            per_page: 5
+            per_page: 5,
+            fields: PRODUCT_CARD_FIELDS
         });
         relatedProducts = categoryProducts.filter(p => p.id !== product.id).slice(0, 4);
     }

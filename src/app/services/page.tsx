@@ -3,7 +3,7 @@ import { MainLayout } from "@/components/templates/main-layout";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { getProducts, getCategories } from "@/lib/api/products";
+import { getProducts, getCategories, PRODUCT_CARD_FIELDS } from "@/lib/api/products";
 import { OptimizedImage } from "@/components/atoms/image";
 import {
     Star,
@@ -36,13 +36,14 @@ export default async function ServicesPage() {
         // Get main category products
         const mainProducts = await getProducts({
             category: consultationCategory.id,
-            per_page: 20
+            per_page: 20,
+            fields: PRODUCT_CARD_FIELDS
         });
         // Find child categories
         const childCategories = categories.filter(c => c.parent === consultationCategory.id);
         // Fetch from child categories too
         const childProductPromises = childCategories.map(child =>
-            getProducts({ category: child.id, per_page: 10 })
+            getProducts({ category: child.id, per_page: 10, fields: PRODUCT_CARD_FIELDS })
         );
         const childProductArrays = await Promise.all(childProductPromises);
         // Combine all products
@@ -67,7 +68,7 @@ export default async function ServicesPage() {
     // Fetch products from all pooja categories
     if (allPoojaCategories.length > 0) {
         const poojaProductPromises = allPoojaCategories.map(cat =>
-            getProducts({ category: cat.id, per_page: 20 })
+            getProducts({ category: cat.id, per_page: 20, fields: PRODUCT_CARD_FIELDS })
         );
         const poojaProductArrays = await Promise.all(poojaProductPromises);
         poojaProducts = poojaProductArrays.flat();

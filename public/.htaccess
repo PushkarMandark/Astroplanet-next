@@ -9,7 +9,7 @@ RewriteEngine On
     Header always set Referrer-Policy "strict-origin-when-cross-origin"
     Header always set Permissions-Policy "camera=(), microphone=(), geolocation=()"
     Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains"
-    Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: blob: https://api.astroeshop.com https://*.openstreetmap.org https://*.wp.com; connect-src 'self' https://api.astroeshop.com https://nominatim.openstreetmap.org https://ohmanda.com https://cloudflareinsights.com https://*.cloudflareinsights.com; frame-src https://www.google.com https://www.youtube.com; font-src 'self' https://fonts.gstatic.com"
+    Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://static.cloudflareinsights.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: blob: https://api.astroeshop.com https://*.openstreetmap.org https://*.wp.com https://www.google-analytics.com https://*.google-analytics.com https://www.googletagmanager.com; connect-src 'self' https://api.astroeshop.com https://nominatim.openstreetmap.org https://ohmanda.com https://cloudflareinsights.com https://*.cloudflareinsights.com https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com; frame-src https://www.google.com https://www.youtube.com; font-src 'self' https://fonts.gstatic.com"
 </IfModule>
 
 # ── Canonical host: apex → www (301) ─────────────────
@@ -32,7 +32,14 @@ ErrorDocument 404 /404.html
 # ── Static asset caching ─────────────────────────────
 <IfModule mod_expires.c>
     ExpiresActive On
-    ExpiresByType text/html "access plus 0 seconds"
+    # HTML gets a SHORT browser TTL (a redeploy reaches users quickly) and a LONG
+    # shared/edge TTL via s-maxage below, so Cloudflare absorbs crawler and repeat
+    # traffic instead of Hostinger. Every .html here is a static build artifact —
+    # only a deploy invalidates it, so purge the Cloudflare cache after each upload.
+    # This was "access plus 0 seconds", which made every page view an origin hit:
+    # Cloudflare served only 12% of requests, 51% went to Hostinger, and the
+    # account got rate-limited into returning 429 site-wide.
+    ExpiresByType text/html "access plus 10 minutes"
     ExpiresByType text/css "access plus 1 year"
     ExpiresByType application/javascript "access plus 1 year"
     ExpiresByType image/jpeg "access plus 6 months"
@@ -46,6 +53,14 @@ ErrorDocument 404 /404.html
 <IfModule mod_headers.c>
     <FilesMatch "\.(?:css|js|woff2|woff)$">
         Header set Cache-Control "public, max-age=31536000, immutable"
+    </FilesMatch>
+
+    # Explicit Cache-Control for HTML. mod_expires alone only emits max-age; we
+    # need s-maxage so Cloudflare (and any shared cache) holds the page far longer
+    # than the browser does. stale-while-revalidate keeps serving instantly while
+    # the edge refetches in the background.
+    <FilesMatch "\.html$">
+        Header set Cache-Control "public, max-age=600, s-maxage=86400, stale-while-revalidate=86400"
     </FilesMatch>
 </IfModule>
 

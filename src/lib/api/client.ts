@@ -16,13 +16,97 @@ const FETCH_TIMEOUT_MS = 30_000;
 // wpRequest, which is why blog pages built clean while 47 of 96 product pages
 // shipped as static 404s out of that same build — every product goes through
 // wcRequest, which had no retry at all.
-const MAX_ATTEMPTS = 4;
+const MAX_ATTEMPTS = 5;
 
-// Backoff before retry N (0-indexed): 1s, 2s, 4s. Spacing retries out lets an
-// overloaded MySQL recover instead of being hammered again immediately.
+// Backoff before retry N (0-indexed): 1s, 2s, 4s, 8s. Spacing retries out lets an
+// overloaded MySQL recover instead of being hammered again immediately. A
+// server-supplied Retry-After (see parseRetryAfter) takes precedence over this.
 const BACKOFF_MS = (attempt: number) => Math.min(1000 * 2 ** attempt, 8000);
 
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
+// Longest we will honour a server-supplied Retry-After. Rate-limit windows are
+// often 60s+, which would stall a 500-page build indefinitely; past this we fall
+// back to our own backoff and let the attempt budget run out.
+const MAX_RETRY_AFTER_MS = 30_000;
+
+// Parse a Retry-After header, which is either delta-seconds or an HTTP date.
+// Returns null when absent or unparseable so the caller uses its own backoff.
+function parseRetryAfter(value: string | null): number | null {
+    if (!value) return null;
+    const seconds = Number(value);
+    if (Number.isFinite(seconds)) {
+        return seconds > 0 ? Math.min(seconds * 1000, MAX_RETRY_AFTER_MS) : null;
+    }
+    const when = Date.parse(value);
+    if (Number.isNaN(when)) return null;
+    const ms = when - Date.now();
+    return ms > 0 ? Math.min(ms, MAX_RETRY_AFTER_MS) : null;
+}
+
+// ── Build-time request rate gate ─────────────────────────────────────────────
+// Hostinger fronts both api.astroeshop.com and www.astroeshop.com with a rate
+// limiter that answers 429 (with no Retry-After) and STAYS engaged while you keep
+// pushing. A 507-page build fires hundreds of requests, so retrying into an
+// active throttle just burns the attempt budget — a build once died at page
+// 0/507 with every request 429ing. The fix is to not exceed the limit at all.
+//
+// Server-side only: browser requests are user-paced and few, and spacing them
+// would just add latency to clicks. Tune without a code change via
+// WP_MAX_IN_FLIGHT / WP_MIN_SPACING_MS.
+//
+// NOTE: Next spawns `experimental.cpus` worker processes and this gate is
+// per-process, so the aggregate ceiling is roughly
+//   cpus × (1000 / WP_MIN_SPACING_MS) requests/second.
+// Keep next.config.ts's `cpus` in mind when tuning either number.
+const IS_SERVER = typeof window === "undefined";
+const MAX_IN_FLIGHT = Math.max(1, Number(process.env.WP_MAX_IN_FLIGHT ?? 2));
+const MIN_SPACING_MS = Math.max(0, Number(process.env.WP_MIN_SPACING_MS ?? 250));
+
+let inFlight = 0;
+const slotQueue: Array<() => void> = [];
+
+function acquireSlot(): Promise<void> {
+    if (inFlight < MAX_IN_FLIGHT) {
+        inFlight++;
+        return Promise.resolve();
+    }
+    return new Promise<void>((resolve) => slotQueue.push(resolve));
+}
+
+function releaseSlot(): void {
+    const next = slotQueue.shift();
+    // Hand the slot straight to the next waiter — inFlight is unchanged because
+    // the slot never actually goes idle.
+    if (next) next();
+    else inFlight--;
+}
+
+// Serialise the "wait until MIN_SPACING_MS since the last start" step through a
+// promise chain, so concurrent callers space out instead of all reading the same
+// lastStart and firing together.
+let lastStart = 0;
+let spacingChain: Promise<void> = Promise.resolve();
+
+function awaitSpacing(): Promise<void> {
+    spacingChain = spacingChain.then(async () => {
+        const gap = Date.now() - lastStart;
+        if (gap < MIN_SPACING_MS) await delay(MIN_SPACING_MS - gap);
+        lastStart = Date.now();
+    });
+    return spacingChain;
+}
+
+async function withRateLimit<T>(fn: () => Promise<T>): Promise<T> {
+    if (!IS_SERVER) return fn();
+    await acquireSlot();
+    try {
+        await awaitSpacing();
+        return await fn();
+    } finally {
+        releaseSlot();
+    }
+}
 
 interface ApiResponse<T> {
     success: boolean;
@@ -70,10 +154,11 @@ function isRetryableMethod(method: string | undefined): boolean {
 // Shared request core for wcRequest and wpRequest — same host, same failure mode,
 // so the same retry policy applies to both.
 //
-// Build-time calls retry on BOTH timeout and 5xx with backoff — the WP shared host
-// frequently drops requests when warm-starting and returns "database connection"
-// 500s under concurrent build load. Genuine 4xx (404/400) returns immediately, so
-// a real "not found" is never confused with a transient outage.
+// Build-time calls retry on timeouts, 5xx AND 429 with backoff — the WP shared
+// host drops requests when warm-starting, returns "database connection" 500s
+// under concurrent build load, and throttles with 429 during a 500-page build.
+// Genuine 4xx (404/400) returns immediately, so a real "not found" is never
+// confused with a transient outage.
 //
 // `endpoint` is used only for log lines: for wcRequest the credentials live in the
 // URL's query string, so logging the bare endpoint keeps them out of build output.
@@ -116,7 +201,7 @@ async function requestWithRetry<T>(
         let result: { response: Response; data: unknown };
 
         try {
-            result = await attemptFetch(timeoutMs);
+            result = await withRateLimit(() => attemptFetch(timeoutMs));
         } catch (err) {
             const isTimeout =
                 err instanceof Error &&
@@ -152,14 +237,25 @@ async function requestWithRetry<T>(
             onUnauthorized();
         }
 
-        // Retry transient 5xx (DB-connection errors, gateway timeouts); the host
-        // usually recovers within a second or two. Never retry 4xx — those are
-        // genuine (404 = really gone, 400 = page past end).
-        if (response.status >= 500 && attempt < maxAttempts - 1) {
+        // Transient statuses worth another attempt:
+        //   5xx — DB-connection errors and gateway timeouts; the host usually
+        //         recovers within a second or two.
+        //   429 — the one 4xx that means "come back later", not "no". Both
+        //         Cloudflare and Hostinger throttle this host, and a build that
+        //         fetches 500+ pages trips it routinely. Treating it as final
+        //         aborted a whole build on a single throttled request.
+        // Every other 4xx is a real answer (404 = gone, 400 = page past end).
+        const isTransient = response.status === 429 || response.status >= 500;
+
+        if (isTransient && attempt < maxAttempts - 1) {
+            // Prefer the host's own Retry-After over our guess when it sends one.
+            const retryAfterMs = parseRetryAfter(response.headers.get("retry-after"));
+            const waitMs = retryAfterMs ?? BACKOFF_MS(attempt);
             console.warn(
-                `[api] HTTP ${response.status} on ${endpoint} — retry ${attempt + 1}/${maxAttempts - 1}`
+                `[api] HTTP ${response.status} on ${endpoint} — retry ${attempt + 1}/${maxAttempts - 1}` +
+                    ` in ${waitMs}ms${retryAfterMs !== null ? " (Retry-After)" : ""}`
             );
-            await delay(BACKOFF_MS(attempt));
+            await delay(waitMs);
             continue;
         }
 
@@ -167,8 +263,9 @@ async function requestWithRetry<T>(
             success: false,
             error: message || "Request failed",
             httpCode: response.status,
-            // A 5xx with retries spent is the host failing, not a real answer.
-            transportFailure: response.status >= 500,
+            // A throttle or 5xx with retries spent is the host failing to answer,
+            // not a real answer — callers must not read it as "not found".
+            transportFailure: isTransient,
         };
     }
 

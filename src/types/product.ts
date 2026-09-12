@@ -85,4 +85,9 @@ export interface ProductListParams {
     on_sale?: boolean;
     orderby?: "date" | "price" | "popularity" | "rating";
     order?: "asc" | "desc";
+    // WooCommerce `_fields` whitelist. Listing callers should pass
+    // PRODUCT_CARD_FIELDS from @/lib/api/products — a full product is ~16.7 KB of
+    // JSON vs ~3.4 KB trimmed, and listing pages serialise every product they
+    // fetch into the static HTML. Omit it only where the whole object is needed.
+    fields?: string;
 }

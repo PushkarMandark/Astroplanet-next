@@ -14,7 +14,7 @@ import { ExpertSection } from "@/components/organisms/expert-section";
 import { YouTubeSection } from "@/components/organisms/youtube-section";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { getProducts, getFeaturedProducts } from "@/lib/api/products";
+import { getProducts, getFeaturedProducts, PRODUCT_CARD_FIELDS } from "@/lib/api/products";
 import { servicesConfig } from "@/config/site";
 import { organizationJsonLd, faqJsonLd } from "@/lib/structured-data";
 
@@ -53,7 +53,7 @@ export default async function HomePage() {
   // Fetch products server-side
   const [featuredProducts, allProducts] = await Promise.all([
     getFeaturedProducts(8),
-    getProducts({ per_page: 8 }),
+    getProducts({ per_page: 8, fields: PRODUCT_CARD_FIELDS }),
   ]);
 
   // Use all products if no featured found

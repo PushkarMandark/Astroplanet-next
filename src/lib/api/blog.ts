@@ -108,7 +108,11 @@ const recentPostsCache = new Map<number, Promise<BlogPost[]>>();
 export async function getRecentPosts(limit = 5): Promise<BlogPost[]> {
     const cached = recentPostsCache.get(limit);
     if (cached) return cached;
-    const promise = getPosts({ per_page: limit }).then((posts) => {
+    // BLOG_LIST_FIELDS, not the full object: this runs on every /blog/[slug] page
+    // (376 of them) to render a 3-card "Related Articles" strip that reads only
+    // id, slug, title, date and the embedded featured image. Fetching full posts
+    // here baked five Yoast @graph blobs into every single blog page.
+    const promise = getPosts({ per_page: limit, fields: BLOG_LIST_FIELDS }).then((posts) => {
         if (posts.length === 0) recentPostsCache.delete(limit); // don't cache failures
         return posts;
     });
@@ -119,8 +123,18 @@ export async function getRecentPosts(limit = 5): Promise<BlogPost[]> {
 // Fields the blog list page actually consumes — drops the heavy `content.rendered`
 // payload from the request, which on a slow shared host is the difference between
 // a batch finishing in 5s and timing out at 30s.
+// Fields the blog LISTING needs — nothing more. The cards render title, excerpt,
+// date, category and the featured image (pulled from `_embedded`), so anything
+// beyond this is pure payload.
+//
+// Do NOT add `yoast_head_json` back. It carries Yoast's full JSON-LD @graph per
+// post, and the listing never reads it: with 368 posts it made out/blog/index.html
+// **13 MB, of which 12.8 MB (99%) was RSC flight data** for a page whose visible
+// markup is 73 KB. Uncached, that shipped off the origin on every crawler hit and
+// helped rate-limit the host into 429s. Per-post SEO metadata belongs on
+// /blog/[slug] only, where `getPostBySlug` fetches the full object.
 const BLOG_LIST_FIELDS =
-    "id,slug,title,excerpt,date,modified,author,featured_media,categories,tags,_links,_embedded,yoast_head_json";
+    "id,slug,title,excerpt,date,modified,author,featured_media,categories,tags,_links,_embedded";
 
 // The WP shared host (api.astroeshop.com) chokes on more than ~2 concurrent
 // _embed=true requests — each triggers per-post media + author DB joins. Limiting

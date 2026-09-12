@@ -1,18 +1,35 @@
 import { Product, ProductListParams, ProductCategory } from "@/types";
 import { wcRequest, buildQueryString } from "./client";
 
+// Fields a product CARD needs — ProductCard reads id, name, slug, price,
+// regular_price, sale_price, on_sale, images, categories, stock_status, and the
+// cart/wishlist derive from that same set. Nothing else is rendered in a listing.
+//
+// A full WooCommerce product is ~16.7 KB of JSON (full description HTML, every
+// attribute, variation list, and a Yoast @graph) against ~3.4 KB with this
+// whitelist — verified against the live API. Listing pages serialise every
+// product they fetch into the static HTML twice (SSR markup + RSC flight
+// payload), which is why out/shop/index.html was 1.9 MB and 93% inline script.
+// The detail page still calls getProductBySlug, which fetches the full object.
+export const PRODUCT_CARD_FIELDS =
+    "id,name,slug,price,regular_price,sale_price,on_sale,images,categories,stock_status";
+
 // Get all products
 export async function getProducts(
     params: ProductListParams = {}
 ): Promise<Product[]> {
-    const defaults: ProductListParams = {
+    const { fields, ...listParams } = params;
+    const defaults: Omit<ProductListParams, "fields"> = {
         per_page: 12,
-        ...params,
+        ...listParams,
     };
 
     const query = buildQueryString(defaults as Record<string, unknown>);
+    // `_fields` is appended by hand — buildQueryString would emit it as `fields=`,
+    // which WooCommerce ignores. Commas are legal unencoded in a query value.
+    const qs = [query, fields ? `_fields=${fields}` : ""].filter(Boolean).join("&");
     const response = await wcRequest<Product[]>(
-        `/wc/v3/products${query ? `?${query}` : ""}`
+        `/wc/v3/products${qs ? `?${qs}` : ""}`
     );
 
     if (!response.success) {
@@ -61,14 +78,14 @@ export async function getProductBySlug(slug: string): Promise<Product | null> {
     return null;
 }
 
-// Get featured products
+// Get featured products. Card fields only — these feed ProductGrid.
 export async function getFeaturedProducts(limit = 4): Promise<Product[]> {
-    return getProducts({ featured: true, per_page: limit });
+    return getProducts({ featured: true, per_page: limit, fields: PRODUCT_CARD_FIELDS });
 }
 
-// Get products on sale
+// Get products on sale. Card fields only — these feed ProductGrid.
 export async function getSaleProducts(limit = 8): Promise<Product[]> {
-    return getProducts({ on_sale: true, per_page: limit });
+    return getProducts({ on_sale: true, per_page: limit, fields: PRODUCT_CARD_FIELDS });
 }
 
 // Search products

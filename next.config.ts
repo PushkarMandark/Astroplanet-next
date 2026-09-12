@@ -15,8 +15,13 @@ const nextConfig: NextConfig = {
   //   cpus → worker processes; staticGenerationMaxConcurrency → pages in flight
   //   per worker. Effective peak ≈ cpus × maxConcurrency page renders at once.
   // Raise these once the backend has a persistent object cache / higher DB limits.
+  // The request rate gate in src/lib/api/client.ts is PER PROCESS, so the
+  // aggregate ceiling is cpus × (1000 / WP_MIN_SPACING_MS) req/s — at cpus: 2
+  // and the default 250ms spacing that is ~8 req/s. Hostinger's limiter answers
+  // 429 with no Retry-After and stays engaged while you keep pushing, which
+  // killed a build at page 0/507. Raise `cpus` only together with the spacing.
   experimental: {
-    cpus: 4,
+    cpus: 2,
     staticGenerationMaxConcurrency: 2,
   },
 };
